@@ -25,11 +25,14 @@
   --acento-suave: #E2F5F8;  /* fondo de "Idea clave" */
   /* Texto de color sobre blanco o sobre el tono claro (el cian de acento no sirve para texto chico) */
   --acento-texto: #0B6B7A;  /* 6,2:1 */
+  /* "En la computadora" (Parte 2 de las actividades): el color del módulo, más oscuro, con texto blanco.
+     La Parte 1 (en la carpeta) usa el acento con texto oscuro. .modulo-2 a .modulo-4 los cambian */
+  --compu: var(--acento-texto); --compu-oscuro: #064650; --compu-claro: var(--acento-claro);
 
   /* Colores con significado propio */
-  --diseno: #A78BFA;   --diseno-numero: #7C3AED;   --diseno-texto: #6D28D9;   --diseno-claro: #DDD6FE;   --diseno-suave: #EDE9FE;
-  --sql: #60A5FA;      --sql-numero: #2563EB;      --sql-texto: #1D4ED8;      --sql-claro: #BFDBFE;      --sql-suave: #DBEAFE;
-  --servidor: #F472B6; --servidor-numero: #DB2777; --servidor-texto: #BE185D; --servidor-claro: #FBCFE8; --servidor-suave: #FCE7F3;
+  --diseno: #A78BFA;   --diseno-numero: #7C3AED;   --diseno-texto: #6D28D9;   --diseno-claro: #DDD6FE;   --diseno-suave: #EDE9FE;   --diseno-oscuro: #4C1D95;
+  --sql: #60A5FA;      --sql-numero: #2563EB;      --sql-texto: #1D4ED8;      --sql-claro: #BFDBFE;      --sql-suave: #DBEAFE;      --sql-oscuro: #1E3A8A;
+  --servidor: #F472B6; --servidor-numero: #DB2777; --servidor-texto: #BE185D; --servidor-claro: #FBCFE8; --servidor-suave: #FCE7F3; --servidor-oscuro: #831843;
   --archivo: #F59E0B;  --archivo-texto: #92400E;   --archivo-claro: #FEF3C7;  --archivo-linea: #FDE68A;
   --naranja: #EA580C;  --naranja-texto: #C2410C;   --naranja-claro: #FFEDD5;
   --ok: #15803D;       --ok-oscuro: #166534;       --ok-claro: #DCFCE7;
@@ -72,9 +75,12 @@
 
 /* Acento por módulo: clase en el <body> de cada TP (o en cada bloque de la portada).
    modulo-1 no cambia nada: usa el cian de :root */
-.modulo-2 { --acento: var(--diseno); --acento-numero: var(--diseno-numero); --acento-texto: var(--diseno-texto); --acento-claro: var(--diseno-claro); --acento-suave: var(--diseno-suave); --panel-linea: var(--diseno-claro); }
-.modulo-3 { --acento: var(--sql); --acento-numero: var(--sql-numero); --acento-texto: var(--sql-texto); --acento-claro: var(--sql-claro); --acento-suave: var(--sql-suave); --panel-linea: var(--sql-claro); }
-.modulo-4 { --acento: var(--servidor); --acento-numero: var(--servidor-numero); --acento-texto: var(--servidor-texto); --acento-claro: var(--servidor-claro); --acento-suave: var(--servidor-suave); --panel-linea: var(--servidor-claro); }
+.modulo-2 { --acento: var(--diseno); --acento-numero: var(--diseno-numero); --acento-texto: var(--diseno-texto); --acento-claro: var(--diseno-claro); --acento-suave: var(--diseno-suave); --panel-linea: var(--diseno-claro);
+  --compu: var(--diseno-texto); --compu-oscuro: var(--diseno-oscuro); --compu-claro: var(--diseno-claro); }
+.modulo-3 { --acento: var(--sql); --acento-numero: var(--sql-numero); --acento-texto: var(--sql-texto); --acento-claro: var(--sql-claro); --acento-suave: var(--sql-suave); --panel-linea: var(--sql-claro);
+  --compu: var(--sql-texto); --compu-oscuro: var(--sql-oscuro); --compu-claro: var(--sql-claro); }
+.modulo-4 { --acento: var(--servidor); --acento-numero: var(--servidor-numero); --acento-texto: var(--servidor-texto); --acento-claro: var(--servidor-claro); --acento-suave: var(--servidor-suave); --panel-linea: var(--servidor-claro);
+  --compu: var(--servidor-texto); --compu-oscuro: var(--servidor-oscuro); --compu-claro: var(--servidor-claro); }
 
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -518,11 +524,11 @@ button.boton { border: 0; font-family: inherit; line-height: inherit; cursor: po
 .act-tabla tbody th { font-weight: 600; color: var(--tinta); }
 
 /* Parte 2 · en la computadora (solo TPs prácticos: 6 a 14 e Integrador final) */
-.lamina--compu .act-banda { background: var(--ok); color: var(--blanco); }
-.lamina--compu .act-banda .ico { color: var(--blanco); --ac: var(--ok-oscuro); }
+.lamina--compu .act-banda { background: var(--compu); color: var(--blanco); }
+.lamina--compu .act-banda .ico { color: var(--blanco); --ac: var(--compu-oscuro); }
 .lamina--compu .act-banda__parte { border-left-color: rgba(255, 255, 255, .5); }
-.lamina--compu .act__num { background: var(--ok); color: var(--blanco); }
-.lamina--compu .act__letra, .lamina--compu .consigna { background: var(--ok-claro); }
+.lamina--compu .act__num { background: var(--compu); color: var(--blanco); }
+.lamina--compu .act__letra, .lamina--compu .consigna { background: var(--compu-claro); }
 
 /* Recuadros "Importante" y "Recomendación" (solo en láminas nuevas y "Para profundizar") */
 .nota { display: grid; gap: 4px; border-radius: var(--radio); padding: 12px 14px 12px 18px; }
@@ -652,6 +658,50 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
 .act__archivos { display: grid; gap: 8px; justify-items: start; }
 
 /* ==========================================================
+   Antes y después, pasos en un programa, datos para descargar (de 5.º, TP4)
+   ========================================================== */
+/* Antes y después (una columna en el celular, lado a lado en pantalla ancha) */
+.antes-despues { display: grid; gap: 10px; justify-items: center; }
+.antes-despues__lado { display: grid; gap: 5px; min-width: 0; max-width: 100%; justify-items: start; }
+.antes-despues__rotulo { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--gris); }
+.antes-despues__nota { font-size: 14.5px; line-height: 1.35; }
+.antes-despues__medio { display: grid; gap: 6px; justify-items: center; }
+.flecha {
+  width: 22px; height: 20px; background: var(--acento);
+  clip-path: polygon(0 32%, 52% 32%, 52% 0, 100% 50%, 52% 100%, 52% 68%, 0 68%);
+  transform: rotate(90deg);
+}
+
+/* Pasos en el programa, con los nombres de menús y botones */
+.instrucciones { counter-reset: paso; display: grid; gap: 6px; }
+.antes-despues__rotulo + .instrucciones { margin-top: 8px; }
+.instrucciones > li {
+  counter-increment: paso;
+  display: grid; grid-template-columns: 26px 1fr; gap: 10px; align-items: start;
+  background: var(--blanco); border-radius: 8px; padding: 6px 10px 6px 7px;
+  font-size: 16px; line-height: 1.4;
+}
+.instrucciones > li::before {
+  content: counter(paso); border-radius: 6px; background: var(--acento); color: var(--tinta);
+  font-family: var(--fuente-titular); font-weight: 800; font-size: 17px; line-height: 1.35; text-align: center;
+}
+/* Texto de la pantalla del programa: menús, opciones y botones */
+.ui {
+  background: var(--acento-suave); color: var(--acento-texto); box-shadow: inset 0 0 0 1px var(--acento-claro);
+  border-radius: 4px; padding: 0 5px; font-weight: 600;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+
+/* Dos bloques lado a lado en pantalla ancha */
+.lado-a-lado { display: grid; gap: 12px; align-items: start; justify-items: stretch; }
+.lado-a-lado .cuando { margin-top: 0; }
+
+/* Datos para descargar (actividades en la computadora) */
+.descarga { display: grid; gap: 8px; justify-items: start; margin-top: 9px; }
+.descarga p { font-size: 16px; line-height: 1.4; }
+.act--ancho { grid-column: 1 / -1; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -697,6 +747,8 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .ejemplo p { grid-column: auto; padding-left: 12px; border-left: 2px solid var(--panel-linea); }
   .archivo-ej { grid-template-columns: auto 1fr; gap: 16px; }
   .act__cuerpo { grid-template-columns: auto 1fr; }
+  .lado-a-lado { grid-template-columns: 1.2fr 1fr; }
+  .lado-a-lado--menu { grid-template-columns: auto 1fr; align-items: center; }
 }
 
 /* ==========================================================
@@ -826,6 +878,13 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .comun--suelto li { padding: 10px 10px 10px 12px; gap: 8px; font-size: 18px; }
   .comun--suelto .glifo, .comun--suelto .ico { width: 34px; }
   .comun--suelto code { font-size: 15px; }
+
+  /* Antes y después lado a lado; pasos en el programa; banda de "En la computadora" (título más largo) */
+  .antes-despues { grid-template-columns: auto auto auto; justify-content: center; align-items: center; gap: 14px; }
+  .flecha { transform: none; }
+  .instrucciones > li { font-size: 16.5px; }
+  .antes-despues__nota { font-size: 15px; }
+  .lamina--compu .act-banda h2 { font-size: 32px; }
 }
 
 /* ==========================================================

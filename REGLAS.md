@@ -30,6 +30,7 @@ assets/css/estilos.css   paleta en :root, mobile first, modo hoja A4
 assets/js/actividades.js botón PDF, resaltado de la barra, "✓ Visto" (localStorage, clave "bd2:tp-visto-")
 assets/fonts/            Barlow, Barlow Semi Condensed, Barlow Condensed (locales)
 assets/img/
+assets/datos/            archivos para descargar desde las actividades en la computadora
 README.md                presentación del sitio + tabla de TPs con su estado
 REGLAS.md                este archivo
 ```
@@ -58,7 +59,7 @@ Reglas fijas:
 ## Diseño
 
 - Colores solo por variables de `:root` en `estilos.css`. El acento (`--acento`, `--acento-numero`, `--acento-claro`, `--acento-suave`, `--acento-texto`) cambia con la clase `modulo-N` del `<body>`: no usar los colores de módulo a mano.
-- Reusar las clases existentes antes de crear nuevas: `.secuencia` + `.paso`, `.panel`, `.tarjeta`, `.mosaico`, `.ambitos`, `.comun`, `.intro`, `.ejemplo`, `.comparar`, `.tabla-comp`, `.cuando`, `.idea`, `.pf`, `.act`, `.act-tabla`, `.grupo`, `.archivo`, `.ventana-cod`, `.nota`, `.etq`.
+- Reusar las clases existentes antes de crear nuevas: `.secuencia` + `.paso`, `.panel`, `.tarjeta`, `.mosaico`, `.ambitos`, `.comun`, `.intro`, `.ejemplo`, `.comparar`, `.tabla-comp`, `.cuando`, `.idea`, `.pf`, `.act`, `.act-tabla`, `.grupo`, `.archivo`, `.ventana-cod`, `.nota`, `.etq`, `.antes-despues`, `.instrucciones` (pasos numerados), `.ui` (menús y botones de un programa, ej.: phpMyAdmin), `.lado-a-lado`, `.descarga`.
 - Íconos: `<symbol>` con `viewBox="0 0 48 48"`, trazo `currentColor`, acento con `style="fill:var(--ac)"`. Sprite inline al principio del `<body>` de cada TP.
 - Diagramas (DER, UML, esquemas de relaciones, servidores): SVG inline simple, con `role="img"` y `aria-label` que describa el diagrama. Si no se puede rehacer, marcador claro `[DIAGRAMA: …]` y avisar.
 - Mobile first. Cortes en 600 px y 860 px. El bloque `@media (min-width: 860px), print` convierte cada `.lamina` en una hoja A4.
@@ -76,10 +77,15 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 
 - Cian, violeta y azul son los mismos valores de 5.º. En 6.º no hay planilla: renombrar `--planilla…` a `--diseno…` y agregar `--servidor…` (magenta). `--sql…` queda igual.
 - Sobre `--acento` de los cuatro módulos va texto oscuro (`--tinta`); sobre `--acento-numero` y `--acento-texto`, blanco. Contrastes medidos: tinta sobre `#F472B6` 6,7:1; `#DB2777` sobre blanco 4,6:1; `#BE185D` sobre blanco 6,0:1. Verificar los demás al aplicar; si alguno no llega, avisar y proponer un ajuste cercano.
-- Se mantienen de 5.º: **azul** para el código SQL (`ventana-cod--sql`, `code.cod-sql`) en cualquier módulo; **ámbar** para archivos (`.archivo`, `code.cod-archivo`: scripts `.sql`, archivos de configuración, respaldos); **naranja** para el segundo grupo de un esquema e "Importante"; **verde** para "En la computadora" y "Recomendación"; colores de sintaxis sobre `--consola-fondo`.
+- Se mantienen de 5.º: **azul** para el código SQL (`ventana-cod--sql`, `code.cod-sql`) en cualquier módulo; **ámbar** para archivos (`.archivo`, `code.cod-archivo`: scripts `.sql`, archivos de configuración, respaldos); **naranja** para el segundo grupo de un esquema e "Importante"; **verde** solo para "Recomendación" (y el botón "▶ Ejecutar" de una consola SQL); colores de sintaxis sobre `--consola-fondo`.
 - **Dos grupos en un mismo esquema:** el primero con el acento (`.grupo`) y el segundo en naranja (`.grupo--naranja`); ventaja / desventaja: `grupo--ok` / `grupo--naranja`.
 - **Recuadros nuevos** (`.nota--importante`, `.nota--consejo`, `.pf__caja--consejo`): solo en láminas nuevas y "Para profundizar", nunca en láminas del PDF.
-- **Actividades:** Parte 1 en la carpeta. Parte 2 en la computadora (`article.lamina--compu`, banda verde "Actividades para hacer en la computadora") en los TPs 6 a 14 y en el Integrador final. TPs 1 a 5 e Integrador 1: las dos partes en la carpeta.
+- **Actividades (igual que en 5.º):** en la carpeta, un color; en la computadora, el color del módulo más oscuro.
+  - **En la carpeta:** banda y números en el acento del módulo con texto oscuro (`--tinta`); letras en `--acento-claro` y consigna en `--acento-suave`.
+  - **En la computadora:** `article.lamina--compu`, banda "Actividades para hacer en la computadora". Banda y números en `--compu` con texto blanco; ícono de la banda en `--compu-oscuro`; letras y consigna en `--compu-claro`. **Nunca verde.**
+  - `--compu` / `--compu-oscuro` / `--compu-claro` cambian con `modulo-N`: M1 cian `#0B6B7A` / `#064650` / `--acento-claro`; M2 violeta `#6D28D9` / `#4C1D95` / `#DDD6FE`; M3 azul `#1D4ED8` / `#1E3A8A` / `#BFDBFE`; M4 magenta `#BE185D` / `#831843` / `#FBCFE8`.
+  - Parte 2 en la computadora en los TPs 6 a 14 y en el Integrador final. TPs 1 a 5 e Integrador 1: las dos partes en la carpeta.
+  - Archivos para descargar desde las actividades (CSV, scripts `.sql`): en `assets/datos/`, UTF-8, con el bloque `.descarga`.
 - **Portada:** cada tarjeta `.tp` con la franja de su módulo. Integrador 1: franja cian + violeta. Integrador final: los cuatro colores. Etiquetas en `.tp__meta`: `etq--sql` (TPs 6–12, 14 e Integrador final), `etq--xampp` (TPs 6, 7, 12, 13, 14 e Integrador final).
 
 ## Controles antes de entregar un TP
@@ -95,7 +101,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 ## Contenido
 
 - Láminas del PDF: respetar el texto, no agregar teoría. Solo se aplican las correcciones de abajo.
-- Láminas "reusadas" (PDF 5, 7 y 8): mismo texto que en 5.º, marcadas como repaso en el subtítulo. La PDF 5 se amplía con una parte nueva (N) sobre funciones del sistema.
+- Láminas "reusadas" (PDF 5, 7 y 8): mismo texto que en 5.º, con la etiqueta `.etq` "Repaso de 5.º" junto al subtítulo; el subtítulo del PDF no se toca. La PDF 5 se amplía con una parte nueva (N) sobre funciones del sistema.
 - Láminas nuevas (N) y "Para profundizar": texto propio, claro, para chicos de 17–18 años, con ejemplos de la escuela y la vida cotidiana, y retomando la tienda del integrador de 5.º. Teoría en tono neutro; consignas en voseo.
 - Los temas marcados "breve" ocupan una lámina, sin "Para profundizar" extra.
 - No adelantar temas de TPs posteriores.
