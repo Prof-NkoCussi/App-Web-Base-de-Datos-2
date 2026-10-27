@@ -1,6 +1,6 @@
 /* ==========================================================
-   Base de Datos I — Cuadernillo web (identidad: "Bases de Datos y SQL · Desde cero")
-   Prof. Nicolás A. Cussi • Base de Datos I
+   Base de Datos II — Cuadernillo web (identidad: "Bases de Datos y SQL · Desde cero")
+   Prof. Nicolás A. Cussi • Base de Datos II
    Mobile first · Modo hoja A4 en escritorio e impresión
    ========================================================== */
 
@@ -17,8 +17,8 @@
 /* ---------- Paleta (detectada del PDF) ---------- */
 :root {
   /* Identidad del cuadernillo. El acento es el cian del Módulo 1;
-     .modulo-2 y .modulo-3 lo cambian por el color de su módulo */
-  --conceptos: #26C6D4;     /* cian del Módulo 1 (también en la franja del Integrador) */
+     .modulo-2 a .modulo-4 lo cambian por el color de su módulo */
+  --conceptos: #26C6D4;     /* cian del Módulo 1 (también en la franja de los integradores) */
   --acento: var(--conceptos); /* acento: íconos, barras, flechas, recuadros */
   --acento-numero: #05A2B4; /* número de cada título (ajustado: 3:1 sobre blanco) */
   --acento-claro: #CDEFF4;  /* encabezados de tarjetas */
@@ -27,8 +27,9 @@
   --acento-texto: #0B6B7A;  /* 6,2:1 */
 
   /* Colores con significado propio */
-  --planilla: #A78BFA; --planilla-numero: #7C3AED; --planilla-texto: #6D28D9; --planilla-claro: #DDD6FE; --planilla-suave: #EDE9FE;
+  --diseno: #A78BFA;   --diseno-numero: #7C3AED;   --diseno-texto: #6D28D9;   --diseno-claro: #DDD6FE;   --diseno-suave: #EDE9FE;
   --sql: #60A5FA;      --sql-numero: #2563EB;      --sql-texto: #1D4ED8;      --sql-claro: #BFDBFE;      --sql-suave: #DBEAFE;
+  --servidor: #F472B6; --servidor-numero: #DB2777; --servidor-texto: #BE185D; --servidor-claro: #FBCFE8; --servidor-suave: #FCE7F3;
   --archivo: #F59E0B;  --archivo-texto: #92400E;   --archivo-claro: #FEF3C7;  --archivo-linea: #FDE68A;
   --naranja: #EA580C;  --naranja-texto: #C2410C;   --naranja-claro: #FFEDD5;
   --ok: #15803D;       --ok-oscuro: #166534;       --ok-claro: #DCFCE7;
@@ -71,8 +72,9 @@
 
 /* Acento por módulo: clase en el <body> de cada TP (o en cada bloque de la portada).
    modulo-1 no cambia nada: usa el cian de :root */
-.modulo-2 { --acento: var(--planilla); --acento-numero: var(--planilla-numero); --acento-texto: var(--planilla-texto); --acento-claro: var(--planilla-claro); --acento-suave: var(--planilla-suave); --panel-linea: var(--planilla-claro); }
+.modulo-2 { --acento: var(--diseno); --acento-numero: var(--diseno-numero); --acento-texto: var(--diseno-texto); --acento-claro: var(--diseno-claro); --acento-suave: var(--diseno-suave); --panel-linea: var(--diseno-claro); }
 .modulo-3 { --acento: var(--sql); --acento-numero: var(--sql-numero); --acento-texto: var(--sql-texto); --acento-claro: var(--sql-claro); --acento-suave: var(--sql-suave); --panel-linea: var(--sql-claro); }
+.modulo-4 { --acento: var(--servidor); --acento-numero: var(--servidor-numero); --acento-texto: var(--servidor-texto); --acento-claro: var(--servidor-claro); --acento-suave: var(--servidor-suave); --panel-linea: var(--servidor-claro); }
 
 /* ---------- Base ---------- */
 *, *::before, *::after { box-sizing: border-box; }
@@ -345,10 +347,8 @@ button.boton { border: 0; font-family: inherit; line-height: inherit; cursor: po
 .sin-raya::after { display: none; }
 
 /* Dos grupos en un mismo esquema: el primero con el acento del módulo (.grupo) y el segundo
-   en naranja (.grupo--naranja); en el TP1 el segundo es la hoja de cálculo (.grupo--planilla) */
+   en naranja (.grupo--naranja) */
 .grupo { --grupo: var(--acento); --grupo-claro: var(--acento-claro); }
-.grupo--planilla { --grupo: var(--planilla); --grupo-claro: var(--planilla-claro); }
-.grupo--planilla .ico { --ac: var(--planilla); }
 .grupo--naranja { --grupo: var(--naranja); --grupo-claro: var(--naranja-claro); }
 .grupo--naranja .ico { --ac: var(--naranja); }
 .grupo--ok { --grupo: var(--ok); --grupo-claro: var(--ok-claro); }
@@ -517,7 +517,7 @@ button.boton { border: 0; font-family: inherit; line-height: inherit; cursor: po
 .act-tabla thead th { background: var(--acento-claro); font-weight: 700; color: var(--tinta); text-align: center; }
 .act-tabla tbody th { font-weight: 600; color: var(--tinta); }
 
-/* Parte 2 · en la computadora (solo TPs prácticos: 4, 5, 9 e integrador) */
+/* Parte 2 · en la computadora (solo TPs prácticos: 6 a 14 e Integrador final) */
 .lamina--compu .act-banda { background: var(--ok); color: var(--blanco); }
 .lamina--compu .act-banda .ico { color: var(--blanco); --ac: var(--ok-oscuro); }
 .lamina--compu .act-banda__parte { border-left-color: rgba(255, 255, 255, .5); }
@@ -549,7 +549,6 @@ code {
   background: var(--acento-suave); color: var(--acento-texto); box-shadow: inset 0 0 0 1px var(--acento-claro);
 }
 code.cod-archivo { background: var(--archivo-claro); color: var(--archivo-texto); box-shadow: inset 0 0 0 1px var(--archivo-linea); }
-code.cod-formula { background: var(--planilla-suave); color: var(--planilla-texto); box-shadow: inset 0 0 0 1px var(--planilla-claro); }
 code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow: inset 0 0 0 1px var(--sql-claro); }
 
 /* Ventanas: los tres puntos de color delante del nombre */
@@ -891,20 +890,22 @@ a.tp:hover { border-color: var(--acento); }
 .tp__temas { font-size: 14.5px; line-height: 1.35; }
 .tp__meta { font-size: 12.5px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--gris); }
 .tp--pronto { opacity: .62; }
-/* Integrador: franja con los tres colores de módulo, en bandas con corte neto */
+/* Integradores: franja con los colores de los módulos que cierran, en bandas con corte neto
+   (Integrador 1: módulos 1 y 2 · Integrador final: los cuatro) */
 .tp--integrador {
   box-shadow: none;
-  background: linear-gradient(var(--conceptos) 0 33.34%, var(--planilla) 0 66.67%, var(--sql) 0) left / 6px 100% no-repeat, var(--acento-suave);
+  background: var(--franja) left / 6px 100% no-repeat, var(--acento-suave);
 }
-/* Etiquetas de la herramienta que se usa (Archivos, Planilla, XAMPP, SQL) */
+.tp--int1 { --franja: linear-gradient(var(--conceptos) 0 50%, var(--diseno) 0); }
+.tp--int2 { --franja: linear-gradient(var(--conceptos) 0 25%, var(--diseno) 0 50%, var(--sql) 0 75%, var(--servidor) 0); }
+/* Etiquetas de la herramienta que se usa (Archivos, XAMPP, SQL) */
 .etq {
   display: inline-block; font-size: 11px; font-weight: 700; letter-spacing: .02em; text-transform: none;
   padding: 1px 7px; border-radius: 999px; line-height: 1.5;
 }
-.etq--archivo  { background: var(--archivo-claro);  color: var(--archivo-texto); }
-.etq--planilla { background: var(--planilla-claro); color: var(--planilla-texto); }
-.etq--xampp    { background: var(--naranja-claro);  color: var(--naranja-texto); }
-.etq--sql      { background: var(--sql-claro);      color: var(--sql-texto); }
+.etq--archivo { background: var(--archivo-claro); color: var(--archivo-texto); }
+.etq--xampp   { background: var(--naranja-claro); color: var(--naranja-texto); }
+.etq--sql     { background: var(--sql-claro);     color: var(--sql-texto); }
 .tp__visto { color: #0F766E; }
 .tp__visto[hidden] { display: none; }
 

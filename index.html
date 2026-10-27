@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Base de Datos I — Cuadernillo de actividades · Prof. Nicolás A. Cussi</title>
-  <meta name="description" content="Cuadernillo de actividades de Base de Datos I (5.º año), organizado en 9 TPs y un integrador. Bachillerato en Programación, Ushuaia.">
+  <title>Base de Datos II — Cuadernillo de actividades · Prof. Nicolás A. Cussi</title>
+  <meta name="description" content="Cuadernillo de actividades de Base de Datos II (6.º año), organizado en 14 TPs y dos integradores. Bachillerato en Programación, Ushuaia.">
   <meta name="theme-color" content="#26C6D4">
   <link rel="preload" href="assets/fonts/barlow-condensed-latin-800-normal.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="stylesheet" href="assets/css/estilos.css">
@@ -34,12 +34,12 @@
   </div>
 
   <header class="portada__hero">
-    <h1>Base de Datos <span>I</span></h1>
-    <p class="tit__sub">Cuadernillo de actividades · 5.º año</p>
+    <h1>Base de Datos <span>II</span></h1>
+    <p class="tit__sub">Cuadernillo de actividades · 6.º año</p>
   </header>
 
   <p class="portada__datos">
-    <strong>Base de Datos I</strong> • Prof. Nicolás A. Cussi<br>
+    <strong>Base de Datos II</strong> • Prof. Nicolás A. Cussi<br>
     Bachillerato Profesional Especializado en Programación · Ushuaia
   </p>
 
@@ -51,102 +51,156 @@
         <path d="M20 39h8M21.5 43h5"/>
       </svg>
     </span>
-    <p><strong>Cómo usarlo:</strong> cada TP tiene sus láminas, una página “Para profundizar” y, al final, las actividades para hacer en la carpeta.</p>
+    <p><strong>Cómo usarlo:</strong> cada TP tiene sus láminas, una página “Para profundizar” y, al final, las actividades para hacer en la carpeta y, desde el TP6, también en la computadora.</p>
   </aside>
 
   <section class="bloque modulo-1" id="indice" aria-labelledby="b1">
-    <h2 class="subtitulo" id="b1">Módulo 1 · Conceptos de bases de datos</h2>
+    <h2 class="subtitulo" id="b1">Módulo 1 · Modelización de datos</h2>
     <ul class="lista-tp">
       <li>
-        <a class="tp" href="unidades/tp01.html">
+        <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">1</span>
-          <span class="tp__titulo">TP N°1 — Del dato a la base de datos</span>
-          <span class="tp__temas">¿Qué son los datos? · ¿Qué es una base de datos? · Bases de datos en la vida cotidiana · Base de datos vs. hoja de cálculo</span>
-          <span class="tp__meta">Láminas 1–4 <span class="tp__visto" data-visto="1" hidden>· ✓ Visto</span></span>
-        </a>
+          <span class="tp__titulo">TP N°1 — De 5.º a 6.º</span>
+          <span class="tp__temas">Evolución de los sistemas de bases de datos · El SGBD y sus funciones · El modelo relacional</span>
+          <span class="tp__meta">Láminas 1–3 · Próximamente</span>
+        </div>
       </li>
       <li>
-        <a class="tp" href="unidades/tp02.html">
+        <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">2</span>
-          <span class="tp__titulo">TP N°2 — Componentes de una tabla</span>
-          <span class="tp__temas">Tablas, filas, columnas y registros · Entidades y atributos · Tipos de datos</span>
-          <span class="tp__meta">Láminas 5–7 <span class="tp__visto" data-visto="2" hidden>· ✓ Visto</span></span>
-        </a>
+          <span class="tp__titulo">TP N°2 — Modelo Entidad-Relación</span>
+          <span class="tp__temas">Introducción al DER · Cómo interpretar un DER · Del DER a las tablas</span>
+          <span class="tp__meta">Láminas 4–6 · Próximamente</span>
+        </div>
       </li>
       <li>
-        <a class="tp" href="unidades/tp03.html">
+        <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">3</span>
-          <span class="tp__titulo">TP N°3 — Archivos de texto</span>
-          <span class="tp__temas">Campos de tamaño fijo · Campos con separadores · Acceso a los datos</span>
-          <span class="tp__meta"><span class="etq etq--archivo">Archivos</span> Láminas 8–10 <span class="tp__visto" data-visto="3" hidden>· ✓ Visto</span></span>
-        </a>
+          <span class="tp__titulo">TP N°3 — UML y otros modelos</span>
+          <span class="tp__temas">UML: diagrama de clases · Modelo orientado a objetos · XML y el modelo semiestructurado · Relacionales y NoSQL</span>
+          <span class="tp__meta">Láminas 7–10 · Próximamente</span>
+        </div>
       </li>
     </ul>
   </section>
 
   <section class="bloque modulo-2" aria-labelledby="b2">
-    <h2 class="subtitulo" id="b2">Módulo 2 · Operaciones con planilla de cálculo</h2>
+    <h2 class="subtitulo" id="b2">Módulo 2 · Diseño de bases de datos</h2>
     <ul class="lista-tp">
       <li>
         <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">4</span>
-          <span class="tp__titulo">TP N°4 — La planilla como base de datos</span>
-          <span class="tp__temas">Armar la base · Ordenar · Filtrar</span>
-          <span class="tp__meta"><span class="etq etq--planilla">Planilla</span> Láminas 11–13 · Próximamente</span>
+          <span class="tp__titulo">TP N°4 — Claves y restricciones</span>
+          <span class="tp__temas">NOT NULL, UNIQUE, DEFAULT y CHECK · Integridad referencial · Claves candidatas, alternativas y foráneas</span>
+          <span class="tp__meta">Láminas 11–13 · Próximamente</span>
         </div>
       </li>
       <li>
         <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">5</span>
-          <span class="tp__titulo">TP N°5 — Buscar y resumir datos</span>
-          <span class="tp__temas">BUSCARV y BUSCARX · Subtotales · Tablas dinámicas</span>
-          <span class="tp__meta"><span class="etq etq--planilla">Planilla</span> Láminas 14–16 · Próximamente</span>
+          <span class="tp__titulo">TP N°5 — Normalización</span>
+          <span class="tp__temas">Redundancia de datos · Normalización · Dependencia funcional y descomposición · Primera, Segunda y Tercera Forma Normal</span>
+          <span class="tp__meta">Láminas 14–17 · Próximamente</span>
+        </div>
+      </li>
+      <li>
+        <div class="tp tp--pronto tp--integrador tp--int1">
+          <span class="tp__num" aria-hidden="true">✦</span>
+          <span class="tp__titulo">Integrador 1 — La tienda, de nuevo</span>
+          <span class="tp__temas">Modelar la tienda con un DER, pasarla a tablas y normalizarla</span>
+          <span class="tp__meta">Lámina 18 · Próximamente</span>
         </div>
       </li>
     </ul>
   </section>
 
   <section class="bloque modulo-3" aria-labelledby="b3">
-    <h2 class="subtitulo" id="b3">Módulo 3 · Bases de datos relacionales</h2>
+    <h2 class="subtitulo" id="b3">Módulo 3 · Lenguajes de consulta</h2>
     <ul class="lista-tp">
       <li>
         <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">6</span>
-          <span class="tp__titulo">TP N°6 — Software de gestión</span>
-          <span class="tp__temas">¿Qué es un SGBD? · Principales gestores · Bases relacionales y NoSQL</span>
-          <span class="tp__meta">Láminas 17–19 · Próximamente</span>
+          <span class="tp__titulo">TP N°6 — Del álgebra relacional a SQL</span>
+          <span class="tp__temas">Álgebra relacional · ¿Qué es SQL? · Puesta en marcha de XAMPP · Familias de comandos: DDL, DML, DQL y TCL</span>
+          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Láminas 19–22 · Próximamente</span>
         </div>
       </li>
       <li>
         <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">7</span>
-          <span class="tp__titulo">TP N°7 — Modelo relacional y claves</span>
-          <span class="tp__temas">El modelo relacional · Clave primaria · Clave foránea</span>
-          <span class="tp__meta">Láminas 20–22 · Próximamente</span>
+          <span class="tp__titulo">TP N°7 — Definir y cargar tablas</span>
+          <span class="tp__temas">CREATE DATABASE y CREATE TABLE · ALTER y DROP · INSERT INTO</span>
+          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Láminas 23–25 · Próximamente</span>
         </div>
       </li>
       <li>
         <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">8</span>
-          <span class="tp__titulo">TP N°8 — Relaciones, formularios e informes</span>
-          <span class="tp__temas">Relaciones 1:1, 1:N y N:M · Formularios e informes</span>
-          <span class="tp__meta">Láminas 23–24 · Próximamente</span>
+          <span class="tp__titulo">TP N°8 — Consultar</span>
+          <span class="tp__temas">SELECT · Columnas específicas y alias · WHERE</span>
+          <span class="tp__meta"><span class="etq etq--sql">SQL</span> Láminas 26–28 · Próximamente</span>
         </div>
       </li>
       <li>
         <div class="tp tp--pronto">
           <span class="tp__num" aria-hidden="true">9</span>
-          <span class="tp__titulo">TP N°9 — Primeros pasos con XAMPP y SQL</span>
-          <span class="tp__temas">XAMPP y phpMyAdmin · CREATE DATABASE y CREATE TABLE · INSERT INTO · SELECT</span>
-          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Láminas 25–28 · Próximamente</span>
+          <span class="tp__titulo">TP N°9 — Filtrar</span>
+          <span class="tp__temas">Operadores de comparación · AND, OR y NOT · LIKE, IN y BETWEEN</span>
+          <span class="tp__meta"><span class="etq etq--sql">SQL</span> Láminas 29–31 · Próximamente</span>
         </div>
       </li>
       <li>
-        <div class="tp tp--pronto tp--integrador">
+        <div class="tp tp--pronto">
+          <span class="tp__num" aria-hidden="true">10</span>
+          <span class="tp__titulo">TP N°10 — Ordenar, modificar y QBE</span>
+          <span class="tp__temas">ORDER BY y LIMIT · UPDATE y DELETE · QBE en phpMyAdmin</span>
+          <span class="tp__meta"><span class="etq etq--sql">SQL</span> Láminas 32–34 · Próximamente</span>
+        </div>
+      </li>
+      <li>
+        <div class="tp tp--pronto">
+          <span class="tp__num" aria-hidden="true">11</span>
+          <span class="tp__titulo">TP N°11 — Resumir y combinar</span>
+          <span class="tp__temas">COUNT, SUM, AVG, MIN y MAX · GROUP BY y HAVING · INNER JOIN y LEFT JOIN</span>
+          <span class="tp__meta"><span class="etq etq--sql">SQL</span> Láminas 35–37 · Próximamente</span>
+        </div>
+      </li>
+      <li>
+        <div class="tp tp--pronto">
+          <span class="tp__num" aria-hidden="true">12</span>
+          <span class="tp__titulo">TP N°12 — Consultas avanzadas y programación</span>
+          <span class="tp__temas">Subconsultas y CTE (WITH) · Scripts .sql · SQL embebido en PHP · Lenguaje de consulta de objetos</span>
+          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Láminas 38–41 · Próximamente</span>
+        </div>
+      </li>
+    </ul>
+  </section>
+
+  <section class="bloque modulo-4" aria-labelledby="b4">
+    <h2 class="subtitulo" id="b4">Módulo 4 · Servidores y bases de datos distribuidas</h2>
+    <ul class="lista-tp">
+      <li>
+        <div class="tp tp--pronto">
+          <span class="tp__num" aria-hidden="true">13</span>
+          <span class="tp__titulo">TP N°13 — El servidor y sus usuarios</span>
+          <span class="tp__temas">Instalación y configuración del motor · Usuarios, permisos y publicación de las bases · Respaldo y capacidad de almacenamiento · Procedimientos almacenados</span>
+          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> Láminas 42–45 · Próximamente</span>
+        </div>
+      </li>
+      <li>
+        <div class="tp tp--pronto">
+          <span class="tp__num" aria-hidden="true">14</span>
+          <span class="tp__titulo">TP N°14 — Transacciones y distribución</span>
+          <span class="tp__temas">Transacciones: COMMIT y ROLLBACK · Concurrencia, fallas y recuperación · Bases de datos distribuidas · Escalabilidad y eficiencia</span>
+          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Láminas 46–49 · Próximamente</span>
+        </div>
+      </li>
+      <li>
+        <div class="tp tp--pronto tp--integrador tp--int2">
           <span class="tp__num" aria-hidden="true">✦</span>
-          <span class="tp__titulo">Integrador</span>
-          <span class="tp__temas">Caso práctico: diseñamos y creamos una base de datos desde cero</span>
-          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Lámina 29 · Próximamente</span>
+          <span class="tp__titulo">Integrador final — Seguridad y desafío final</span>
+          <span class="tp__temas">Seguridad, SQL Injection y protección de datos · Desafío integrador final</span>
+          <span class="tp__meta"><span class="etq etq--xampp">XAMPP</span> <span class="etq etq--sql">SQL</span> Lámina 50 · Próximamente</span>
         </div>
       </li>
     </ul>
@@ -154,7 +208,7 @@
 
   <footer class="pie">
     <span class="pie__linea"></span>
-    <span>Base de Datos I — Prof. Nicolás A. Cussi</span>
+    <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
     <span class="pie__linea"></span>
   </footer>
 </main>
