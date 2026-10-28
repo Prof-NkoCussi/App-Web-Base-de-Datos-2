@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°1 — De 5.º a 6.º · Base de Datos II</title>
+  <meta name="description" content="TP N°1 de Base de Datos II: cómo evolucionaron los sistemas de bases de datos, qué es un SGBD y el modelo relacional, como repaso de 5.º. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#26C6D4">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="1" class="modulo-1">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-db-engranaje" viewBox="0 0 48 48">
+      <ellipse cx="20" cy="9" rx="14" ry="5" style="fill:var(--ac)"/>
+      <path d="M6 9v24c0 2.8 6.3 5 14 5"/>
+      <path d="M34 9v10"/>
+      <path d="M6 17c0 2.8 6.3 5 14 5s14-2.2 14-5M6 25c0 2.8 6.3 5 14 5"/>
+      <g transform="translate(22.5 22.5) scale(.54)" style="stroke-width:4.6">
+        <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z" style="fill:var(--ac)"/>
+        <circle cx="24" cy="24" r="6" style="fill:#fff"/>
+      </g>
+    </symbol>
+    <symbol id="i-db-menos" viewBox="0 0 48 48">
+      <ellipse cx="20" cy="9" rx="14" ry="5" style="fill:var(--ac)"/>
+      <path d="M6 9v24c0 2.8 6.3 5 14 5"/>
+      <path d="M34 9v10"/>
+      <path d="M6 17c0 2.8 6.3 5 14 5s14-2.2 14-5M6 25c0 2.8 6.3 5 14 5"/>
+      <circle cx="34" cy="34" r="10" style="fill:#fff"/>
+      <path d="M34 28.5v10M29.5 34.5l4.5 4.5 4.5-4.5"/>
+    </symbol>
+    <symbol id="i-reloj" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18"/>
+      <path d="M24 12.5V24l6.5 7" style="stroke:var(--ac);stroke-width:3.6"/>
+    </symbol>
+    <symbol id="i-archivos" viewBox="0 0 48 48">
+      <path d="M17 4h14l8 8v23H17z" style="fill:var(--ac)"/>
+      <path d="M9 12h15l8 8v24H9z" style="fill:#fff"/>
+      <path d="M24 12v8h8"/>
+      <path d="M14 27h13M14 33h13M14 39h7"/>
+    </symbol>
+    <symbol id="i-arbol" viewBox="0 0 48 48">
+      <path d="M24 14v7M11 21h26M11 21v9M37 21v9"/>
+      <path d="M19 34.5h10" style="stroke-dasharray:3 2.5"/>
+      <rect x="16" y="5" width="16" height="9" rx="2" style="fill:var(--ac)"/>
+      <rect x="3" y="30" width="16" height="9" rx="2" style="fill:#fff"/>
+      <rect x="29" y="30" width="16" height="9" rx="2" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-tabla" viewBox="0 0 48 48">
+      <path d="M7.3 11.3h33.4V17H7.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 17v21M30 17v21"/>
+    </symbol>
+    <symbol id="i-globo" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18" style="fill:#fff"/>
+      <ellipse cx="24" cy="24" rx="7.5" ry="18" style="fill:var(--ac)"/>
+      <path d="M6 24h36M8.5 15h31M8.5 33h31"/>
+    </symbol>
+    <symbol id="i-nube" viewBox="0 0 48 48">
+      <path d="M13 37a8 8 0 0 1-.6-16A11 11 0 0 1 33.5 17.5 9.8 9.8 0 0 1 35 37z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 48 48">
+      <path d="M30 43H11V5h18l9 9v19"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h16M16 30h10M16 36h6"/>
+      <circle cx="36" cy="38" r="5.5" style="fill:var(--ac)"/>
+      <circle cx="36" cy="38" r="1.8" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-doc-mas" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M36 31.5v9M31.5 36h9" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-personas" viewBox="0 0 48 48">
+      <circle cx="10.5" cy="19" r="4"/>
+      <path d="M3 37c0-5 3.3-8.5 7.5-8.5 1.9 0 3.4.6 4.6 1.6"/>
+      <circle cx="37.5" cy="19" r="4"/>
+      <path d="M45 37c0-5-3.3-8.5-7.5-8.5-1.9 0-3.4.6-4.6 1.6"/>
+      <circle cx="24" cy="14" r="5.5" style="fill:var(--ac)"/>
+      <path d="M13.5 38c0-7 4.7-12 10.5-12s10.5 5 10.5 12z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-candado" viewBox="0 0 48 48">
+      <path d="M24 4 7 10v12c0 11 7 18.5 17 22 10-3.5 17-11 17-22V10z" style="fill:#fff"/>
+      <path d="M19.5 22v-3.5a4.5 4.5 0 0 1 9 0V22"/>
+      <rect x="16" y="22" width="16" height="12" rx="2" style="fill:var(--ac)"/>
+      <path d="M24 26.5v3" style="stroke-width:3"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="19" style="fill:var(--ac);stroke:none"/>
+      <path d="M15 24.5l6.5 6.5L33.5 18" style="stroke:#fff;stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-llave" viewBox="0 0 48 48">
+      <path d="M22 20.5h21l2.5 3.5-2.5 3.5h-3l-2 3-2-3h-2l-2 3-2-3H22z" style="fill:var(--ac)"/>
+      <circle cx="14" cy="24" r="10" style="fill:var(--ac)"/>
+      <circle cx="11.5" cy="24" r="3" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-relaciones" viewBox="0 0 48 48">
+      <path d="M24 30V12M24 30 9 19M24 30l15-11"/>
+      <circle cx="24" cy="9.5" r="4.5" style="fill:var(--ac)"/>
+      <circle cx="8" cy="19" r="4.5" style="fill:#fff"/>
+      <circle cx="40" cy="19" r="4.5" style="fill:#fff"/>
+      <circle cx="24" cy="32" r="9" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-carpeta" viewBox="0 0 48 48">
+      <path d="M5 37V12a2 2 0 0 1 2-2h10l4 4h18a2 2 0 0 1 2 2v21z" style="fill:var(--ac)"/>
+      <path d="M5 38l5.5-16H44l-5.5 16z" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-escudo" viewBox="0 0 48 48">
+      <path d="M24 4 7 10v12c0 11 7 18.5 17 22 10-3.5 17-11 17-22V10z" style="fill:#fff"/>
+      <path d="M16 23l6 6 11-12" style="stroke:var(--ac);stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-escuela" viewBox="0 0 48 48">
+      <path d="M24 13V4"/>
+      <path d="M24 4h7.5v4.5H24" style="fill:var(--ac)"/>
+      <path d="M12 23 24 13l12 10"/>
+      <path d="M14 21.5V43h20V21.5"/>
+      <path d="M14 28H5v15h38V28h-9"/>
+      <path d="M4 43h40"/>
+      <path d="M20 43v-7a4 4 0 0 1 8 0v7" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.5"/>
+      <path d="M9.5 32v4M38.5 32v4" style="stroke:var(--ac);stroke-width:3.2"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°1 — De 5.º a 6.º</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°1">
+    <a href="#pag-1">1 · Evolución</a>
+    <a href="#pag-2">2 · SGBD</a>
+    <a href="#pag-3">3 · Modelo relacional</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°1 — De 5.º a 6.º</h1>
+
+  <!-- =================== LÁMINA 1 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina" id="pag-1" aria-labelledby="t1" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t1"><span class="tit__num">1.</span> De los archivos a las bases de datos</h2>
+      <p class="tit__sub">Cómo evolucionaron los sistemas de bases de datos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-reloj"/></svg>
+      <p>Las bases de datos que se usan hoy son el resultado de más de sesenta años de cambios. Cada etapa buscó resolver los problemas de la anterior.</p>
+    </div>
+
+    <ol class="secuencia secuencia--linea" aria-label="Línea de tiempo de los sistemas de bases de datos">
+      <li class="paso"><h3>Años 60</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-archivos"/></svg><p><strong>Sistemas de archivos</strong>, como los CSV del TP3 de 5.º.</p></li>
+      <li class="paso"><h3>Fines de los 60</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-arbol"/></svg><p>Modelos <strong>jerárquico</strong>, en árbol (IBM IMS, 1968), y <strong>de red</strong> (CODASYL).</p></li>
+      <li class="paso"><h3>1970</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><p>E. F. Codd propone el <strong>modelo relacional</strong>: datos en tablas.</p></li>
+      <li class="paso"><h3>Años 80</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db-engranaje"/></svg><p><strong>SGBD relacionales</strong> en las empresas y <strong>SQL</strong> estándar (ANSI, 1986).</p></li>
+      <li class="paso"><h3>Años 90</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-globo"/></svg><p>Bases <strong>orientadas a objetos</strong> y bases <strong>en la web</strong> (MySQL, 1995).</p></li>
+      <li class="paso"><h3>Desde 2009</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-nube"/></svg><p>Bases <strong>NoSQL</strong> (no relacionales) y bases <strong>en la nube</strong>.</p></li>
+    </ol>
+
+    <section aria-labelledby="c1">
+      <h3 class="subtitulo sin-raya" id="c1">¿Qué problemas resolvió el cambio?</h3>
+      <ul class="comparar">
+        <li class="grupo grupo--naranja">
+          <div>
+            <h4><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-archivos"/></svg>Archivos</h4>
+            <ul class="pf__lista lista-txt">
+              <li><strong>Redundancia:</strong> el mismo dato se repite en varios archivos.</li>
+              <li><strong>Inconsistencia:</strong> si se corrige en un archivo y no en otro, ya no coinciden.</li>
+              <li><strong>Acceso difícil:</strong> cada consulta nueva necesita un programa nuevo.</li>
+              <li><strong>Un usuario por vez:</strong> si dos lo modifican juntos, se pierden cambios.</li>
+            </ul>
+          </div>
+        </li>
+        <li class="grupo">
+          <div>
+            <h4><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-db-engranaje"/></svg>Base de datos</h4>
+            <ul class="pf__lista lista-txt">
+              <li>Cada dato se guarda <strong>una sola vez</strong>.</li>
+              <li>Todos ven <strong>el mismo dato</strong>, siempre actualizado.</li>
+              <li>Se consulta con un <strong>lenguaje</strong> (SQL), sin programar cada búsqueda.</li>
+              <li>El SGBD permite <strong>varios usuarios a la vez</strong>.</li>
+            </ul>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Cada etapa cambió cómo se organizan los datos, para guardarlos sin repetir y consultarlos con facilidad.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 1">1</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 2 (PDF pág. 5 · repaso de 5.º) =================== -->
+  <article class="lamina lamina--densa" id="pag-2" aria-labelledby="t2">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t2"><span class="tit__num">2.</span> ¿Qué es un SGBD / DBMS?</h2>
+      <p class="tit__sub">El software que administra la base de datos <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-doc"/></svg>
+      <p>Un <strong>SGBD o DBMS</strong> es el programa que permite crear, guardar, consultar, modificar y proteger una base de datos.</p>
+    </div>
+
+    <ol class="secuencia">
+      <li class="paso"><h3>Usuario</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-personas"/></svg><p>Personas que usan la información.</p></li>
+      <li class="paso"><h3>SGBD / DBMS</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><p>Software que administra la base de datos.</p></li>
+      <li class="paso"><h3>Base de datos</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><p>Datos organizados y almacenados.</p></li>
+    </ol>
+
+    <section class="panel" aria-labelledby="f2">
+      <div class="panel__cab"><h3 class="subtitulo" id="f2">Principales funciones del SGBD</h3></div>
+      <ul class="ambitos ambitos--4">
+        <li class="tarjeta"><h4 class="tarjeta__cab">Crear</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg><p>bases, tablas y relaciones.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Consultar</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><p>buscar y mostrar información.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Modificar</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg><p>agregar, cambiar o eliminar datos.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Proteger</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-candado"/></svg><p>control de acceso y copias de seguridad.</p></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="g2">
+      <div class="panel__cab"><h3 class="subtitulo" id="g2">Funciones principales</h3></div>
+      <ul class="comun comun--4">
+        <li><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>organiza</li>
+        <li><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>controla</li>
+        <li><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>respalda</li>
+        <li><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-check"/></svg>optimiza</li>
+      </ul>
+    </section>
+
+    <div class="intro">
+      <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p><strong>Ejemplos de SGBD:</strong> MySQL, PostgreSQL, SQLite, SQL Server y Oracle.</p>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> La base de datos guarda la información; el SGBD la administra.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 2">2</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 3 (PDF pág. 8 · repaso de 5.º) =================== -->
+  <article class="lamina lamina--densa" id="pag-3" aria-labelledby="t3">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t3"><span class="tit__num">3.</span> El modelo relacional</h2>
+      <p class="tit__sub">Cómo se conectan los datos <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>El <strong>modelo relacional</strong> organiza la información en <strong>tablas</strong> y las conecta mediante relaciones.</p>
+    </div>
+
+    <div class="panel relacion">
+      <table class="tabla-ej">
+        <caption>ALUMNOS</caption>
+        <thead>
+          <tr><th scope="col">id</th><th scope="col">nombre</th><th scope="col">edad</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Ana</td><td>15</td></tr>
+          <tr><td>2</td><td>Luis</td><td>16</td></tr>
+          <tr><td>3</td><td>Marta</td><td>15</td></tr>
+        </tbody>
+      </table>
+      <svg class="relacion__flecha" viewBox="0 0 40 20" role="img" aria-label="ALUMNOS se relaciona con INSCRIPCIONES"><path d="M1 10 9 2v5h22V2l8 8-8 8v-5H9v5z"/></svg>
+      <table class="tabla-ej">
+        <caption>INSCRIPCIONES</caption>
+        <thead>
+          <tr><th scope="col">id</th><th scope="col">alumno_id</th><th scope="col">curso_id</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>1</td><td>101</td></tr>
+          <tr><td>2</td><td>2</td><td>102</td></tr>
+          <tr><td>3</td><td>1</td><td>102</td></tr>
+        </tbody>
+      </table>
+      <svg class="relacion__flecha" viewBox="0 0 40 20" role="img" aria-label="INSCRIPCIONES se relaciona con CURSOS"><path d="M1 10 9 2v5h22V2l8 8-8 8v-5H9v5z"/></svg>
+      <table class="tabla-ej">
+        <caption>CURSOS</caption>
+        <thead>
+          <tr><th scope="col">id</th><th scope="col">nombre</th><th scope="col">docente</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>101</td><td>Matemática</td><td>Pérez</td></tr>
+          <tr><td>102</td><td>Historia</td><td>Gómez</td></tr>
+          <tr><td>103</td><td>Inglés</td><td>Ruiz</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <ul class="secuencia secuencia--suelta">
+      <li class="paso"><h3>Tablas</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><p>cada tema se guarda por separado.</p></li>
+      <li class="paso"><h3>Claves</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-llave"/></svg><p>las claves permiten identificar y relacionar registros.</p></li>
+      <li class="paso"><h3>Relaciones</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-relaciones"/></svg><p>unen la información sin repetirla de más.</p></li>
+    </ul>
+
+    <section class="panel" aria-labelledby="v3">
+      <div class="panel__cab"><h3 class="subtitulo" id="v3">Ventajas del modelo relacional</h3></div>
+      <ul class="ambitos ambitos--4">
+        <li class="tarjeta"><h4 class="tarjeta__cab">orden</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-carpeta"/></svg></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">menos redundancia</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db-menos"/></svg></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">consultas claras</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">mejor control</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-escudo"/></svg></li>
+      </ul>
+    </section>
+
+    <div class="ejemplo">
+      <h3 class="subtitulo">Ejemplo</h3>
+      <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-escuela"/></svg>
+      <p>Una escuela puede tener una tabla de alumnos, otra de cursos y otra de inscripciones.</p>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> El modelo relacional separa la información en tablas y luego la relaciona para trabajar mejor con ella.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 3">3</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 1</p>
+      <h3 class="pf__titulo" id="pf1">¿Por qué ganó el modelo relacional?</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>En los modelos jerárquico y de red, el programa recorre los datos por un camino fijo; si cambia la forma de guardarlos, hay que reescribirlo.</p>
+          <p>El modelo relacional trajo dos ventajas: la <strong>independencia de los datos</strong> (el programa pide <em>qué</em> datos quiere, no cómo llegar a ellos) y un lenguaje común, <strong>SQL</strong>.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo en la escuela</h4>
+          <ul class="pf__lista">
+            <li><strong>Jerárquico:</strong> para listar los alumnos con promedio mayor a 8, el programa recorre cada curso, alumno y nota.</li>
+            <li><strong>Relacional:</strong> una consulta dice qué se quiere; el SGBD decide cómo buscarlo.</li>
+            <li>Si se agrega la columna email a ALUMNOS, la consulta sigue funcionando.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 2 · Ampliación</p>
+      <h3 class="pf__titulo" id="pf2">Los componentes del sistema</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Según C. J. Date, un <strong>sistema de base de datos</strong> tiene cuatro componentes:</p>
+          <ul class="pf__lista">
+            <li><strong>Datos:</strong> integrados y compartidos.</li>
+            <li><strong>Hardware:</strong> los discos y la computadora que los procesa.</li>
+            <li><strong>Software:</strong> el SGBD, intermediario entre usuarios y datos.</li>
+            <li><strong>Usuarios:</strong> <strong>programadores</strong>, <strong>usuarios finales</strong> y el <strong>administrador</strong> de la base (DBA).</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: el sistema de notas de la escuela</h4>
+          <ul class="pf__lista">
+            <li><strong>Datos:</strong> alumnos, materias y notas.</li>
+            <li><strong>Hardware:</strong> el servidor de la escuela.</li>
+            <li><strong>Software:</strong> el SGBD, por ejemplo, MySQL.</li>
+            <li><strong>Usuarios:</strong> quien lo programó; docentes y alumnos, que lo usan; y el DBA, que da permisos y hace copias.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 3</p>
+      <h3 class="pf__titulo" id="pf3">Los nombres del modelo relacional</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>En la teoría, las partes de una tabla tienen nombres propios, los que usó Codd en 1970.</p>
+          <p>El <strong>dominio</strong> es el conjunto de valores posibles de un atributo: para edad, los enteros positivos.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Cuadro de equivalencias</h4>
+          <table class="tabla-comp">
+            <caption class="sr-only">Equivalencias entre el vocabulario de 5.º y el del modelo relacional, con ejemplos de la tabla ALUMNOS</caption>
+            <thead>
+              <tr><th scope="col">En 5.º</th><th scope="col">En 6.º</th><th scope="col">En ALUMNOS</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Tabla</th><td>Relación</td><td>ALUMNOS</td></tr>
+              <tr><th scope="row">Fila</th><td>Tupla</td><td>2, Luis, 16</td></tr>
+              <tr><th scope="row">Columna</th><td>Atributo</td><td>nombre</td></tr>
+              <tr><th scope="row">Tipo de dato</th><td>Dominio</td><td>enteros (edad)</td></tr>
+              <tr><th scope="row">Clave</th><td>Clave primaria</td><td>id</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">La tienda de 5.º, con estos conceptos</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>La base de datos de la tienda del integrador de 5.º se puede describir con el esquema de la lámina 2: los usuarios trabajan con el SGBD, y el SGBD con la base de datos.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>La tienda, parte por parte</h4>
+          <ul class="pf__lista">
+            <li><strong>SGBD:</strong> MariaDB, el que trae XAMPP (se maneja desde phpMyAdmin).</li>
+            <li><strong>Usuarios:</strong> quien lo programó, los vendedores y dueños que lo usan, y el DBA.</li>
+            <li><strong>Tablas:</strong> CLIENTES, PRODUCTOS, VENTAS y DETALLE_VENTA.</li>
+            <li><strong>Relaciones:</strong> cada venta, con su cliente; cada detalle, con su venta y su producto.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 1</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°1 — De 5.º a 6.º</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°1.</p>
+
+    <!-- Puntos 1 a 3: uno por lámina (1, nuevo; 2 y 3, del PDF) · Punto 4: caso nuevo -->
+    <ol class="acts acts--2col">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> De los archivos a las bases de datos</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Ordená de la más antigua a la más nueva: NoSQL / archivos / modelo relacional / SQL estándar / jerárquico y de red.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué propuso Codd en 1970? ¿Por qué desplazó a los modelos anteriores?</div></li>
+          <li><b class="act__letra">c)</b><div>Los CSV del TP3 de 5.º, ¿a qué etapa corresponden? Justificá.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> ¿Qué es un SGBD / DBMS?</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Explicá con tus palabras qué hace un SGBD.</div></li>
+          <li><b class="act__letra">b)</b><div>Uní cada acción con el SGBD: crear / consultar / proteger / modificar.</div></li>
+          <li><b class="act__letra">c)</b><div>Nombrá un ejemplo de SGBD.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> El modelo relacional</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Nombrá tres tablas que podría tener una escuela.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Por qué conviene separar alumnos y cursos en tablas distintas?</div></li>
+          <li><b class="act__letra">c)</b><div>Inventá un ejemplo de dos tablas relacionadas.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Caso para analizar</h3>
+        <p class="act__caso">Una escuela guarda las notas en archivos CSV, uno por curso:</p>
+        <div class="act__archivos">
+          <figure class="archivo">
+            <figcaption class="archivo__nombre">notas_6A.csv</figcaption>
+<pre class="archivo__txt">dni,alumno,materia,nota
+47111222,Ana Paz,Matemática,8
+47111222,Ana Paz,Historia,6</pre>
+          </figure>
+        </div>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué datos se repiten? ¿Qué pasa si se corrige el nombre de Ana en una sola línea?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Cómo se arma la lista de los desaprobados de toda la escuela?</div></li>
+          <li><b class="act__letra">c)</b><div>Dos docentes editan el archivo a la vez. ¿Qué puede pasar?</div></li>
+          <li><b class="act__letra">d)</b><div>¿Cómo resolvería cada problema un SGBD?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 1</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2 (consignas nuevas) =================== -->
+  <article class="lamina lamina--act" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la carpeta</h2>
+        <p>TP N°1 — De 5.º a 6.º</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <ol class="acts acts--amplio" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Cuadro para completar: de los archivos a la nube</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Copiá el cuadro y completalo con la información de la lámina 1 y de “Para profundizar”.
+            <table class="act-tabla">
+              <caption class="sr-only">Etapas de la evolución de las bases de datos, para completar</caption>
+              <thead><tr><th scope="col">Etapa</th><th scope="col">Cómo organiza los datos</th><th scope="col">Un ejemplo</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Sistemas de archivos</th><td></td><td></td></tr>
+                <tr><th scope="row">Jerárquico y de red</th><td></td><td></td></tr>
+                <tr><th scope="row">Modelo relacional</th><td></td><td></td></tr>
+                <tr><th scope="row">SGBD relacionales y SQL</th><td></td><td></td></tr>
+                <tr><th scope="row">Objetos y web</th><td></td><td></td></tr>
+                <tr><th scope="row">NoSQL y nube</th><td></td><td></td></tr>
+              </tbody>
+            </table></div></li>
+          <li><b class="act__letra">b)</b><div>Elegí dos etapas seguidas y explicá qué problema de la primera resolvió la segunda.</div></li>
+          <li><b class="act__letra">c)</b><div>¿En qué etapa ubicarías la base de datos de la tienda que armaste en 5.º? ¿Por qué?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Cierre: la tienda de 5.º como sistema de base de datos</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Dibujá el esquema de la lámina 2 (usuario → SGBD → base de datos) para la tienda de 5.º. Escribí quiénes son los usuarios y qué SGBD usa.</div></li>
+          <li><b class="act__letra">b)</b><div>Dentro de la base de datos del esquema, nombrá sus tablas y uní con flechas las que se relacionan.</div></li>
+          <li><b class="act__letra">c)</b><div>Elegí una de esas tablas e indicá, con el vocabulario de 6.º, cuál es la relación, cuáles son sus atributos y cuál es su clave primaria. Inventá una tupla.</div></li>
+          <li><b class="act__letra">d)</b><div>Para cerrar: escribí en cinco renglones qué aprendiste en este TP. Usá estas palabras: sistema de archivos, modelo relacional, SGBD, usuarios y tabla.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 1</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

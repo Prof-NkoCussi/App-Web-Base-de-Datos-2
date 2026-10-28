@@ -26,7 +26,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | TP | Tema | Estado |
 |---|---|---|
 | **Módulo 1 · Modelización de datos** | | |
-| 1 | De 5.º a 6.º | Próximamente |
+| 1 | De 5.º a 6.º | ✅ Disponible |
 | 2 | Modelo Entidad-Relación | Próximamente |
 | 3 | UML y otros modelos | Próximamente |
 | **Módulo 2 · Diseño de bases de datos** | | |

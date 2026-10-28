@@ -324,11 +324,11 @@ button.boton { border: 0; font-family: inherit; line-height: inherit; cursor: po
 
 /* Dos opciones lado a lado (Hoja de cálculo / Base de datos) */
 .comparar { display: grid; gap: 10px; }
-.comparar li {
+.comparar > li {
   display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px;
   background: var(--panel); border-radius: var(--radio); padding: 14px;
 }
-.comparar h3 { font-family: var(--fuente-titulo); font-weight: 700; font-size: 23px; color: var(--tinta); line-height: 1.1; margin-bottom: 4px; }
+.comparar h3, .comparar h4 { font-family: var(--fuente-titulo); font-weight: 700; font-size: 23px; color: var(--tinta); line-height: 1.1; margin-bottom: 4px; }
 .comparar p { font-size: 16.5px; line-height: 1.35; }
 
 /* Tabla comparativa */
@@ -361,6 +361,7 @@ button.boton { border: 0; font-family: inherit; line-height: inherit; cursor: po
 .grupo--ok .ico { --ac: var(--ok); }
 .comparar .grupo { box-shadow: inset 0 5px 0 var(--grupo); }
 .comparar .grupo--ok, .comparar .grupo--naranja { background: var(--grupo-claro); }   /* TP3: ventaja / desventaja */
+.comparar .pf__lista li::before { background: var(--grupo); }
 .cuando .grupo { box-shadow: inset 5px 0 0 var(--grupo); }
 .tabla-comp thead th.grupo { background: var(--grupo-claro); }
 .tabla-comp thead th:first-child { background: var(--panel-oscuro); }
@@ -702,6 +703,33 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
 .act--ancho { grid-column: 1 / -1; }
 
 /* ==========================================================
+   De 6.º (TP1): "Repaso de 5.º", línea de tiempo, tablas relacionadas
+   ========================================================== */
+/* Etiqueta "Repaso de 5.º" junto al subtítulo de las láminas reusadas del PDF */
+.etq--repaso { background: var(--acento-claro); color: var(--acento-texto); }
+.tit__sub .etq { font-family: var(--fuente); font-size: 14px; letter-spacing: .03em; vertical-align: .3em; margin-left: 4px; white-space: nowrap; }
+
+/* Tarjetas con el aspecto de .paso, sin flechas (Tablas · Claves · Relaciones) */
+.secuencia--suelta { gap: 10px; }
+.secuencia--suelta > li:not(:last-child)::after { display: none; }
+
+/* Cuatro ítems cortos con ícono (Funciones principales) */
+.comun--4 { grid-template-columns: repeat(2, 1fr); }
+.comun--4 li { justify-content: center; font-weight: 600; }
+
+/* Tablas relacionadas con flechas entre ellas (una debajo de otra hasta la hoja A4) */
+.relacion { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.relacion .tabla-ej { max-width: 380px; }
+.relacion__flecha { flex: none; width: 40px; height: 20px; fill: var(--acento-texto); transform: rotate(90deg); }
+
+/* Cuadro de equivalencias dentro de "Para profundizar" */
+.sin-raya + .comparar { margin-top: 8px; }
+.comparar > li > div:only-child { align-self: start; }   /* sin ícono al costado: el texto arriba */
+.pf .tabla-comp { width: calc(100% + 8px); margin: -4px; border-spacing: 4px; table-layout: auto; }
+.pf .tabla-comp thead th:first-child, .pf .tabla-comp tbody th { width: auto; }
+.pf .tabla-comp th, .pf .tabla-comp td { font-size: 14px; padding: 4px 6px; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -749,6 +777,22 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .act__cuerpo { grid-template-columns: auto 1fr; }
   .lado-a-lado { grid-template-columns: 1.2fr 1fr; }
   .lado-a-lado--menu { grid-template-columns: auto 1fr; align-items: center; }
+  .secuencia--suelta { gap: 12px; }
+  .comun--4 { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* La línea de tiempo de 6 etapas no entra en una fila hasta la hoja A4: sigue vertical */
+@media screen and (min-width: 600px) and (max-width: 859px) {
+  .secuencia--linea { grid-auto-flow: row; gap: 26px; }
+  .secuencia--linea > li:not(:last-child)::after {
+    left: 50%; right: auto; top: auto; bottom: -21px;
+    transform: translateX(-50%) rotate(90deg);
+  }
+  .secuencia--linea .paso {
+    grid-template-columns: 64px 1fr; grid-template-areas: "ico tit" "ico txt";
+    text-align: left; row-gap: 2px; padding: 12px 14px;
+  }
+  .secuencia--linea .paso .ico { width: 56px; height: 56px; }
 }
 
 /* ==========================================================
@@ -817,8 +861,8 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .idea__ico .ico { width: 50px; height: 50px; }
   .idea p { font-size: 18.5px; padding: 16px 20px; }
   .idea strong { font-size: 26px; }
-  .comparar li { padding: 13px 18px; }
-  .comparar h3 { font-size: 26px; }
+  .comparar > li { padding: 13px 18px; }
+  .comparar h3, .comparar h4 { font-size: 26px; }
   .comparar p { font-size: 17.5px; }
   .comparar .ico--xl { width: 80px; height: 80px; }
   .tabla-comp th, .tabla-comp td { font-size: 17px; padding: 8px 8px; }
@@ -885,6 +929,32 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .instrucciones > li { font-size: 16.5px; }
   .antes-despues__nota { font-size: 15px; }
   .lamina--compu .act-banda h2 { font-size: 32px; }
+
+  /* De 6.º: línea de tiempo de 6 etapas en una fila; tablas relacionadas lado a lado */
+  .secuencia--linea { gap: 18px; }
+  .secuencia--linea > li:not(:last-child)::after { right: -16px; width: 14px; height: 13px; }
+  .secuencia--linea .paso { padding: 12px 6px 14px; row-gap: 8px; }
+  .secuencia--linea .paso h3 { font-size: 18px; line-height: 1.1; }
+  .secuencia--linea .paso .ico { width: 52px; height: 52px; }
+  .secuencia--linea .paso p { font-size: 14.5px; line-height: 1.3; }
+  .comun--4 .ico { width: 34px; height: 34px; }
+  .relacion { flex-direction: row; gap: 6px; }
+  .relacion .tabla-ej { flex: 1 1 0; width: auto; max-width: none; min-width: 0; table-layout: auto; font-size: 15px; }
+  .relacion__flecha { transform: none; width: 34px; height: 18px; }
+  .pf .tabla-comp th, .pf .tabla-comp td { font-size: 13.5px; padding: 3px 6px; }
+
+  /* Láminas del PDF con muchos bloques: menos aire entre bloques y dentro de cada uno */
+  .lamina--densa { gap: 3mm; }
+  .lamina--densa .intro { padding: 12px 18px; }
+  .lamina--densa .panel { padding: 12px 14px; }
+  .lamina--densa .panel__cab { margin-bottom: 10px; }
+  .lamina--densa .paso { padding: 10px 10px 12px; row-gap: 6px; }
+  .lamina--densa .paso .ico { width: 50px; height: 50px; }
+  .lamina--densa .ambitos--4 .tarjeta .ico--l { width: 46px; height: 46px; }
+  .lamina--densa .tarjeta__cab { font-size: 16px; padding: 6px 2px; }
+  .lamina--densa .comun li { padding: 8px 14px; }
+  .lamina--densa .ejemplo { padding: 10px 18px; }
+  .lamina--densa .idea p { padding: 12px 20px; }
 }
 
 /* ==========================================================
