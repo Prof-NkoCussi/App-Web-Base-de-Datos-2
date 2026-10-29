@@ -31,6 +31,7 @@ assets/js/actividades.js botón PDF, resaltado de la barra, "✓ Visto" (localSt
 assets/fonts/            Barlow, Barlow Semi Condensed, Barlow Condensed (locales)
 assets/img/
 assets/datos/            archivos para descargar desde las actividades en la computadora
+CONTENIDOS.md            contenidos del diseño curricular, plan de TPs y cobertura
 README.md                presentación del sitio + tabla de TPs con su estado
 REGLAS.md                este archivo
 ```
@@ -100,6 +101,8 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 
 ## Contenido
 
+- **Los contenidos los define `CONTENIDOS.md`** (diseño curricular de 6.º + plan de TPs), no el PDF. Una página del PDF se usa solo si coincide con un contenido del plan; lo que el plan pide y el PDF no trae se genera como lámina nueva (N). No agregues temas que no estén en `CONTENIDOS.md`; si una ampliación en "Para profundizar" se sale del tema de la lámina, avisá antes. NoSQL no está en el diseño curricular: solo el repaso de la pág. 7, sin ampliar.
+- Antes de cada TP, revisá en `CONTENIDOS.md` qué contenidos cubre ese TP (tabla "Cobertura").
 - Láminas del PDF: respetar el texto, no agregar teoría. Solo se aplican las correcciones de abajo.
 - Láminas "reusadas" (PDF 5, 7 y 8): mismo texto que en 5.º, con la etiqueta `.etq` "Repaso de 5.º" junto al subtítulo; el subtítulo del PDF no se toca. La PDF 5 se amplía con una parte nueva (N) sobre funciones del sistema.
 - Láminas nuevas (N) y "Para profundizar": texto propio, claro, para chicos de 17–18 años, con ejemplos de la escuela y la vida cotidiana, y retomando la tienda del integrador de 5.º. Teoría en tono neutro; consignas en voseo.
@@ -142,8 +145,8 @@ Orden: Modelización → Diseño → Lenguajes de consulta → Servidores. (N) =
 | 11 | Resumir y combinar | 35–37 | PDF 35, 36, 37 |
 | 12 | Consultas avanzadas y programación | 38–41 | PDF 38 · (N) scripts .sql · (N) SQL embebido en PHP · (N) lenguaje de consulta de objetos, breve |
 | **Módulo 4 · Servidores y bases de datos distribuidas** | | | |
-| 13 | El servidor y sus usuarios | 42–45 | (N) instalación y configuración del motor · (N) usuarios, permisos y publicación de las bases · (N) respaldo y capacidad de almacenamiento · (N) procedimientos almacenados, breve |
-| 14 | Transacciones y distribución | 46–49 | PDF 39 · (N) control de concurrencia, fallas y recuperación, breve · (N) bases de datos distribuidas · (N) escalabilidad y eficiencia |
+| 13 | El servidor y sus usuarios | 42–45 | (N) instalación y configuración del motor · (N) usuarios, permisos y publicación de las bases · (N) respaldo, preservación y capacidad de almacenamiento · (N) procedimientos almacenados, breve |
+| 14 | Transacciones y distribución | 46–49 | PDF 39 · (N) control de concurrencia, fallas y recuperación, breve · (N) bases de datos distribuidas y problemas de su explotación · (N) escalabilidad, eficiencia y efectividad |
 | Integrador final | Seguridad y desafío final | 50 | PDF 40 |
 
 Ritmo para que entre en el año: TP1 en una semana (repaso); TPs 7 y 8 más rápidos (CREATE, INSERT y SELECT ya se vieron en 5.º).
