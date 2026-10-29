@@ -114,6 +114,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 
 | Pág. | Va en | Error | Corrección |
 |---|---|---|---|
+| 7 | TP3 | La actividad 1 dice "Marcá cuáles ejemplos usarían una base relacional y cuáles una NoSQL", pero la lámina ya marca el tipo de cada ejemplo | "Para cada ejemplo, explicá por qué usaría una base relacional o una NoSQL." |
 | 15 | TP2 | En el ejemplo de DER, `id_alumno` está subrayado (identificador) y `id_curso` no | Subrayar también `id_curso`. |
 | 16 | TP2 | La relación PEDIDO–PRODUCTO dice `1 : N`, con pata de gallo solo del lado de PEDIDO, y "Un producto puede estar en muchos pedidos" | `N : M`, con pata de gallo de los dos lados, y "Un pedido puede tener muchos productos y un producto puede estar en muchos pedidos". |
 | 22 | Integrador 1 | El diagrama del Paso 3 dice `DETALLE_VENTA 1:N PRODUCTOS` (al revés) | `PRODUCTOS 1:N DETALLE_VENTA`: el "1" del lado de PRODUCTOS y la "N" del lado de DETALLE_VENTA. El texto de abajo ya está bien. |

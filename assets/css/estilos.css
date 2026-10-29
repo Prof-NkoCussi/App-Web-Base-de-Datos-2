@@ -817,6 +817,43 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
 .pf__enunciado { font-style: italic; padding-left: 10px; border-left: 3px solid var(--acento-claro); }
 
 /* ==========================================================
+   De 6.º (TP3): diagramas de clases y de objetos, XML y tipos de bases de datos
+   ========================================================== */
+/* Clases y objetos de UML (reusan .der__caja y .der__caja-cab del TP2) */
+.der__div { fill: none; stroke: var(--acento); stroke-width: 2; }
+.der__obj-cab { fill: var(--acento-claro); stroke: var(--acento); stroke-width: 2; }
+.der__linea--punteada { stroke-dasharray: 5 4; }
+.der__triangulo { fill: var(--blanco); stroke: var(--tinta); stroke-width: 1.6; stroke-linejoin: round; }
+.der .der__rotulo { fill: var(--gris); font-size: 11px; font-weight: 700; letter-spacing: .08em; }
+.der .der__mult { font-size: 22px; font-weight: 700; }
+.der--orm { max-width: 200px; margin: 0 auto; }
+.der-lienzo + .texto { margin-top: 10px; }
+.lamina > .cuando { margin-top: 0; }
+
+/* Multiplicidad: el valor y lo que significa, uno debajo de otro */
+.comun.comun--mult { grid-template-columns: 1fr; gap: 6px; margin-top: 8px; }
+.comun--mult li { font-size: 16px; line-height: 1.3; padding: 6px 12px; }
+.comun--mult .clave--grande { min-width: 2.6em; text-align: center; }
+.lado-a-lado--parejo { align-items: stretch; }
+.lado-a-lado--parejo .texto { font-size: 16px; line-height: 1.35; }
+.lado-a-lado--parejo .tabla-comp + .texto { margin-top: 8px; }
+.lado-a-lado--parejo .tabla-comp { table-layout: auto; }
+.lado-a-lado--parejo .tabla-comp thead th:first-child, .lado-a-lado--parejo .tabla-comp tbody th { width: auto; }
+
+/* XML y JSON: las marcas (etiquetas, nombres y signos) en naranja, los datos en negro */
+.marca { color: var(--naranja-texto); }
+.archivo--xml .archivo__txt { line-height: 1.45; }
+.sin-raya + .archivo-ej { margin-top: 8px; }
+.archivo-ej .comparar { grid-template-columns: 1fr; }
+.pf__archivos { display: grid; gap: 6px; justify-items: start; }
+.pf .archivo__txt { font-size: 12.5px; line-height: 1.45; padding: 4px 10px 6px; }
+.pf .archivo__nombre { font-size: 11.5px; padding: 3px 10px; }
+
+/* Ejemplos de la lámina 10: título, ícono y tipo de base (relacional en el acento, NoSQL en naranja) */
+.tarjeta__tit { font-size: 17px; font-weight: 700; line-height: 1.15; color: var(--tinta); }
+.ejemplos-bd .tarjeta__cab { margin-top: auto; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -863,6 +900,7 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .archivo-ej { grid-template-columns: auto 1fr; gap: 16px; }
   .act__cuerpo { grid-template-columns: auto 1fr; }
   .lado-a-lado { grid-template-columns: 1.2fr 1fr; }
+  .lado-a-lado--parejo { grid-template-columns: 1.35fr 1fr; }
   .lado-a-lado--menu { grid-template-columns: auto 1fr; align-items: center; }
   .secuencia--suelta { gap: 12px; }
   .comun--4 { grid-template-columns: repeat(4, 1fr); }
@@ -1074,6 +1112,15 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .der-tablas .tabla-ej { max-width: none; font-size: 13.5px; }
   .der-tablas .tabla-ej th, .der-tablas .tabla-ej td { padding-left: 4px; padding-right: 4px; }
   .pf .tabla-ej { font-size: 12.5px; }
+
+  /* De 6.º (TP3) */
+  .tit__h--muy-largo { font-size: 39px; letter-spacing: -.02em; }
+  .lado-a-lado--parejo .tabla-comp th, .lado-a-lado--parejo .tabla-comp td { font-size: 15.5px; padding: 6px 8px; }
+  .tarjeta__tit { font-size: 16px; }
+  .lamina--densa .cuando li { font-size: 16.5px; padding: 9px 16px; gap: 14px; }
+  .lamina--densa .cuando .ico--l { width: 46px; height: 46px; }
+  .lamina--densa .comparar .lista-txt { font-size: 16px; }
+  .comun.comun--mult li { font-size: 16px; padding: 6px 12px; gap: 12px; }
 }
 
 /* ==========================================================

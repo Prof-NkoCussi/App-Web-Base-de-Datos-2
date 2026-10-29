@@ -1,0 +1,880 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°3 — UML y otros modelos · Base de Datos II</title>
+  <meta name="description" content="TP N°3 de Base de Datos II: el diagrama de clases de UML, el modelo orientado a objetos, XML y el modelo semiestructurado, y las bases relacionales y NoSQL. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#26C6D4">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="3" class="modulo-1">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-clase" viewBox="0 0 48 48">
+      <path d="M9.3 7.3h29.4V16H9.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="8" y="6" width="32" height="36" rx="2"/>
+      <path d="M8 16h32M8 31h32M13 21h13M13 26h9M13 36.5h11"/>
+    </symbol>
+    <symbol id="i-objeto" viewBox="0 0 48 48">
+      <path d="M7 13v22l17 8V21z" style="fill:#fff"/>
+      <path d="M41 13v22l-17 8V21z" style="fill:#fff"/>
+      <path d="M24 5 41 13 24 21 7 13z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 48 48">
+      <path d="M30 43H11V5h18l9 9v19"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h16M16 30h10M16 36h6"/>
+      <circle cx="36" cy="38" r="5.5" style="fill:var(--ac)"/>
+      <circle cx="36" cy="38" r="1.8" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-credencial" viewBox="0 0 48 48">
+      <rect x="4" y="10" width="40" height="28" rx="3"/>
+      <circle cx="16" cy="21" r="4.5" style="fill:var(--ac)"/>
+      <path d="M9 32c0-4 3.1-6.5 7-6.5s7 2.5 7 6.5z" style="fill:var(--ac)"/>
+      <path d="M28 19h10M28 25h10M28 31h6"/>
+    </symbol>
+    <symbol id="i-herencia" viewBox="0 0 48 48">
+      <path d="M24 21v6M10 27h28M10 27v6M38 27v6"/>
+      <path d="M24 15l-4 6h8z" style="fill:#fff"/>
+      <rect x="15" y="4" width="18" height="11" rx="2" style="fill:var(--ac)"/>
+      <rect x="3" y="33" width="14" height="11" rx="2" style="fill:#fff"/>
+      <rect x="31" y="33" width="14" height="11" rx="2" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-candado" viewBox="0 0 48 48">
+      <path d="M24 4 7 10v12c0 11 7 18.5 17 22 10-3.5 17-11 17-22V10z" style="fill:#fff"/>
+      <path d="M19.5 22v-3.5a4.5 4.5 0 0 1 9 0V22"/>
+      <rect x="16" y="22" width="16" height="12" rx="2" style="fill:var(--ac)"/>
+      <path d="M24 26.5v3" style="stroke-width:3"/>
+    </symbol>
+    <symbol id="i-tabla" viewBox="0 0 48 48">
+      <path d="M7.3 11.3h33.4V17H7.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 17v21M30 17v21"/>
+    </symbol>
+    <symbol id="i-xml" viewBox="0 0 48 48">
+      <path d="M30 5H10v38h28V13z" style="fill:#fff"/>
+      <path d="M30 5v8h8"/>
+      <path d="M19 22l-5 5 5 5M29 22l5 5-5 5" style="stroke:var(--ac);stroke-width:3.4"/>
+      <path d="M26 20l-4 14"/>
+    </symbol>
+    <symbol id="i-elemento" viewBox="0 0 48 48">
+      <path d="M13 13 4 24l9 11M35 13l9 11-9 11"/>
+      <rect x="16" y="18" width="16" height="12" rx="2" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-etiqueta" viewBox="0 0 48 48">
+      <path d="M25 6h17v17L22.5 42.5a2.5 2.5 0 0 1-3.5 0L5.5 29a2.5 2.5 0 0 1 0-3.5z" style="fill:#fff"/>
+      <circle cx="33.5" cy="14.5" r="4" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-arbol" viewBox="0 0 48 48">
+      <path d="M24 14v7M11 21h26M11 21v9M37 21v9"/>
+      <path d="M19 34.5h10" style="stroke-dasharray:3 2.5"/>
+      <rect x="16" y="5" width="16" height="9" rx="2" style="fill:var(--ac)"/>
+      <rect x="3" y="30" width="16" height="9" rx="2" style="fill:#fff"/>
+      <rect x="29" y="30" width="16" height="9" rx="2" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-tablas-rel" viewBox="0 0 48 48">
+      <path d="M4.3 5.3h21.4V10H4.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="3" y="4" width="24" height="17" rx="2"/>
+      <path d="M3 10h24M3 15.5h24M11 10v11M19 10v11"/>
+      <path d="M9 21v5M9 32v5h12"/>
+      <circle cx="9" cy="29" r="3" style="fill:var(--ac)"/>
+      <path d="M22.3 28.3h21.4V33H22.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="21" y="27" width="24" height="17" rx="2"/>
+      <path d="M21 33h24M21 38.5h24M29 33v11M37 33v11"/>
+    </symbol>
+    <symbol id="i-nosql" viewBox="0 0 48 48">
+      <path d="M28 3H17v18h14V6z" style="fill:#fff"/>
+      <path d="M28 3v3h3"/>
+      <path d="M20.5 10h6M20.5 14h7"/>
+      <path d="M24 21v6M9 27h30M9 27v5M24 27v5M39 27v5"/>
+      <circle cx="9" cy="37" r="5" style="fill:var(--ac)"/>
+      <rect x="19" y="32" width="10" height="10" rx="1" style="fill:var(--ac)"/>
+      <path d="M39 32l5 3.6-1.9 5.9h-6.2L34 35.6z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-escuela" viewBox="0 0 48 48">
+      <path d="M24 13V4"/>
+      <path d="M24 4h7.5v4.5H24" style="fill:var(--ac)"/>
+      <path d="M12 23 24 13l12 10"/>
+      <path d="M14 21.5V43h20V21.5"/>
+      <path d="M14 28H5v15h38V28h-9"/>
+      <path d="M4 43h40"/>
+      <path d="M20 43v-7a4 4 0 0 1 8 0v7" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.5"/>
+      <path d="M9.5 32v4M38.5 32v4" style="stroke:var(--ac);stroke-width:3.2"/>
+    </symbol>
+    <symbol id="i-carrito" viewBox="0 0 48 48">
+      <path d="M11 14h32l-4.5 15H14.5z" style="fill:var(--ac)"/>
+      <path d="M3 8h6.5l5.5 21-2 6h26"/>
+      <circle cx="16" cy="40.5" r="3"/>
+      <circle cx="35" cy="40.5" r="3"/>
+    </symbol>
+    <symbol id="i-personas" viewBox="0 0 48 48">
+      <circle cx="10.5" cy="19" r="4"/>
+      <path d="M3 37c0-5 3.3-8.5 7.5-8.5 1.9 0 3.4.6 4.6 1.6"/>
+      <circle cx="37.5" cy="19" r="4"/>
+      <path d="M45 37c0-5-3.3-8.5-7.5-8.5-1.9 0-3.4.6-4.6 1.6"/>
+      <circle cx="24" cy="14" r="5.5" style="fill:var(--ac)"/>
+      <path d="M13.5 38c0-7 4.7-12 10.5-12s10.5 5 10.5 12z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-chat" viewBox="0 0 48 48">
+      <path d="M21 17h21a3 3 0 0 1 3 3v12a3 3 0 0 1-3 3h-2v6l-6-6H21a3 3 0 0 1-3-3V20a3 3 0 0 1 3-3z" style="fill:var(--ac)"/>
+      <path d="M6 6h22a3 3 0 0 1 3 3v13a3 3 0 0 1-3 3H15l-6 6v-6H6a3 3 0 0 1-3-3V9a3 3 0 0 1 3-3z" style="fill:#fff"/>
+      <path d="M10.5 15.5h.01M17 15.5h.01M23.5 15.5h.01" style="stroke:var(--ac);stroke-width:4"/>
+    </symbol>
+    <symbol id="i-flechas" viewBox="0 0 48 48">
+      <path d="M24 34c0-6-5-10-17-10M12.5 18.5 7 24l5.5 5.5" style="stroke:var(--ac);stroke-width:3.4"/>
+      <path d="M24 34c0-6 5-10 17-10M35.5 18.5 41 24l-5.5 5.5" style="stroke:var(--ac);stroke-width:3.4"/>
+      <path d="M24 44V7M17.5 13.5 24 7l6.5 6.5"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°3 — UML y otros modelos</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°3">
+    <a href="#pag-7">7 · Diagrama de clases</a>
+    <a href="#pag-8">8 · Orientado a objetos</a>
+    <a href="#pag-9">9 · XML</a>
+    <a href="#pag-10">10 · Relacionales y NoSQL</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°3 — UML y otros modelos</h1>
+
+  <!-- =================== LÁMINA 7 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa" id="pag-7" aria-labelledby="t7" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t7"><span class="tit__num">7.</span> UML: el diagrama de clases</h2>
+      <p class="tit__sub">Otra forma de modelar los datos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-clase"/></svg>
+      <p>En el <strong>diagrama de clases</strong> del <strong>UML</strong> (Lenguaje Unificado de Modelado), cada clase es una caja con tres compartimentos y las clases se unen con <strong>asociaciones</strong>.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="e7">
+      <div class="panel__cab"><h3 class="subtitulo" id="e7">Ejemplo: el DER de la lámina 4, en UML</h3></div>
+      <div class="der-lienzo">
+        <!-- Pantalla ancha y A4 -->
+        <svg class="der der--ancho" viewBox="0 0 700 136" role="img" aria-label="Diagrama de clases. La clase Alumno tiene tres compartimentos: el nombre (Alumno), los atributos (id_alumno, nombre y email) y los métodos (inscribirse() y verNotas()). La clase Curso tiene los atributos id_curso, nombre y creditos, y los métodos agregarAlumno() y listarAlumnos(). Una asociación, se inscribe en, une las dos clases, con la multiplicidad * en cada punta: un alumno se inscribe en muchos cursos y un curso tiene muchos alumnos.">
+          <path class="der__linea" d="M128 7h-4v20h4M128 35h-4v50h4M128 93h-4v36h4M304 60H524"/>
+          <text class="der__rotulo" x="118" y="21" text-anchor="end">NOMBRE</text>
+          <text class="der__rotulo" x="118" y="64" text-anchor="end">ATRIBUTOS</text>
+          <text class="der__rotulo" x="118" y="115" text-anchor="end">MÉTODOS</text>
+
+          <rect class="der__caja" x="132" y="3" width="172" height="130" rx="8"/>
+          <path class="der__caja-cab" d="M140 3h156a8 8 0 0 1 8 8v20H132V11a8 8 0 0 1 8-8z"/>
+          <path class="der__div" d="M132 89h172"/>
+          <text class="der__nom" x="218" y="22" text-anchor="middle">Alumno</text>
+          <text x="144" y="50">id_alumno</text>
+          <text x="144" y="67">nombre</text>
+          <text x="144" y="84">email</text>
+          <text x="144" y="108">inscribirse()</text>
+          <text x="144" y="125">verNotas()</text>
+
+          <text class="der__mult" x="318" y="57" text-anchor="middle">*</text>
+          <text x="414" y="52" text-anchor="middle">se inscribe en</text>
+          <text class="der__rotulo" x="414" y="78" text-anchor="middle">ASOCIACIÓN</text>
+          <text class="der__mult" x="510" y="57" text-anchor="middle">*</text>
+
+          <rect class="der__caja" x="524" y="3" width="172" height="130" rx="8"/>
+          <path class="der__caja-cab" d="M532 3h156a8 8 0 0 1 8 8v20H524V11a8 8 0 0 1 8-8z"/>
+          <path class="der__div" d="M524 89h172"/>
+          <text class="der__nom" x="610" y="22" text-anchor="middle">Curso</text>
+          <text x="536" y="50">id_curso</text>
+          <text x="536" y="67">nombre</text>
+          <text x="536" y="84">creditos</text>
+          <text x="536" y="108">agregarAlumno()</text>
+          <text x="536" y="125">listarAlumnos()</text>
+        </svg>
+        <!-- Celular: el mismo diagrama, de arriba hacia abajo -->
+        <svg class="der der--angosto" viewBox="0 0 320 327" role="img" aria-label="Diagrama de clases. La clase Alumno tiene tres compartimentos: el nombre (Alumno), los atributos (id_alumno, nombre y email) y los métodos (inscribirse() y verNotas()). La clase Curso tiene los atributos id_curso, nombre y creditos, y los métodos agregarAlumno() y listarAlumnos(). Una asociación, se inscribe en, une las dos clases, con la multiplicidad * en cada punta: un alumno se inscribe en muchos cursos y un curso tiene muchos alumnos.">
+          <path class="der__linea" d="M114 7h-4v20h4M114 35h-4v50h4M114 93h-4v36h4M210 133V193"/>
+          <text class="der__rotulo" x="104" y="21" text-anchor="end">NOMBRE</text>
+          <text class="der__rotulo" x="104" y="64" text-anchor="end">ATRIBUTOS</text>
+          <text class="der__rotulo" x="104" y="115" text-anchor="end">MÉTODOS</text>
+
+          <rect class="der__caja" x="118" y="3" width="184" height="130" rx="8"/>
+          <path class="der__caja-cab" d="M126 3h168a8 8 0 0 1 8 8v20H118V11a8 8 0 0 1 8-8z"/>
+          <path class="der__div" d="M118 89h184"/>
+          <text class="der__nom" x="210" y="22" text-anchor="middle">Alumno</text>
+          <text x="130" y="50">id_alumno</text>
+          <text x="130" y="67">nombre</text>
+          <text x="130" y="84">email</text>
+          <text x="130" y="108">inscribirse()</text>
+          <text x="130" y="125">verNotas()</text>
+
+          <text class="der__mult" x="222" y="160">*</text>
+          <text x="200" y="161" text-anchor="end">se inscribe en</text>
+          <text class="der__rotulo" x="200" y="177" text-anchor="end">ASOCIACIÓN</text>
+          <text class="der__mult" x="222" y="197">*</text>
+
+          <rect class="der__caja" x="118" y="193" width="184" height="130" rx="8"/>
+          <path class="der__caja-cab" d="M126 193h168a8 8 0 0 1 8 8v20H118v-20a8 8 0 0 1 8-8z"/>
+          <path class="der__div" d="M118 279h184"/>
+          <text class="der__nom" x="210" y="212" text-anchor="middle">Curso</text>
+          <text x="130" y="240">id_curso</text>
+          <text x="130" y="257">nombre</text>
+          <text x="130" y="274">creditos</text>
+          <text x="130" y="298">agregarAlumno()</text>
+          <text x="130" y="315">listarAlumnos()</text>
+        </svg>
+      </div>
+      <p class="texto">Se lee igual que el DER: un alumno se inscribe en muchos cursos y un curso tiene muchos alumnos.</p>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--parejo">
+      <section class="panel" aria-labelledby="m7">
+        <div class="panel__cab"><h3 class="subtitulo" id="m7">Multiplicidad</h3></div>
+        <p class="texto">En cada punta: cuántos objetos participan.</p>
+        <ul class="comun comun--mult">
+          <li><span class="clave clave--grande">1</span><p><strong>Uno:</strong> un curso tiene 1 preceptor.</p></li>
+          <li><span class="clave clave--grande">0..1</span><p><strong>Cero o uno:</strong> un curso tiene 0..1 delegado.</p></li>
+          <li><span class="clave clave--grande">*</span><p><strong>Muchos (cero o más):</strong> un docente da * cursos.</p></li>
+          <li><span class="clave clave--grande">1..*</span><p><strong>Uno o más:</strong> un pedido tiene 1..* productos.</p></li>
+        </ul>
+      </section>
+      <section class="panel" aria-labelledby="q7">
+        <div class="panel__cab"><h3 class="subtitulo" id="q7">DER y diagrama de clases</h3></div>
+        <table class="tabla-comp">
+          <caption class="sr-only">Equivalencias entre el DER del TP2 y el diagrama de clases</caption>
+          <thead>
+            <tr><th scope="col">DER</th><th scope="col">Diagrama de clases</th></tr>
+          </thead>
+          <tbody>
+            <tr><th scope="row">Entidad</th><td>Clase</td></tr>
+            <tr><th scope="row">Atributo</th><td>Atributo</td></tr>
+            <tr><th scope="row">Relación</th><td>Asociación</td></tr>
+            <tr><th scope="row">Cardinalidad</th><td>Multiplicidad</td></tr>
+            <tr><th scope="row"><span aria-hidden="true">—</span><span class="sr-only">Sin equivalente</span></th><td><strong>Métodos</strong></td></tr>
+          </tbody>
+        </table>
+        <p class="texto">Los <strong>métodos</strong> son lo nuevo: el DER muestra solo los datos.</p>
+      </section>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Un diagrama de clases muestra lo mismo que un DER y suma los métodos: lo que cada clase puede hacer.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 7">7</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 8 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa" id="pag-8" aria-labelledby="t8" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t8"><span class="tit__num">8.</span> El modelo orientado a objetos</h2>
+      <p class="tit__sub">Datos y comportamiento juntos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-objeto"/></svg>
+      <p>En el <strong>modelo orientado a objetos</strong>, cada <strong>objeto</strong> guarda sus datos y, además, sabe qué hacer con ellos.</p>
+    </div>
+
+    <ul class="secuencia secuencia--suelta" aria-label="Lo que tiene un objeto">
+      <li class="paso"><h3>Estado</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc"/></svg><p>Los valores de sus atributos.</p></li>
+      <li class="paso"><h3>Comportamiento</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><p>Sus métodos: lo que puede hacer.</p></li>
+      <li class="paso"><h3>Identidad</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-credencial"/></svg><p>Es único, aunque otro tenga sus mismos datos.</p></li>
+    </ul>
+
+    <section class="panel" aria-labelledby="e8">
+      <div class="panel__cab"><h3 class="subtitulo" id="e8">Ejemplo: la clase Alumno y dos objetos</h3></div>
+      <div class="der-lienzo">
+        <!-- Pantalla ancha y A4 -->
+        <svg class="der der--ancho" viewBox="0 0 700 136" role="img" aria-label="La clase Alumno, en el centro, con los atributos id_alumno, nombre y email, y los métodos inscribirse() y verNotas(). A los costados, dos objetos de esa clase, unidos a ella con una flecha punteada: ana : Alumno, con id_alumno = 1, nombre = “Ana” y email = “ana@mail.com”, y luis : Alumno, con id_alumno = 2, nombre = “Luis” y email = “luis@mail.com”.">
+          <path class="der__linea der__linea--punteada" d="M190 69H256M510 69H444"/>
+          <path class="der__linea" d="M249 63l8 6-8 6M451 63l-8 6 8 6"/>
+          <text class="der__nota" x="223" y="61" text-anchor="middle">objeto de</text>
+          <text class="der__nota" x="477" y="61" text-anchor="middle">objeto de</text>
+
+          <rect class="der__caja" x="4" y="24" width="186" height="90" rx="8"/>
+          <path class="der__obj-cab" d="M12 24h170a8 8 0 0 1 8 8v20H4V32a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="97" y="43" text-anchor="middle">ana : Alumno</text>
+          <text x="16" y="71">id_alumno = 1</text>
+          <text x="16" y="88">nombre = "Ana"</text>
+          <text x="16" y="105">email = "ana@mail.com"</text>
+
+          <rect class="der__caja" x="262" y="3" width="176" height="130" rx="8"/>
+          <path class="der__caja-cab" d="M270 3h160a8 8 0 0 1 8 8v20H262V11a8 8 0 0 1 8-8z"/>
+          <path class="der__div" d="M262 89h176"/>
+          <text class="der__nom" x="350" y="22" text-anchor="middle">Alumno</text>
+          <text x="274" y="50">id_alumno</text>
+          <text x="274" y="67">nombre</text>
+          <text x="274" y="84">email</text>
+          <text x="274" y="108">inscribirse()</text>
+          <text x="274" y="125">verNotas()</text>
+
+          <rect class="der__caja" x="510" y="24" width="186" height="90" rx="8"/>
+          <path class="der__obj-cab" d="M518 24h170a8 8 0 0 1 8 8v20H510V32a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="603" y="43" text-anchor="middle">luis : Alumno</text>
+          <text x="522" y="71">id_alumno = 2</text>
+          <text x="522" y="88">nombre = "Luis"</text>
+          <text x="522" y="105">email = "luis@mail.com"</text>
+        </svg>
+        <!-- Celular: la clase arriba y los dos objetos debajo -->
+        <svg class="der der--angosto" viewBox="0 0 320 372" role="img" aria-label="La clase Alumno, arriba, con los atributos id_alumno, nombre y email, y los métodos inscribirse() y verNotas(). Debajo, dos objetos de esa clase, unidos a ella con una flecha punteada: ana : Alumno, con id_alumno = 1, nombre = “Ana” y email = “ana@mail.com”, y luis : Alumno, con id_alumno = 2, nombre = “Luis” y email = “luis@mail.com”.">
+          <path class="der__linea der__linea--punteada" d="M100 215H56M100 325H56V68H96"/>
+          <path class="der__linea" d="M92 62l8 6-8 6"/>
+          <text class="der__nota" transform="rotate(-90 44 200)" x="44" y="200" text-anchor="middle">objetos de Alumno</text>
+
+          <rect class="der__caja" x="100" y="3" width="200" height="130" rx="8"/>
+          <path class="der__caja-cab" d="M108 3h184a8 8 0 0 1 8 8v20H100V11a8 8 0 0 1 8-8z"/>
+          <path class="der__div" d="M100 89h200"/>
+          <text class="der__nom" x="200" y="22" text-anchor="middle">Alumno</text>
+          <text x="112" y="50">id_alumno</text>
+          <text x="112" y="67">nombre</text>
+          <text x="112" y="84">email</text>
+          <text x="112" y="108">inscribirse()</text>
+          <text x="112" y="125">verNotas()</text>
+
+          <rect class="der__caja" x="100" y="170" width="200" height="90" rx="8"/>
+          <path class="der__obj-cab" d="M108 170h184a8 8 0 0 1 8 8v20H100v-20a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="200" y="189" text-anchor="middle">ana : Alumno</text>
+          <text x="112" y="217">id_alumno = 1</text>
+          <text x="112" y="234">nombre = "Ana"</text>
+          <text x="112" y="251">email = "ana@mail.com"</text>
+
+          <rect class="der__caja" x="100" y="280" width="200" height="90" rx="8"/>
+          <path class="der__obj-cab" d="M108 280h184a8 8 0 0 1 8 8v20H100v-20a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="200" y="299" text-anchor="middle">luis : Alumno</text>
+          <text x="112" y="327">id_alumno = 2</text>
+          <text x="112" y="344">nombre = "Luis"</text>
+          <text x="112" y="361">email = "luis@mail.com"</text>
+        </svg>
+      </div>
+      <p class="texto">La clase es el molde; <strong>ana</strong> y <strong>luis</strong> son dos objetos de esa clase.</p>
+    </section>
+
+    <ul class="cuando">
+      <li><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-herencia"/></svg><span><strong>Herencia:</strong> una clase hereda lo de otra más general y suma lo suyo.</span></li>
+      <li><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-candado"/></svg><span><strong>Encapsulamiento:</strong> los datos de un objeto se cambian solo con sus métodos.</span></li>
+    </ul>
+
+    <ul class="comparar">
+      <li class="grupo"><div><h3>Base orientada a objetos</h3><p>Guarda los objetos tal como los usa el programa, con sus datos y sus vínculos, sin pasarlos a tablas.</p></div></li>
+      <li class="grupo grupo--naranja"><div><h3>Base objeto-relacional</h3><p>Una base relacional, con tablas y SQL, que suma características de objetos. Ejemplo: PostgreSQL.</p></div></li>
+    </ul>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Un objeto reúne sus datos y su comportamiento; una base orientada a objetos lo guarda así, sin pasarlo a tablas.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 8">8</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 9 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina" id="pag-9" aria-labelledby="t9" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t9"><span class="tit__num">9.</span> XML: el modelo semiestructurado</h2>
+      <p class="tit__sub">Datos con etiquetas y forma de árbol</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-xml"/></svg>
+      <p><strong>XML</strong> (Lenguaje de Marcado Extensible) guarda cada dato entre <strong>etiquetas</strong> que dicen qué es. Es un modelo <strong>semiestructurado</strong>: tiene una forma, pero no tan fija como una tabla.</p>
+    </div>
+
+    <ul class="reconocer reconocer--3">
+      <li class="tarjeta">
+        <h3 class="tarjeta__cab">ELEMENTO</h3>
+        <div class="reconocer__def">
+          <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-elemento"/></svg>
+          <p>Un dato entre una etiqueta de apertura y una de cierre.</p>
+        </div>
+        <p class="reconocer__ej"><strong>Ejemplo:</strong> <code class="cod-archivo">&lt;nombre&gt;Ana&lt;/nombre&gt;</code></p>
+      </li>
+      <li class="tarjeta">
+        <h3 class="tarjeta__cab">ATRIBUTO</h3>
+        <div class="reconocer__def">
+          <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-etiqueta"/></svg>
+          <p>Un dato extra, dentro de la etiqueta de apertura.</p>
+        </div>
+        <p class="reconocer__ej"><strong>Ejemplo:</strong> <code class="cod-archivo">&lt;alumno id="1"&gt;</code></p>
+      </li>
+      <li class="tarjeta">
+        <h3 class="tarjeta__cab">JERARQUÍA</h3>
+        <div class="reconocer__def">
+          <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-arbol"/></svg>
+          <p>Los elementos van unos dentro de otros, como las ramas de un árbol.</p>
+        </div>
+        <p class="reconocer__ej"><strong>Ejemplo:</strong> <code class="cod-archivo">&lt;alumnos&gt;</code> contiene a cada <code class="cod-archivo">&lt;alumno&gt;</code>.</p>
+      </li>
+    </ul>
+
+    <section aria-labelledby="e9">
+      <h3 class="subtitulo sin-raya" id="e9">Ejemplo: dos alumnos, uno sin teléfono</h3>
+      <div class="archivo-ej">
+        <figure class="archivo archivo--xml">
+          <figcaption class="archivo__nombre">alumnos.xml</figcaption>
+<pre class="archivo__txt"><span class="marca">&lt;alumnos&gt;</span>
+  <span class="marca">&lt;alumno id=</span>"1"<span class="marca">&gt;</span>
+    <span class="marca">&lt;nombre&gt;</span>Ana<span class="marca">&lt;/nombre&gt;</span>
+    <span class="marca">&lt;email&gt;</span>ana@mail.com<span class="marca">&lt;/email&gt;</span>
+    <span class="marca">&lt;telefono&gt;</span>421234<span class="marca">&lt;/telefono&gt;</span>
+  <span class="marca">&lt;/alumno&gt;</span>
+  <span class="marca">&lt;alumno id=</span>"2"<span class="marca">&gt;</span>
+    <span class="marca">&lt;nombre&gt;</span>Luis<span class="marca">&lt;/nombre&gt;</span>
+    <span class="marca">&lt;email&gt;</span>luis@mail.com<span class="marca">&lt;/email&gt;</span>
+  <span class="marca">&lt;/alumno&gt;</span>
+<span class="marca">&lt;/alumnos&gt;</span></pre>
+        </figure>
+        <ul class="comparar">
+          <li class="grupo">
+            <div>
+              <h4><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg>Tabla</h4>
+              <ul class="pf__lista lista-txt">
+                <li>Todas las filas tienen las mismas columnas.</li>
+                <li>Si falta un dato, la celda queda vacía.</li>
+              </ul>
+            </div>
+          </li>
+          <li class="grupo grupo--naranja">
+            <div>
+              <h4><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-xml"/></svg>XML</h4>
+              <ul class="pf__lista lista-txt">
+                <li>Cada elemento tiene solo los datos que necesita.</li>
+                <li>Si falta un dato, la etiqueta no está: Luis no tiene <code class="cod-archivo">&lt;telefono&gt;</code>.</li>
+              </ul>
+            </div>
+          </li>
+        </ul>
+      </div>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> XML guarda los datos entre etiquetas, en forma de árbol, y cada elemento puede tener solo los datos que necesita.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 9">9</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 10 (PDF pág. 7 · repaso de 5.º) =================== -->
+  <article class="lamina lamina--densa" id="pag-10" aria-labelledby="t10">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--muy-largo" id="t10"><span class="tit__num">10.</span> Tipos de bases de datos: relacionales y NoSQL</h2>
+      <p class="tit__sub">Dos formas de organizar la información <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Existen diferentes tipos de bases de datos, según cómo se almacenan y se usan los datos.</p>
+    </div>
+
+    <ul class="comparar">
+      <li class="grupo">
+        <div>
+          <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-tablas-rel"/></svg>Relacionales</h3>
+          <ul class="pf__lista lista-txt">
+            <li>usan tablas</li>
+            <li>relacionan datos con claves</li>
+            <li>mantienen orden y estructura</li>
+            <li>son ideales para registros, ventas, alumnos, stock</li>
+          </ul>
+        </div>
+      </li>
+      <li class="grupo grupo--naranja">
+        <div>
+          <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-nosql"/></svg>NoSQL</h3>
+          <ul class="pf__lista lista-txt">
+            <li>no dependen solo de tablas</li>
+            <li>pueden usar documentos, grafos o clave-valor</li>
+            <li>son más flexibles</li>
+            <li>se usan mucho en apps web, redes sociales y grandes volúmenes de datos</li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+
+    <section class="panel" aria-labelledby="j10">
+      <div class="panel__cab"><h3 class="subtitulo" id="j10">Ejemplos</h3></div>
+      <ul class="ambitos ambitos--4 ejemplos-bd">
+        <li class="tarjeta grupo"><h4 class="tarjeta__tit">Escuela</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-escuela"/></svg><p class="tarjeta__cab">Relacional</p></li>
+        <li class="tarjeta grupo"><h4 class="tarjeta__tit">Tienda online</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-carrito"/></svg><p class="tarjeta__cab">Relacional</p></li>
+        <li class="tarjeta grupo grupo--naranja"><h4 class="tarjeta__tit">Red social</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-personas"/></svg><p class="tarjeta__cab">NoSQL</p></li>
+        <li class="tarjeta grupo grupo--naranja"><h4 class="tarjeta__tit">App con mensajes y contenido variable</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-chat"/></svg><p class="tarjeta__cab">NoSQL</p></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="d10">
+      <div class="panel__cab"><h3 class="subtitulo" id="d10">¿En qué se diferencian?</h3></div>
+      <ul class="ambitos ambitos--fila">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><h4 class="tarjeta__cab">estructura</h4><p>Las relacionales son más rígidas y organizadas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-flechas"/></svg><h4 class="tarjeta__cab">flexibilidad</h4><p>NoSQL es más flexible y se adapta mejor a distintos tipos de datos.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><h4 class="tarjeta__cab">uso</h4><p>Cada tipo es más adecuado para ciertos escenarios y necesidades.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Las bases relacionales priorizan el orden de las tablas; NoSQL prioriza la flexibilidad según el tipo de aplicación.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 10">10</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 7</p>
+      <h3 class="pf__titulo" id="pf1">La herencia en UML</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Cuando varias clases comparten atributos, lo común va en una clase general, la <strong>superclase</strong>. Cada <strong>subclase</strong> hereda todo eso y suma lo suyo.</p>
+          <p>Se dibuja con una línea que termina en un <strong>triángulo vacío</strong>, que apunta a la superclase.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: Persona, Alumno y Docente</h4>
+          <svg class="der der--pf" viewBox="0 0 300 142" role="img" aria-label="Diagrama de clases con herencia. Las clases Alumno, con el atributo curso, y Docente, con el atributo materia, se unen con una línea que termina en un triángulo vacío, que apunta a la clase Persona, con los atributos dni y nombre.">
+            <path class="der__linea" d="M150 70V84M55 84H245M55 84V96M245 84V96"/>
+            <path class="der__triangulo" d="M150 58l-8 12h16z"/>
+            <rect class="der__caja" x="105" y="2" width="90" height="56" rx="6"/>
+            <path class="der__caja-cab" d="M111 2h78a6 6 0 0 1 6 6v14h-90V8a6 6 0 0 1 6-6z"/>
+            <text class="der__nom" x="150" y="16" text-anchor="middle">Persona</text>
+            <text x="114" y="37">dni</text>
+            <text x="114" y="52">nombre</text>
+            <rect class="der__caja" x="10" y="96" width="90" height="44" rx="6"/>
+            <path class="der__caja-cab" d="M16 96h78a6 6 0 0 1 6 6v14H10v-14a6 6 0 0 1 6-6z"/>
+            <text class="der__nom" x="55" y="110" text-anchor="middle">Alumno</text>
+            <text x="19" y="133">curso</text>
+            <rect class="der__caja" x="200" y="96" width="90" height="44" rx="6"/>
+            <path class="der__caja-cab" d="M206 96h78a6 6 0 0 1 6 6v14h-90v-14a6 6 0 0 1 6-6z"/>
+            <text class="der__nom" x="245" y="110" text-anchor="middle">Docente</text>
+            <text x="209" y="133">materia</text>
+          </svg>
+          <p>Se lee: un alumno es una persona, y un docente también. Los dos tienen dni y nombre sin repetirlos.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 8</p>
+      <h3 class="pf__titulo" id="pf2">Objetos y tablas: el ORM</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Un programa trabaja con <strong>objetos</strong>, que tienen métodos y pueden guardar listas u otros objetos; una tabla guarda solo valores simples. Es el <strong>desfase</strong> entre objetos y tablas.</p>
+          <p>Un <strong>ORM</strong> (mapeo objeto-relacional) traduce: guarda cada objeto como una fila y, al leerla, vuelve a armar el objeto.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: el objeto ana, en una tabla</h4>
+          <svg class="der der--pf der--orm" viewBox="0 0 200 98" role="img" aria-label="El objeto ana, de la clase Alumno, con id_alumno = 1, nombre = “Ana” y email = “ana@mail.com”. Una flecha con la palabra ORM baja hasta la tabla ALUMNOS.">
+            <rect class="der__caja" x="20" y="2" width="160" height="74" rx="6"/>
+            <path class="der__obj-cab" d="M26 2h148a6 6 0 0 1 6 6v14H20V8a6 6 0 0 1 6-6z"/>
+            <text class="der__nom der__id" x="100" y="17" text-anchor="middle">ana : Alumno</text>
+            <text x="30" y="38">id_alumno = 1</text>
+            <text x="30" y="53">nombre = "Ana"</text>
+            <text x="30" y="68">email = "ana@mail.com"</text>
+            <path class="der__linea" d="M100 78V95M94 88l6 7 6-7"/>
+            <text class="der__card" x="112" y="91">ORM</text>
+          </svg>
+          <table class="tabla-ej">
+            <caption>ALUMNOS</caption>
+            <thead>
+              <tr><th scope="col">id_alumno</th><th scope="col">nombre</th><th scope="col">email</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Ana</td><td>ana@mail.com</td></tr>
+            </tbody>
+          </table>
+          <p>Los métodos no se guardan en la tabla.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 9</p>
+      <h3 class="pf__titulo" id="pf3">XML y JSON</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p><strong>JSON</strong> guarda los mismos datos con llaves y pares <em>nombre: valor</em>. Es más corto y muy usado en las apps web.</p>
+          <p>Un XML se puede <strong>validar</strong> con un esquema (DTD o XSD), que fija sus elementos y atributos.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: Ana, en XML y en JSON</h4>
+          <div class="pf__archivos">
+            <figure class="archivo">
+              <figcaption class="archivo__nombre">alumno.xml</figcaption>
+<pre class="archivo__txt"><span class="marca">&lt;alumno id=</span>"1"<span class="marca">&gt;</span>
+  <span class="marca">&lt;nombre&gt;</span>Ana<span class="marca">&lt;/nombre&gt;</span>
+<span class="marca">&lt;/alumno&gt;</span></pre>
+            </figure>
+            <figure class="archivo">
+              <figcaption class="archivo__nombre">alumno.json</figcaption>
+<pre class="archivo__txt"><span class="marca">{ "id":</span> 1<span class="marca">, "nombre":</span> "Ana" <span class="marca">}</span></pre>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">La tienda en tres modelos</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Un producto de la tienda de 5.º, en cada modelo:</p>
+          <ul class="pf__lista">
+            <li><strong>Relacional:</strong> una fila de la tabla PRODUCTOS.</li>
+            <li><strong>Orientado a objetos:</strong> un objeto de la clase Producto, con métodos como <code>actualizarStock()</code>.</li>
+            <li><strong>XML:</strong> un elemento <code class="cod-archivo">&lt;producto&gt;</code> con un hijo por cada dato.</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: la notebook, en XML</h4>
+          <figure class="archivo">
+            <figcaption class="archivo__nombre">producto.xml</figcaption>
+<pre class="archivo__txt"><span class="marca">&lt;producto id=</span>"4"<span class="marca">&gt;</span>
+  <span class="marca">&lt;nombre&gt;</span>Notebook<span class="marca">&lt;/nombre&gt;</span>
+  <span class="marca">&lt;precio&gt;</span>45000<span class="marca">&lt;/precio&gt;</span>
+<span class="marca">&lt;/producto&gt;</span></pre>
+          </figure>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 3</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°3 — UML y otros modelos</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°3.</p>
+
+    <!-- Puntos 1 a 4: uno por lámina (1 a 3, nuevos; 4, del PDF, con la corrección del inciso a) -->
+    <ol class="acts acts--2col">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> UML: el diagrama de clases</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué va en cada uno de los tres compartimentos de una clase?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué significan las multiplicidades 0..1 y 1..*? Dá un ejemplo de cada una.</div></li>
+          <li><b class="act__letra">c)</b><div>Dibujá la clase Libro con tres atributos y dos métodos.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> El modelo orientado a objetos</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué tres cosas tiene todo objeto? Explicá cada una.</div></li>
+          <li><b class="act__letra">b)</b><div>ana y luis son objetos de la clase Alumno. ¿Qué tienen en común? ¿En qué se diferencian?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué diferencia hay entre una base orientada a objetos y una objeto-relacional?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> XML: el modelo semiestructurado</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>En alumnos.xml, señalá un elemento, un atributo y el elemento raíz.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribí el elemento de una alumna nueva, Marta, con email y sin teléfono.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Por qué se dice que XML es semiestructurado?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Tipos de bases de datos: relacionales y NoSQL</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Para cada ejemplo, explicá por qué usaría una base relacional o una NoSQL.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribí una diferencia entre ambos tipos.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Cuál usarías para una escuela? ¿Y para una red social?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 3</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2 (consignas nuevas) =================== -->
+  <article class="lamina lamina--act" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°3</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la carpeta</h2>
+        <p>TP N°3 — UML y otros modelos</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <ol class="acts acts--amplio" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Cuadro para completar</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Copiá y completá el cuadro: cómo se representa cada concepto en cada modelo.
+            <table class="act-tabla">
+              <caption class="sr-only">Un mismo concepto en el DER, en UML y en XML, para completar</caption>
+              <thead><tr><th scope="col">Concepto</th><th scope="col">DER</th><th scope="col">UML</th><th scope="col">XML</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">Entidad (ALUMNO)</th><td></td><td></td><td></td></tr>
+                <tr><th scope="row">Atributo (nombre)</th><td></td><td></td><td></td></tr>
+                <tr><th scope="row">Relación (se inscribe en)</th><td></td><td></td><td></td></tr>
+              </tbody>
+            </table></div></li>
+          <li><b class="act__letra">b)</b><div>Representá la entidad LIBRO, con titulo y autor, en los tres modelos.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Decisión justificada</h3>
+        <p class="act__caso">Para cada caso, elegí qué modelo usarías: relacional, orientado a objetos o XML. Explicá por qué.</p>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>El sistema de notas de la escuela.</div></li>
+          <li><b class="act__letra">b)</b><div>Un catálogo de productos con datos distintos según el tipo: un celular tiene pantalla y batería; una remera, talle y color.</div></li>
+          <li><b class="act__letra">c)</b><div>Un videojuego que guarda cada personaje con su inventario y lo que puede hacer.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 3</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>
