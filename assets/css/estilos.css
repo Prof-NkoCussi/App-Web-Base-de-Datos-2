@@ -1236,6 +1236,10 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
   .pf .pseudo li::before { width: 1.7em; padding-right: .4em; }
   .pf .ventana-cod__barra { font-size: 10.5px; padding: 2px 10px; }
   .pf .tabla-comp th, .pf .tabla-comp td { font-size: 13px; padding: 3px 5px; }
+  /* Lámina 12: la tabla de opciones con menos aire, para que la hoja no se pase */
+  .pf--ajustado .tabla-comp { border-spacing: 3px; width: calc(100% + 6px); margin: -3px; }
+  .pf--ajustado .tabla-comp th, .pf--ajustado .tabla-comp td { padding: 1px 5px; }
+  .pf--ajustado .pf__lista { gap: 2px; }
   .acts--amplio .act-tabla--filas th, .acts--amplio .act-tabla--filas td { height: auto; padding: 4px 6px; }
   .acts--ajustado { gap: 4mm; }
   .acts--ajustado .act__items > li { padding-top: 6px; padding-bottom: 6px; }
