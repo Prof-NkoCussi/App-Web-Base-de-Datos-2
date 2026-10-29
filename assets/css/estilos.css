@@ -854,6 +854,62 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
 .ejemplos-bd .tarjeta__cab { margin-top: auto; }
 
 /* ==========================================================
+   De 6.º (TP4): restricciones, integridad referencial y claves
+   ========================================================== */
+/* Restricción debajo del nombre del campo (PRODUCTOS, FICHAS, ALUMNOS) */
+.restr { display: block; font-size: .8em; font-weight: 600; letter-spacing: .02em; }
+/* Tablas de ejemplo angostas: cada columna, del ancho de su dato */
+.lado-a-lado--ej .tabla-ej, .claves-ej .tabla-ej, .tablas-ri .tabla-ej, .comparar--ej .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Recuadro con ícono al pie de un ejemplo, dentro de un panel */
+.panel > .intro { background: var(--blanco); padding: 10px 12px; gap: 12px; margin-top: 10px; }
+.panel > .intro p, .intro__txt p { font-size: 15.5px; line-height: 1.35; }
+.intro__txt { display: grid; gap: 6px; padding-left: 12px; border-left: 2px solid var(--panel-linea); }
+.intro .intro__txt p { padding-left: 0; border-left: 0; }
+.rotulo { background: var(--acento-claro); border-radius: 4px; padding: 0 6px; margin-right: 2px; }
+
+/* Código SQL (.ventana-cod--sql): palabras clave en rosa, nombres en lima, tipos de datos en cian.
+   La línea que no entra sigue con sangría */
+.pseudo--sql .pseudo__c { padding-left: 2ch; text-indent: -2ch; }
+.pseudo--sql .i1 .pseudo__c { padding-left: 4ch; }
+.pf .pseudo li { font-size: inherit; line-height: inherit; }   /* no toma la letra de los ítems de "Para profundizar" */
+/* Mensaje de error del gestor: puede cortarse en dos renglones */
+code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+
+/* Integridad referencial: CLIENTES y VENTAS; ejemplo incorrecto (naranja) y correcto (verde) */
+.tablas-ri { margin-top: 10px; }
+.comparar--ej p { font-size: 15.5px; line-height: 1.35; }
+.comparar--ej .tabla-ej { margin-top: 8px; }
+.comparar--ej .tabla-ej th { background: var(--panel-oscuro); }
+.tabla-ej .marca-celda { background: var(--grupo-claro); box-shadow: inset 0 0 0 3px var(--grupo); font-weight: 700; color: var(--tinta); }
+.comparar--ej .veredicto { margin-top: 8px; background: var(--blanco); border-radius: 6px; padding: 6px 10px 6px 14px; box-shadow: inset 4px 0 0 var(--grupo); }
+.importa .tarjeta { gap: 6px; padding: 8px 6px 10px; }
+.importa .tarjeta p { font-size: 15px; }
+
+/* Claves candidatas: encabezados en el color de su grupo (candidata en el acento, primaria en naranja) */
+.claves-ej { display: grid; gap: 10px; }
+.tabla-ej th.grupo { background: var(--grupo-claro); box-shadow: inset 0 -4px 0 var(--grupo); }
+.tabla-ej th.neutro { background: var(--panel-oscuro); }
+.eleccion { display: grid; gap: 10px; margin-top: 12px; }
+.eleccion__caja {
+  display: grid; gap: 6px; align-content: start;
+  background: var(--blanco); border-radius: 8px; padding: 13px 12px 10px; box-shadow: inset 0 5px 0 var(--grupo);
+}
+.eleccion__caja h4 { font-family: var(--fuente-titulo); font-weight: 700; font-size: 19px; line-height: 1.15; color: var(--tinta); }
+.eleccion__caja p { font-size: 15px; line-height: 1.3; }
+.campos { display: flex; flex-wrap: wrap; gap: 6px; }
+.campos li { background: var(--grupo-claro); border-radius: 6px; padding: 2px 10px; font-weight: 700; font-size: 15px; color: var(--tinta); }
+.eleccion__flecha { display: grid; justify-items: center; align-content: center; gap: 4px; font-size: 13px; font-weight: 600; color: var(--gris); }
+.otras-claves li { align-items: flex-start; }
+
+/* Actividades: lo que guarda cada campo, debajo del nombre; filas para cargar */
+.act-tabla__nota { display: block; font-weight: 400; font-size: .9em; line-height: 1.25; margin-top: 2px; }
+.act-tabla--filas td { text-align: center; background: var(--blanco); }
+/* Título del panel con una frase al costado (en el celular, debajo) */
+.panel__cab--texto { flex-wrap: wrap; align-items: baseline; gap: 4px 16px; }
+.panel__cab--texto .texto { font-size: 16px; }
+.act-tabla--filas thead th { vertical-align: bottom; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -909,6 +965,12 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .der--angosto { display: none; }
   .comun--2 { grid-template-columns: 1fr 1fr; }
   .pasos-der .paso p { text-align: left; }
+  /* TP4: dos ejemplos del mismo ancho; las claves candidatas, la flecha y lo que se elige, en una fila */
+  .lado-a-lado--ej { grid-template-columns: 1fr 1fr; align-items: stretch; }
+  .claves-ej { grid-template-columns: 1.6fr 1fr; align-items: center; column-gap: 16px; }
+  .eleccion { grid-template-columns: 1.3fr auto 1fr 1fr; }
+  .tablas-ri { grid-template-columns: 1.1fr 1fr; }
+  .eleccion .flecha { transform: none; }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
@@ -1121,6 +1183,66 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
   .lamina--densa .cuando .ico--l { width: 46px; height: 46px; }
   .lamina--densa .comparar .lista-txt { font-size: 16px; }
   .comun.comun--mult li { font-size: 16px; padding: 6px 12px; gap: 12px; }
+
+  /* De 6.º (TP4): las láminas 11 a 13 traen muchos bloques; menos aire y texto un poco más chico */
+  .tit__h--extra-largo { font-size: 36px; letter-spacing: -.02em; }
+  .lamina--compacta { gap: 2.2mm; }
+  .lamina--compacta .intro { padding: 10px 16px; }
+  .lamina--compacta .intro p { font-size: 17px; line-height: 1.38; }
+  .lamina--compacta .idea p { font-size: 17px; padding: 10px 18px; }
+  .lamina--compacta .idea strong { font-size: 24px; }
+  .lamina--compacta .subtitulo { font-size: 22px; }
+  .lamina--compacta .panel { padding: 10px 14px 12px; }
+  .lamina--compacta .panel__cab { margin-bottom: 8px; }
+  /* Tablas de ejemplo: cada dato en un renglón */
+  .lamina--compacta .tabla-ej { table-layout: auto; font-size: 14px; }
+  .lamina--compacta .tabla-ej th, .lamina--compacta .tabla-ej td { white-space: nowrap; padding: 3px 6px; }
+  .lamina--compacta .tabla-ej caption { font-size: 16px; padding: 2px; }
+  /* Lámina 11: el SQL, a la derecha, entra sin cortar líneas; lámina 12: más ancho para "¿Por qué importa?" */
+  .lado-a-lado--sql-der { grid-template-columns: 1fr 1.2fr; }
+  .lado-a-lado--sql-izq { grid-template-columns: .9fr 1.2fr; }
+  .lado-a-lado--ej .tabla-ej { font-size: 13px; }
+  .lamina--compacta .lado-a-lado--ej .tabla-ej th, .lamina--compacta .lado-a-lado--ej .tabla-ej td { padding: 3px 4px; }
+  .restricciones { gap: 8px; }
+  .restricciones .tarjeta { gap: 5px; padding: 5px 4px 8px; }
+  .restricciones .ico--l { width: 40px; height: 40px; }
+  .restricciones .tarjeta p { font-size: 14px; line-height: 1.28; padding: 0 2px; }
+  /* Código SQL y nota con ícono al pie de un ejemplo */
+  .pseudo--sql { font-size: 12px; line-height: 1.4; }
+  .pseudo--sql li { gap: 6px; padding-right: 4px; }
+  .pseudo--sql li::before { width: 1.6em; padding-right: .4em; }
+  .panel > .intro { padding: 8px 12px; margin-top: 8px; gap: 12px; }
+  .panel > .intro .ico { width: 40px; height: 40px; }
+  .panel > .intro p, .intro__txt p { font-size: 14.5px; line-height: 1.32; padding-left: 12px; }
+  .intro__txt { gap: 4px; }
+  .panel__cab--texto .texto { font-size: 16.5px; }
+  /* Integridad referencial */
+  .comparar--ej > li { padding: 10px 14px 12px; }
+  .comparar--ej h3 { font-size: 21px; }
+  .comparar--ej p { font-size: 14.5px; }
+  .importa { gap: 8px; }
+  .importa .ico--l { width: 34px; height: 34px; }
+  .importa .tarjeta__tit { font-size: 15px; }
+  .importa .tarjeta p { font-size: 13.5px; line-height: 1.28; padding: 0 2px; }
+  /* Claves candidatas */
+  .eleccion { margin-top: 10px; }
+  .eleccion__caja h4 { font-size: 19px; }
+  .eleccion__caja p { font-size: 14.5px; }
+  .comun.otras-claves li { font-size: 15.5px; padding: 9px 14px; gap: 12px; }
+  .otras-claves .ico--l { width: 46px; height: 46px; }
+  /* Para profundizar y actividades */
+  .pf .pseudo { font-size: 11.5px; padding: 3px 0; }
+  .pf .pseudo li { padding-right: 4px; gap: 6px; }
+  .pf .pseudo li::before { width: 1.7em; padding-right: .4em; }
+  .pf .ventana-cod__barra { font-size: 10.5px; padding: 2px 10px; }
+  .pf .tabla-comp th, .pf .tabla-comp td { font-size: 13px; padding: 3px 5px; }
+  .acts--amplio .act-tabla--filas th, .acts--amplio .act-tabla--filas td { height: auto; padding: 4px 6px; }
+  .acts--ajustado { gap: 4mm; }
+  .acts--ajustado .act__items > li { padding-top: 6px; padding-bottom: 6px; }
+  .acts--ajustado .act-tabla__nota { display: inline; }
+  .acts--ajustado .act-tabla__nota::before { content: "· "; }
+  .act-tabla--campos thead th:first-child { width: 48%; }
+  .acts--amplio .act-tabla--campos th, .acts--amplio .act-tabla--campos td { height: 38px; padding-top: 4px; padding-bottom: 4px; }
 }
 
 /* ==========================================================

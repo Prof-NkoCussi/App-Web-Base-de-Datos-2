@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°4 — Claves y restricciones · Base de Datos II</title>
+  <meta name="description" content="TP N°4 de Base de Datos II: las restricciones NOT NULL, UNIQUE, DEFAULT y CHECK, la integridad referencial y las claves candidatas, alternativas y foráneas. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#A78BFA">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="4" class="modulo-2">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-escudo" viewBox="0 0 48 48">
+      <path d="M24 4.5 39.5 10v11.5c0 10.2-6.6 18.2-15.5 21.8C15.1 39.7 8.5 31.7 8.5 21.5V10z" style="fill:var(--ac)"/>
+      <path d="M16.5 24l5.5 5.5 10-11" style="stroke-width:3.4"/>
+    </symbol>
+    <symbol id="i-prohibido" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="17"/>
+      <path d="M12.5 12.5l23 23" style="stroke:var(--ac);stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-doc-def" viewBox="0 0 48 48">
+      <path d="M24 42H10V5h18l8 8v10"/>
+      <path d="M28 5v8h8"/>
+      <path d="M15 17h12M15 23h15M15 29h7"/>
+      <circle cx="35" cy="35" r="9" style="fill:var(--ac)"/>
+      <path d="M30.5 35h8.5M35.5 31.5 39 35l-3.5 3.5"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="17" style="fill:var(--ac)"/>
+      <path d="M16 24.5l5.5 5.5 11-11.5" style="stroke-width:3.4"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18" style="fill:var(--ac)"/>
+      <path d="M24 22v13" style="stroke-width:4"/>
+      <circle cx="24" cy="14.5" r="2.6" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-cadena" viewBox="0 0 48 48">
+      <rect x="4" y="22.5" width="25" height="13" rx="6.5" transform="rotate(-45 16.5 29)" style="fill:var(--ac)"/>
+      <rect x="19" y="12.5" width="25" height="13" rx="6.5" transform="rotate(-45 31.5 19)"/>
+      <path d="M21 27l6-6"/>
+    </symbol>
+    <symbol id="i-cruz" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="19" style="fill:var(--ac);stroke:none"/>
+      <path d="M17 17l14 14M31 17 17 31" style="stroke:#fff;stroke-width:4"/>
+    </symbol>
+    <symbol id="i-ok" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="19" style="fill:var(--ac);stroke:none"/>
+      <path d="M15.5 24.5l6 6 11-12" style="stroke:#fff;stroke-width:4"/>
+    </symbol>
+    <symbol id="i-tacho" viewBox="0 0 48 48">
+      <path d="M9 12h30M19 12V7h10v5"/>
+      <path d="M12.5 12l2.5 30h18l2.5-30z" style="fill:var(--ac)"/>
+      <path d="M20 18v18M28 18v18"/>
+    </symbol>
+    <symbol id="i-llave" viewBox="0 0 48 48">
+      <path d="M22 20.5h21l2.5 3.5-2.5 3.5h-3l-2 3-2-3h-2l-2 3-2-3H22z" style="fill:var(--ac)"/>
+      <circle cx="14" cy="24" r="10" style="fill:var(--ac)"/>
+      <circle cx="11.5" cy="24" r="3" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-compuesta" viewBox="0 0 48 48">
+      <path d="M7.3 17h21.4v19.7H7.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 10v28M30 10v28"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°4 — Claves y restricciones</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°4">
+    <a href="#pag-11">11 · Restricciones</a>
+    <a href="#pag-12">12 · Integridad referencial</a>
+    <a href="#pag-13">13 · Claves candidatas</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°4 — Claves y restricciones</h1>
+
+  <!-- =================== LÁMINA 11 (PDF pág. 17) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-11" aria-labelledby="t11">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°4</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--extra-largo" id="t11"><span class="tit__num">11.</span> Restricciones: NOT NULL, UNIQUE, DEFAULT y CHECK</h2>
+      <p class="tit__sub">Reglas para validar y cuidar los datos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-escudo"/></svg>
+      <p>Las <strong>restricciones (constraints)</strong> son reglas que se aplican a los campos de una tabla para validar los datos que se guardan. Ayudan a evitar errores, mantener la consistencia de la información y asegurar que los datos sean correctos y confiables.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="p11">
+      <div class="panel__cab"><h3 class="subtitulo" id="p11">Principales restricciones</h3></div>
+      <ul class="ambitos ambitos--4 restricciones">
+        <li class="tarjeta"><h4 class="tarjeta__cab">NOT NULL</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-prohibido"/></svg><p>El campo no puede estar vacío. Siempre debe tener un valor.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">UNIQUE</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><p>Los valores no pueden repetirse. Cada registro debe tener un valor único en ese campo.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">DEFAULT</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-def"/></svg><p>Si no se ingresa un valor, se asigna un valor predeterminado automáticamente.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">CHECK</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-check"/></svg><p>Valida que el valor cumpla una condición especifica (por ejemplo, que sea mayor que cero).</p></li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--ej lado-a-lado--sql-der">
+      <section class="panel" aria-labelledby="e11">
+        <div class="panel__cab"><h3 class="subtitulo" id="e11">Ejemplo en una tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_<wbr>producto <span class="restr">(PK)</span></th><th scope="col">nombre <span class="restr">(NOT NULL)</span></th><th scope="col">precio <span class="restr">(CHECK)</span></th><th scope="col">categoria <span class="restr">(DEFAULT)</span></th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Laptop</td><td>750.00</td><td>Electrónica</td></tr>
+            <tr><td>2</td><td>Mouse</td><td>25.00</td><td>Accesorios</td></tr>
+            <tr><td>3</td><td>Teclado</td><td>40.00</td><td>Accesorios</td></tr>
+          </tbody>
+        </table>
+        <div class="intro">
+          <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-info"/></svg>
+          <p>Cada campo tiene una restricción que ayuda a mantener los datos válidos y organizados.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="s11">
+        <div class="panel__cab"><h3 class="subtitulo" id="s11">Ejemplo en SQL</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla productos con sus restricciones">
+            <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">productos</span> (</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">id_producto</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">100</span>) <b>NOT NULL</b>,</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">precio</span> <span class="t-fun">DECIMAL</span>(<span class="t-num">10</span>,<span class="t-num">2</span>) <b>CHECK</b> (<span class="t-atr">precio</span> &gt; <span class="t-num">0</span>),</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">categoria</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">50</span>) <b>DEFAULT</b> <span class="t-str">'General'</span></span></li>
+            <li><span class="pseudo__c">);</span></li>
+          </ol>
+        </div>
+        <div class="intro">
+          <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+          <div class="intro__txt">
+            <p>También puedes combinar varias restricciones en una misma tabla para tener datos más seguros y consistentes.</p>
+            <p><strong class="rotulo">Ejemplo:</strong> un campo puede ser NOT NULL y UNIQUE al mismo tiempo.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Las restricciones ayudan a mantener el orden, la consistencia y la calidad de los datos en la base de datos.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 11">11</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 12 (PDF pág. 18) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-12" aria-labelledby="t12">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°4</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t12"><span class="tit__num">12.</span> Integridad referencial</h2>
+      <p class="tit__sub">Que las relaciones entre tablas tengan sentido</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-cadena"/></svg>
+      <p>La <strong>integridad referencial</strong> garantiza que un valor de <strong>clave foránea</strong> corresponda a un valor de <strong>clave primaria</strong> existente en la tabla relacionada. Así evitamos registros que hagan referencia a datos que no existen.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="e12">
+      <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="e12">Ejemplo: CLIENTES y VENTAS</h3><p class="texto">Cada venta debe estar asociada a un cliente que exista.</p></div>
+      <div class="lado-a-lado tablas-ri">
+        <table class="tabla-ej">
+          <caption>CLIENTES</caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">email</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana López</td><td>ana<wbr>@ejemplo.com</td></tr>
+            <tr><td>2</td><td>Carlos Ruiz</td><td>carlos<wbr>@ejemplo.com</td></tr>
+            <tr><td>3</td><td>Laura Díaz</td><td>laura<wbr>@ejemplo.com</td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej">
+          <caption>VENTAS</caption>
+          <thead>
+            <tr><th scope="col">id_venta</th><th scope="col">id_cliente</th><th scope="col">fecha</th><th scope="col">monto</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>101</td><td>1</td><td>2026-01-10</td><td>250.00</td></tr>
+            <tr><td>102</td><td>2</td><td>2026-01-12</td><td>120.00</td></tr>
+            <tr><td>103</td><td>3</td><td>2026-01-15</td><td>300.00</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <ul class="comparar comparar--ej">
+      <li class="grupo grupo--naranja">
+        <div>
+          <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-cruz"/></svg>Ejemplo incorrecto</h3>
+          <p>No se puede registrar una venta con un id_cliente que no exista en la tabla CLIENTES.</p>
+          <table class="tabla-ej">
+            <caption class="sr-only">Venta 104 con id_cliente 99</caption>
+            <thead>
+              <tr><th scope="col">id_venta</th><th scope="col">id_cliente</th><th scope="col">fecha</th><th scope="col">monto</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>104</td><td class="marca-celda">99</td><td>2026-01-20</td><td>180.00</td></tr>
+            </tbody>
+          </table>
+          <p class="veredicto"><strong>Error:</strong> el cliente con id_cliente = 99 no existe en la tabla CLIENTES.</p>
+        </div>
+      </li>
+      <li class="grupo grupo--ok">
+        <div>
+          <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-ok"/></svg>Ejemplo correcto</h3>
+          <p>La venta referencia un cliente que sí existe.</p>
+          <table class="tabla-ej">
+            <caption class="sr-only">Venta 104 con id_cliente 1</caption>
+            <thead>
+              <tr><th scope="col">id_venta</th><th scope="col">id_cliente</th><th scope="col">fecha</th><th scope="col">monto</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>104</td><td class="marca-celda">1</td><td>2026-01-20</td><td>180.00</td></tr>
+            </tbody>
+          </table>
+          <p class="veredicto"><strong>Correcto:</strong> el cliente con id_cliente = 1 existe en la tabla CLIENTES.</p>
+        </div>
+      </li>
+    </ul>
+
+    <div class="lado-a-lado lado-a-lado--ej lado-a-lado--sql-izq">
+      <section class="panel" aria-labelledby="s12">
+        <div class="panel__cab"><h3 class="subtitulo" id="s12">Ejemplo en SQL</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla ventas con su clave foránea">
+            <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">ventas</span> (</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">id_venta</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">id_cliente</span> <span class="t-fun">INT</span> <b>NOT NULL</b>,</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">fecha</span> <span class="t-fun">DATE</span>,</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">monto</span> <span class="t-fun">DECIMAL</span>(<span class="t-num">10</span>,<span class="t-num">2</span>),</span></li>
+            <li class="i1"><span class="pseudo__c"><b>FOREIGN KEY</b> (<span class="t-atr">id_cliente</span>) <b>REFERENCES</b> <span class="t-atr">clientes</span>(<span class="t-atr">id_cliente</span>)</span></li>
+            <li><span class="pseudo__c">);</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="i12">
+        <div class="panel__cab"><h3 class="subtitulo" id="i12">¿Por qué importa?</h3></div>
+        <ul class="ambitos importa">
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-tacho"/></svg><h4 class="tarjeta__tit">Evita registros huérfanos</h4><p>No hay ventas sin un cliente válido.</p></li>
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><h4 class="tarjeta__tit">Mantiene la consistencia</h4><p>Las relaciones entre tablas siempre tienen sentido.</p></li>
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-escudo"/></svg><h4 class="tarjeta__tit">Genera confianza en los datos</h4><p>La información es más confiable y de mejor calidad.</p></li>
+        </ul>
+      </section>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Una clave foránea solo puede tomar valores que existan en la clave primaria de la tabla relacionada.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 12">12</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 13 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-13" aria-labelledby="t13" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°4</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t13"><span class="tit__num">13.</span> Claves candidatas, alternativas y foráneas</h2>
+      <p class="tit__sub">Cómo se elige la clave de una tabla</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-llave"/></svg>
+      <p>Una <strong>clave candidata</strong> es el campo, o el grupo mínimo de campos, que identifica cada fila sin repetirse. Una tabla puede tener varias: de ellas se elige la <strong>clave primaria</strong>.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="e13">
+      <div class="panel__cab"><h3 class="subtitulo" id="e13">Ejemplo: la tabla ALUMNOS</h3></div>
+      <div class="claves-ej">
+        <table class="tabla-ej">
+          <caption>ALUMNOS</caption>
+          <thead>
+            <tr><th scope="col" class="grupo grupo--naranja">id_alumno</th><th scope="col" class="grupo">dni</th><th scope="col" class="grupo">email</th><th scope="col" class="neutro">nombre</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>47123456</td><td>ana<wbr>@mail.com</td><td>Ana</td></tr>
+            <tr><td>2</td><td>46987654</td><td>luis<wbr>@mail.com</td><td>Luis</td></tr>
+            <tr><td>3</td><td>47555111</td><td>ana.p<wbr>@mail.com</td><td>Ana</td></tr>
+          </tbody>
+        </table>
+        <p class="texto"><strong>nombre</strong> no es candidata: hay dos alumnas que se llaman Ana. Los otros tres campos no se repiten nunca.</p>
+      </div>
+
+      <div class="eleccion">
+        <div class="eleccion__caja grupo">
+          <h4>Claves candidatas</h4>
+          <ul class="campos" aria-label="Claves candidatas"><li>id_alumno</li><li>dni</li><li>email</li></ul>
+          <p>Cada una identifica a un alumno sin repetirse.</p>
+        </div>
+        <div class="eleccion__flecha"><span class="flecha" aria-hidden="true"></span><span>se elige una</span></div>
+        <div class="eleccion__caja grupo grupo--naranja">
+          <h4>Clave primaria</h4>
+          <ul class="campos" aria-label="Clave primaria"><li>id_alumno</li></ul>
+          <p>La candidata elegida.</p>
+        </div>
+        <div class="eleccion__caja grupo">
+          <h4>Claves alternativas</h4>
+          <ul class="campos" aria-label="Claves alternativas"><li>dni</li><li>email</li></ul>
+          <p>Las demás. Se aseguran con UNIQUE y NOT NULL (lámina 11).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="o13">
+      <div class="panel__cab"><h3 class="subtitulo" id="o13">Otras claves</h3></div>
+      <ul class="comun comun--2 otras-claves">
+        <li><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-cadena"/></svg><p><strong>Clave foránea</strong> Un campo que toma valores de la clave primaria de otra tabla, como id_cliente en VENTAS (lámina 12).</p></li>
+        <li><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-compuesta"/></svg><p><strong>Clave compuesta</strong> La que usa más de un campo, como id_alumno + id_curso en INSCRIPCIONES, la tabla intermedia del TP2: un alumno no se inscribe dos veces en el mismo curso.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> De las claves candidatas se elige una como primaria; las demás quedan como alternativas, con UNIQUE y NOT NULL.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 13">13</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°4</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 11</p>
+      <h3 class="pf__titulo" id="pf1">Cuando se rompe una restricción</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Si una fila no cumple una restricción, el gestor la <strong>rechaza</strong>: no la guarda y muestra un <strong>error</strong> con la regla que no se cumplió.</p>
+          <p>En <strong>MariaDB</strong>, el gestor de XAMPP, CHECK se aplica. MySQL lo ignoraba antes de la versión 8.0.16.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: la ficha de inscripción</h4>
+          <table class="tabla-ej">
+            <caption>FICHAS</caption>
+            <thead>
+              <tr><th scope="col">dni <span class="restr">(UNIQUE)</span></th><th scope="col">nombre <span class="restr">(NOT NULL)</span></th><th scope="col">curso <span class="restr">(DEFAULT)</span></th></tr>
+            </thead>
+            <tbody>
+              <tr><td>47123456</td><td>Ana</td><td>1.º A</td></tr>
+            </tbody>
+          </table>
+          <p>Ana se cargó sin curso: quedó en 1.º A, el valor por defecto. Otra ficha con el DNI 47123456 se rechaza:</p>
+          <p><code class="cod-sql cod-error">Duplicate entry '47123456' for key 'dni'</code> (valor repetido en dni).</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 12</p>
+      <h3 class="pf__titulo" id="pf2">Al borrar o modificar un registro</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>La clave foránea dice, después de REFERENCES, qué pasa con las ventas si se borra su cliente (<strong>ON DELETE</strong>) o si cambia su id (<strong>ON UPDATE</strong>):</p>
+          <ul class="pf__lista">
+            <li><strong>RESTRICT:</strong> no lo permite. Es la opción por defecto.</li>
+            <li><strong>CASCADE:</strong> hace lo mismo en las ventas.</li>
+            <li><strong>SET NULL:</strong> deja id_cliente vacío (NULL); el campo no puede ser NOT NULL.</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: se borra el cliente 2</h4>
+          <table class="tabla-comp">
+            <caption class="sr-only">Qué pasa con la venta 102, del cliente 2, al borrar ese cliente con cada opción</caption>
+            <thead>
+              <tr><th scope="col">Opción</th><th scope="col">La venta 102</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">RESTRICT</th><td>Error: el cliente no se borra</td></tr>
+              <tr><th scope="row">CASCADE</th><td>Se borra también</td></tr>
+              <tr><th scope="row">SET NULL</th><td>Queda con id_cliente NULL</td></tr>
+            </tbody>
+          </table>
+          <p>Con <code class="cod-sql">ON UPDATE CASCADE</code>, si el cliente 2 pasa a ser el 20, su venta también.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 13</p>
+      <h3 class="pf__titulo" id="pf3">¿Clave natural o artificial?</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Una clave <strong>natural</strong> es un dato que ya existe, como el DNI; una <strong>artificial</strong> se crea para la tabla, como id_alumno.</p>
+          <ul class="pf__lista">
+            <li><strong>Natural:</strong> tiene sentido fuera de la base y no suma un campo, pero puede faltar (un alumno extranjero sin DNI) o cargarse mal.</li>
+            <li><strong>Artificial:</strong> es corta, nunca cambia y no depende de los datos; es la más usada.</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Dos sentidos de “clave secundaria”</h4>
+          <p>En el diseño curricular y en muchos libros, es la <strong>clave foránea</strong>, la que relaciona tablas. En otros, es un campo por el que se busca seguido, como el apellido. En este cuadernillo se usa el primer sentido.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">La tabla ALUMNOS, completa</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Línea 2: clave primaria. Línea 3: clave alternativa. Líneas 4 a 6: NOT NULL, CHECK y DEFAULT. Línea 8: clave foránea; CURSOS tiene que existir antes.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: CREATE TABLE alumnos</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla alumnos con clave primaria, clave alternativa, NOT NULL, CHECK, DEFAULT y clave foránea">
+              <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">alumnos</span> (</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">id_alumno</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">dni</span> <span class="t-fun">INT</span> <b>NOT NULL UNIQUE</b>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">100</span>) <b>NOT NULL</b>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">edad</span> <span class="t-fun">INT</span> <b>CHECK</b> (<span class="t-atr">edad</span> &gt;= <span class="t-num">12</span>),</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">turno</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">10</span>) <b>DEFAULT</b> <span class="t-str">'mañana'</span>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">id_curso</span> <span class="t-fun">INT</span> <b>NOT NULL</b>,</span></li>
+              <li class="i1"><span class="pseudo__c"><b>FOREIGN KEY</b> (<span class="t-atr">id_curso</span>) <b>REFERENCES</b> <span class="t-atr">cursos</span>(<span class="t-atr">id_curso</span>)</span></li>
+              <li><span class="pseudo__c">);</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 4</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°4</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°4 — Claves y restricciones</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°4.</p>
+
+    <!-- Puntos 1 a 3: uno por lámina (1 y 2, del PDF; 3, nuevo) · Punto 4: caso nuevo -->
+    <ol class="acts acts--2col">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> Restricciones</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Observa la tabla de productos y di qué restricción corresponde a cada caso:
+            <ul class="act__frases">
+              <li>El campo nombre no puede estar vacío.</li>
+              <li>El campo categoria tiene un valor por defecto.</li>
+              <li>El campo precio debe ser mayor que 0.</li>
+            </ul></div></li>
+          <li><b class="act__letra">b)</b><div>Explica con tus palabras por qué es útil la restricción UNIQUE.</div></li>
+          <li><b class="act__letra">c)</b><div>Inventa un campo para una tabla (por ejemplo, usuarios o pedidos) que debería usar la restricción CHECK y escribe qué condición validarías.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> Integridad referencial</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Observa las tablas de CLIENTES y VENTAS de la lámina 12. ¿Cuáles de las ventas (101, 102, 103) son válidas? ¿Por qué?</div></li>
+          <li><b class="act__letra">b)</b><div>Si intentas registrar una venta con id_cliente = 99, ¿qué pasará? Explica.</div></li>
+          <li><b class="act__letra">c)</b><div>Escribe una instrucción SQL para crear la tabla VENTAS con su clave foránea que referencie a CLIENTES(id_cliente).</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> Claves candidatas, alternativas y foráneas</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>En la tabla ALUMNOS de la lámina 13, ¿por qué nombre no es una clave candidata?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué diferencia hay entre una clave alternativa y una clave foránea?</div></li>
+          <li><b class="act__letra">c)</b><div>En INSCRIPCIONES (TP2), ¿por qué id_alumno solo no alcanza para identificar cada fila? ¿Qué clave compuesta tiene?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Caso para analizar</h3>
+        <p class="act__caso">Un club guarda de cada socio: nro_socio, dni, email, nombre y telefono. Hay socios que se llaman igual, y los hermanos dan el teléfono de la casa.</p>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Cuáles son las claves candidatas? ¿Por qué nombre y telefono no lo son?</div></li>
+          <li><b class="act__letra">b)</b><div>Elegí la clave primaria y justificá tu elección.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué restricciones les ponés a las claves alternativas?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 4</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2 (consignas nuevas) =================== -->
+  <article class="lamina lamina--act" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°4</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la carpeta</h2>
+        <p>TP N°4 — Claves y restricciones</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <ol class="acts acts--amplio acts--ajustado" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Cuadro para completar</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Copiá y completá el cuadro: elegí una restricción para cada campo de la tabla PEDIDOS y explicá por qué.
+            <table class="act-tabla act-tabla--campos">
+              <caption class="sr-only">Campos de la tabla PEDIDOS, para completar con su restricción y el motivo</caption>
+              <thead><tr><th scope="col">Campo</th><th scope="col">Restricción</th><th scope="col">¿Por qué?</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">codigo_<wbr>seguimiento <span class="act-tabla__nota">el código para seguir el envío</span></th><td></td><td></td></tr>
+                <tr><th scope="row">id_cliente <span class="act-tabla__nota">el cliente que hizo el pedido</span></th><td></td><td></td></tr>
+                <tr><th scope="row">cantidad <span class="act-tabla__nota">las unidades pedidas</span></th><td></td><td></td></tr>
+                <tr><th scope="row">estado <span class="act-tabla__nota">pendiente, enviado o entregado (al crearse, pendiente)</span></th><td></td><td></td></tr>
+              </tbody>
+            </table></div></li>
+          <li><b class="act__letra">b)</b><div>Escribí el CREATE TABLE de PEDIDOS, con id_pedido como clave primaria.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué campo de PEDIDOS es una clave alternativa? ¿Por qué?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Encontrá el error</h3>
+        <p class="act__caso">En la tabla ALUMNOS de “Para profundizar” ya está Ana (id_alumno 1, DNI 47123456), y en CURSOS están los cursos 1, 2 y 3. Se quieren cargar estas cuatro filas:</p>
+        <table class="act-tabla act-tabla--datos act-tabla--filas">
+          <caption class="sr-only">Cuatro filas para cargar en la tabla ALUMNOS, con la restricción de cada campo</caption>
+          <thead><tr><th scope="col">id_<wbr>alumno <span class="restr">(PK)</span></th><th scope="col">dni <span class="restr">(NOT NULL, UNIQUE)</span></th><th scope="col">nombre <span class="restr">(NOT NULL)</span></th><th scope="col">edad <span class="restr">(CHECK edad &gt;= 12)</span></th><th scope="col">id_<wbr>curso <span class="restr">(FK a CURSOS)</span></th></tr></thead>
+          <tbody>
+            <tr><td>5</td><td>46222333</td><td>Sofía</td><td>16</td><td>7</td></tr>
+            <tr><td>6</td><td>47123456</td><td>Tomás</td><td>17</td><td>1</td></tr>
+            <tr><td>7</td><td>45111222</td><td><em>(vacío)</em></td><td>15</td><td>2</td></tr>
+            <tr><td>8</td><td>47999000</td><td>Lucía</td><td>9</td><td>3</td></tr>
+          </tbody>
+        </table>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Indicá qué restricción rompe cada fila: NOT NULL, UNIQUE, CHECK o clave foránea. ¿Qué hace el gestor con ellas?</div></li>
+          <li><b class="act__letra">b)</b><div>Cambiá un dato de cada fila para que se pueda cargar.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 4</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>
