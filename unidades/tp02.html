@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°2 — Modelo Entidad-Relación · Base de Datos II</title>
+  <meta name="description" content="TP N°2 de Base de Datos II: qué es un diagrama entidad-relación, cómo se lee y cómo se pasa a tablas. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#26C6D4">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="2" class="modulo-1">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-doc-der" viewBox="0 0 48 48">
+      <path d="M30 5H10v38h28V13z"/>
+      <path d="M30 5v8h8"/>
+      <path d="M18 22v4M22 22l7 7"/>
+      <rect x="14" y="14" width="8" height="8" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="14" y="26" width="8" height="8" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="27" y="29" width="8" height="8" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-der-tablas" viewBox="0 0 48 48">
+      <path d="M11 15l9 9-9 9-9-9z" style="fill:var(--ac)"/>
+      <path d="M21 24h5M24 21l3 3-3 3"/>
+      <path d="M29 13h16v6H29z" style="fill:var(--ac);stroke:none"/>
+      <rect x="28" y="12" width="18" height="24" rx="2"/>
+      <path d="M28 19h18M28 25.5h18M28 32h18M37 19v17"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-personas" viewBox="0 0 48 48">
+      <circle cx="10.5" cy="19" r="4"/>
+      <path d="M3 37c0-5 3.3-8.5 7.5-8.5 1.9 0 3.4.6 4.6 1.6"/>
+      <circle cx="37.5" cy="19" r="4"/>
+      <path d="M45 37c0-5-3.3-8.5-7.5-8.5-1.9 0-3.4.6-4.6 1.6"/>
+      <circle cx="24" cy="14" r="5.5" style="fill:var(--ac)"/>
+      <path d="M13.5 38c0-7 4.7-12 10.5-12s10.5 5 10.5 12z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-tabla" viewBox="0 0 48 48">
+      <path d="M7.3 11.3h33.4V17H7.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 17v21M30 17v21"/>
+    </symbol>
+    <symbol id="i-columna" viewBox="0 0 48 48">
+      <path d="M18 11.3h12v25.4H18z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 10v28M30 10v28"/>
+    </symbol>
+    <symbol id="i-doc" viewBox="0 0 48 48">
+      <path d="M30 43H11V5h18l9 9v19"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h16M16 30h10M16 36h6"/>
+      <circle cx="36" cy="38" r="5.5" style="fill:var(--ac)"/>
+      <circle cx="36" cy="38" r="1.8" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-llave" viewBox="0 0 48 48">
+      <path d="M22 20.5h21l2.5 3.5-2.5 3.5h-3l-2 3-2-3h-2l-2 3-2-3H22z" style="fill:var(--ac)"/>
+      <circle cx="14" cy="24" r="10" style="fill:var(--ac)"/>
+      <circle cx="11.5" cy="24" r="3" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-relaciones" viewBox="0 0 48 48">
+      <path d="M24 30V12M24 30 9 19M24 30l15-11"/>
+      <circle cx="24" cy="9.5" r="4.5" style="fill:var(--ac)"/>
+      <circle cx="8" cy="19" r="4.5" style="fill:#fff"/>
+      <circle cx="40" cy="19" r="4.5" style="fill:#fff"/>
+      <circle cx="24" cy="32" r="9" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-1n" viewBox="0 0 48 48">
+      <rect x="3" y="16" width="12" height="16" rx="2" style="fill:var(--ac)"/>
+      <rect x="33" y="16" width="12" height="16" rx="2" style="fill:#fff"/>
+      <path d="M15 24h18M20 18.5v11M26 24l7-6M26 24l7 6"/>
+    </symbol>
+    <symbol id="i-nm" viewBox="0 0 48 48">
+      <rect x="1.5" y="17" width="10" height="14" rx="2" style="fill:var(--ac)"/>
+      <rect x="18.5" y="15" width="11" height="18" rx="2" style="fill:#fff"/>
+      <rect x="36.5" y="17" width="10" height="14" rx="2" style="fill:var(--ac)"/>
+      <path d="M11.5 24h7M29.5 24h7M14.5 24l4-4.5M14.5 24l4 4.5M33.5 24l-4-4.5M33.5 24l-4 4.5"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°2 — Modelo Entidad-Relación</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°2">
+    <a href="#pag-4">4 · Introducción al DER</a>
+    <a href="#pag-5">5 · Interpretar un DER</a>
+    <a href="#pag-6">6 · Del DER a las tablas</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°2 — Modelo Entidad-Relación</h1>
+
+  <!-- =================== LÁMINA 4 (PDF pág. 15) =================== -->
+  <article class="lamina lamina--densa" id="pag-4" aria-labelledby="t4">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°2</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t4"><span class="tit__num">4.</span> Introducción al Diagrama Entidad-Relación</h2>
+      <p class="tit__sub">El plano visual de una base de datos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Un <strong>Diagrama Entidad-Relación (DER)</strong> es una forma gráfica de representar las entidades, sus atributos y las relaciones entre ellas antes de crear la base de datos.</p>
+    </div>
+
+    <ul class="reconocer reconocer--3">
+      <li class="tarjeta">
+        <h3 class="tarjeta__cab">ENTIDAD</h3>
+        <div class="reconocer__def">
+          <svg class="der-simbolo" viewBox="0 0 64 44" role="img" aria-label="Rectángulo, el símbolo de una entidad"><rect class="der__ent" x="3" y="5" width="58" height="34" rx="4"/></svg>
+          <p>Representa un objeto o concepto del mundo real sobre el que se almacenan datos.</p>
+        </div>
+        <p class="reconocer__ej"><strong>Ejemplo:</strong> ALUMNO</p>
+      </li>
+      <li class="tarjeta">
+        <h3 class="tarjeta__cab">ATRIBUTO</h3>
+        <div class="reconocer__def">
+          <svg class="der-simbolo" viewBox="0 0 64 44" role="img" aria-label="Elipse, el símbolo de un atributo"><ellipse class="der__atr" cx="32" cy="22" rx="29" ry="16"/></svg>
+          <p>Representa una característica o dato de una entidad.</p>
+        </div>
+        <p class="reconocer__ej"><strong>Ejemplo:</strong> nombre, fecha_nacimiento</p>
+      </li>
+      <li class="tarjeta">
+        <h3 class="tarjeta__cab">RELACIÓN</h3>
+        <div class="reconocer__def">
+          <svg class="der-simbolo" viewBox="0 0 64 44" role="img" aria-label="Rombo, el símbolo de una relación"><path class="der__rel" d="M32 2 62 22 32 42 2 22z"/></svg>
+          <p>Representa la asociación entre dos o más entidades.</p>
+        </div>
+        <p class="reconocer__ej"><strong>Ejemplo:</strong> se_inscribe en, imparte</p>
+      </li>
+  </ul>
+
+    <section class="panel" aria-labelledby="e4">
+      <div class="panel__cab"><h3 class="subtitulo" id="e4">Ejemplo de Diagrama Entidad-Relación</h3></div>
+      <div class="der-lienzo">
+        <!-- Pantalla ancha y A4 -->
+        <svg class="der der--ancho" viewBox="0 0 672 132" role="img" aria-label="Diagrama entidad-relación: la entidad ALUMNO, con los atributos id_alumno (subrayado, es el identificador), nombre y email, se vincula con la entidad CURSO, con los atributos id_curso (subrayado, es el identificador), nombre y creditos, mediante la relación INSCRIPCIÓN. Cardinalidad: N del lado de ALUMNO y N del lado de CURSO.">
+          <path class="der__linea" d="M102 20 128 53M102 66H128M102 112 128 79M228 66H266M406 66H444M544 53 570 20M544 66H570M544 79 570 112"/>
+          <ellipse class="der__atr" cx="52" cy="20" rx="50" ry="18"/>
+          <ellipse class="der__atr" cx="52" cy="66" rx="50" ry="18"/>
+          <ellipse class="der__atr" cx="52" cy="112" rx="50" ry="18"/>
+          <text class="der__id" x="52" y="25" text-anchor="middle">id_alumno</text>
+          <text x="52" y="71" text-anchor="middle">nombre</text>
+          <text x="52" y="117" text-anchor="middle">email</text>
+          <rect class="der__ent" x="128" y="43" width="100" height="46" rx="5"/>
+          <text class="der__nom" x="178" y="71" text-anchor="middle">ALUMNO</text>
+          <text class="der__card" x="247" y="57" text-anchor="middle">N</text>
+          <path class="der__rel" d="M336 32 406 66 336 100 266 66z"/>
+          <text class="der__nom" x="336" y="71" text-anchor="middle">INSCRIPCIÓN</text>
+          <text class="der__card" x="425" y="57" text-anchor="middle">N</text>
+          <rect class="der__ent" x="444" y="43" width="100" height="46" rx="5"/>
+          <text class="der__nom" x="494" y="71" text-anchor="middle">CURSO</text>
+          <ellipse class="der__atr" cx="620" cy="20" rx="50" ry="18"/>
+          <ellipse class="der__atr" cx="620" cy="66" rx="50" ry="18"/>
+          <ellipse class="der__atr" cx="620" cy="112" rx="50" ry="18"/>
+          <text class="der__id" x="620" y="25" text-anchor="middle">id_curso</text>
+          <text x="620" y="71" text-anchor="middle">nombre</text>
+          <text x="620" y="117" text-anchor="middle">creditos</text>
+        </svg>
+        <!-- Celular: el mismo diagrama, de arriba hacia abajo -->
+        <svg class="der der--angosto" viewBox="0 0 320 358" role="img" aria-label="Diagrama entidad-relación: la entidad ALUMNO, con los atributos id_alumno (subrayado, es el identificador), nombre y email, se vincula con la entidad CURSO, con los atributos id_curso (subrayado, es el identificador), nombre y creditos, mediante la relación INSCRIPCIÓN. Cardinalidad: N del lado de ALUMNO y N del lado de CURSO.">
+          <path class="der__linea" d="M55 39 130 64M160 39V64M265 39 190 64M160 106V142M160 218V254M130 296 55 321M160 296V321M190 296 265 321"/>
+          <ellipse class="der__atr" cx="55" cy="22" rx="50" ry="17"/>
+          <ellipse class="der__atr" cx="160" cy="22" rx="50" ry="17"/>
+          <ellipse class="der__atr" cx="265" cy="22" rx="50" ry="17"/>
+          <text class="der__id" x="55" y="27" text-anchor="middle">id_alumno</text>
+          <text x="160" y="27" text-anchor="middle">nombre</text>
+          <text x="265" y="27" text-anchor="middle">email</text>
+          <rect class="der__ent" x="105" y="64" width="110" height="42" rx="5"/>
+          <text class="der__nom" x="160" y="90" text-anchor="middle">ALUMNO</text>
+          <text class="der__card" x="174" y="129">N</text>
+          <path class="der__rel" d="M160 142 240 180 160 218 80 180z"/>
+          <text class="der__nom" x="160" y="185" text-anchor="middle">INSCRIPCIÓN</text>
+          <text class="der__card" x="174" y="241">N</text>
+          <rect class="der__ent" x="105" y="254" width="110" height="42" rx="5"/>
+          <text class="der__nom" x="160" y="280" text-anchor="middle">CURSO</text>
+          <ellipse class="der__atr" cx="55" cy="338" rx="50" ry="17"/>
+          <ellipse class="der__atr" cx="160" cy="338" rx="50" ry="17"/>
+          <ellipse class="der__atr" cx="265" cy="338" rx="50" ry="17"/>
+          <text class="der__id" x="55" y="343" text-anchor="middle">id_curso</text>
+          <text x="160" y="343" text-anchor="middle">nombre</text>
+          <text x="265" y="343" text-anchor="middle">creditos</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="s4">
+      <div class="panel__cab"><h3 class="subtitulo" id="s4">¿Para qué sirve?</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><h4 class="tarjeta__cab">Planificar la estructura</h4><p>Ayuda a organizar los datos antes de implementar la base de datos.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><h4 class="tarjeta__cab">Evitar duplicación</h4><p>Permite identificar datos repetidos y mejorar el diseño.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-personas"/></svg><h4 class="tarjeta__cab">Comunicar el diseño</h4><p>Es un lenguaje visual fácil de entender para todo el equipo.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__cab">Detectar relaciones</h4><p>Facilita encontrar cómo se conectan los datos entre entidades.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Un DER funciona como un plano o esquema de la base de datos antes de escribir el código SQL.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 4">4</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 5 (PDF pág. 16) =================== -->
+  <article class="lamina lamina--densa" id="pag-5" aria-labelledby="t5">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°2</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t5"><span class="tit__num">5.</span> Cómo interpretar un DER</h2>
+      <p class="tit__sub">Leer entidades, atributos y relaciones</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-doc-der"/></svg>
+      <p>Para leer un Diagrama Entidad-Relación (DER) debes identificar primero las <strong>entidades</strong>, luego sus <strong>atributos</strong>, después las <strong>claves</strong> y finalmente las <strong>relaciones</strong> y su cardinalidad.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="e5">
+      <div class="panel__cab"><h3 class="subtitulo" id="e5">Ejemplo de DER</h3></div>
+      <div class="der-lienzo">
+        <!-- Pantalla ancha y A4 -->
+        <svg class="der der--ancho" viewBox="0 0 672 156" role="img" aria-label="DER en notación pata de gallo. CLIENTE: id_cliente (PK), nombre, email, telefono y direccion. PEDIDO: id_pedido (PK), id_cliente (FK), fecha, total y estado. PRODUCTO: id_producto (PK), nombre, precio, stock y categoria. Entre CLIENTE y PEDIDO, relación 1 : N, con una raya del lado de CLIENTE y pata de gallo del lado de PEDIDO: un cliente puede tener muchos pedidos. Entre PEDIDO y PRODUCTO, relación N : M, con pata de gallo de los dos lados: un pedido puede tener muchos productos y un producto puede estar en muchos pedidos.">
+          <path class="der__linea" d="M152 72H261M163 63v18M243 72 261 63M243 72 261 81M411 72H520M429 72 411 63M429 72 411 81M502 72 520 63M502 72 520 81"/>
+          <text class="der__card" x="206.5" y="60" text-anchor="middle">1 : N</text>
+          <text class="der__nota" text-anchor="middle"><tspan x="206.5" y="92">Un cliente</tspan><tspan x="206.5" y="105">puede tener</tspan><tspan x="206.5" y="118">muchos pedidos</tspan></text>
+          <text class="der__card" x="465.5" y="60" text-anchor="middle">N : M</text>
+          <text class="der__nota" text-anchor="middle"><tspan x="465.5" y="88">Un pedido puede</tspan><tspan x="465.5" y="100.5">tener muchos</tspan><tspan x="465.5" y="113">productos y un</tspan><tspan x="465.5" y="125.5">producto puede</tspan><tspan x="465.5" y="138">estar en muchos</tspan><tspan x="465.5" y="150.5">pedidos</tspan></text>
+
+          <rect class="der__caja" x="2" y="2" width="150" height="152" rx="8"/>
+          <path class="der__caja-cab" d="M10 2h134a8 8 0 0 1 8 8v22H2V10a8 8 0 0 1 8-8z"/>
+          <text class="der__nom" x="77" y="23" text-anchor="middle">CLIENTE</text>
+          <rect class="der__pk" x="12" y="42" width="26" height="17" rx="4"/><text class="der__etq" x="25" y="54.5" text-anchor="middle">PK</text>
+          <text class="der__clave" x="46" y="55">id_cliente</text>
+          <text x="46" y="77">nombre</text>
+          <text x="46" y="99">email</text>
+          <text x="46" y="121">telefono</text>
+          <text x="46" y="143">direccion</text>
+
+          <rect class="der__caja" x="261" y="2" width="150" height="152" rx="8"/>
+          <path class="der__caja-cab" d="M269 2h134a8 8 0 0 1 8 8v22H261V10a8 8 0 0 1 8-8z"/>
+          <text class="der__nom" x="336" y="23" text-anchor="middle">PEDIDO</text>
+          <rect class="der__pk" x="271" y="42" width="26" height="17" rx="4"/><text class="der__etq" x="284" y="54.5" text-anchor="middle">PK</text>
+          <text class="der__clave" x="305" y="55">id_pedido</text>
+          <rect class="der__fk" x="271" y="64" width="26" height="17" rx="4"/><text class="der__etq" x="284" y="76.5" text-anchor="middle">FK</text>
+          <text class="der__clave" x="305" y="77">id_cliente</text>
+          <text x="305" y="99">fecha</text>
+          <text x="305" y="121">total</text>
+          <text x="305" y="143">estado</text>
+
+          <rect class="der__caja" x="520" y="2" width="150" height="152" rx="8"/>
+          <path class="der__caja-cab" d="M528 2h134a8 8 0 0 1 8 8v22H520V10a8 8 0 0 1 8-8z"/>
+          <text class="der__nom" x="595" y="23" text-anchor="middle">PRODUCTO</text>
+          <rect class="der__pk" x="530" y="42" width="26" height="17" rx="4"/><text class="der__etq" x="543" y="54.5" text-anchor="middle">PK</text>
+          <text class="der__clave" x="564" y="55">id_producto</text>
+          <text x="564" y="77">nombre</text>
+          <text x="564" y="99">precio</text>
+          <text x="564" y="121">stock</text>
+          <text x="564" y="143">categoria</text>
+        </svg>
+        <!-- Celular: el mismo diagrama, de arriba hacia abajo -->
+        <svg class="der der--angosto" viewBox="0 0 320 670" role="img" aria-label="DER en notación pata de gallo. CLIENTE: id_cliente (PK), nombre, email, telefono y direccion. PEDIDO: id_pedido (PK), id_cliente (FK), fecha, total y estado. PRODUCTO: id_producto (PK), nombre, precio, stock y categoria. Entre CLIENTE y PEDIDO, relación 1 : N, con una raya del lado de CLIENTE y pata de gallo del lado de PEDIDO: un cliente puede tener muchos pedidos. Entre PEDIDO y PRODUCTO, relación N : M, con pata de gallo de los dos lados: un pedido puede tener muchos productos y un producto puede estar en muchos pedidos.">
+          <path class="der__linea" d="M160 164V244M151 176h18M160 226 151 244M160 226 169 244M160 406V506M160 424 151 406M160 424 169 406M160 488 151 506M160 488 169 506"/>
+          <text class="der__card" x="176" y="198">1 : N</text>
+          <text class="der__nota"><tspan x="176" y="214">Un cliente puede tener</tspan><tspan x="176" y="228">muchos pedidos</tspan></text>
+          <text class="der__card" x="176" y="434">N : M</text>
+          <text class="der__nota"><tspan x="176" y="450">Un pedido puede tener</tspan><tspan x="176" y="464">muchos productos y un</tspan><tspan x="176" y="478">producto puede estar</tspan><tspan x="176" y="492">en muchos pedidos</tspan></text>
+
+          <rect class="der__caja" x="60" y="2" width="200" height="162" rx="8"/>
+          <path class="der__caja-cab" d="M68 2h184a8 8 0 0 1 8 8v22H60V10a8 8 0 0 1 8-8z"/>
+          <text class="der__nom" x="160" y="23" text-anchor="middle">CLIENTE</text>
+          <rect class="der__pk" x="70" y="42" width="26" height="17" rx="4"/><text class="der__etq" x="83" y="54.5" text-anchor="middle">PK</text>
+          <text class="der__clave" x="104" y="55">id_cliente</text>
+          <text x="104" y="79">nombre</text>
+          <text x="104" y="103">email</text>
+          <text x="104" y="127">telefono</text>
+          <text x="104" y="151">direccion</text>
+
+          <rect class="der__caja" x="60" y="244" width="200" height="162" rx="8"/>
+          <path class="der__caja-cab" d="M68 244h184a8 8 0 0 1 8 8v22H60v-22a8 8 0 0 1 8-8z"/>
+          <text class="der__nom" x="160" y="265" text-anchor="middle">PEDIDO</text>
+          <rect class="der__pk" x="70" y="284" width="26" height="17" rx="4"/><text class="der__etq" x="83" y="296.5" text-anchor="middle">PK</text>
+          <text class="der__clave" x="104" y="297">id_pedido</text>
+          <rect class="der__fk" x="70" y="308" width="26" height="17" rx="4"/><text class="der__etq" x="83" y="320.5" text-anchor="middle">FK</text>
+          <text class="der__clave" x="104" y="321">id_cliente</text>
+          <text x="104" y="345">fecha</text>
+          <text x="104" y="369">total</text>
+          <text x="104" y="393">estado</text>
+
+          <rect class="der__caja" x="60" y="506" width="200" height="162" rx="8"/>
+          <path class="der__caja-cab" d="M68 506h184a8 8 0 0 1 8 8v22H60v-22a8 8 0 0 1 8-8z"/>
+          <text class="der__nom" x="160" y="527" text-anchor="middle">PRODUCTO</text>
+          <rect class="der__pk" x="70" y="546" width="26" height="17" rx="4"/><text class="der__etq" x="83" y="558.5" text-anchor="middle">PK</text>
+          <text class="der__clave" x="104" y="559">id_producto</text>
+          <text x="104" y="583">nombre</text>
+          <text x="104" y="607">precio</text>
+          <text x="104" y="631">stock</text>
+          <text x="104" y="655">categoria</text>
+        </svg>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="p5">
+      <div class="panel__cab"><h3 class="subtitulo" id="p5">Pasos para interpretar un DER</h3></div>
+      <ol class="secuencia secuencia--suelta pasos-der">
+        <li class="paso"><h4><span class="paso__n">1</span>Identificar entidades</h4><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><p>Busca los rectángulos del diagrama. Cada uno representa una entidad (por ejemplo: CLIENTE, PEDIDO, PRODUCTO).</p></li>
+        <li class="paso"><h4><span class="paso__n">2</span>Leer atributos</h4><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc"/></svg><p>Dentro de cada entidad aparecen sus atributos (campos) con sus nombres y tipos de información (por ejemplo: <em>nombre, fecha, precio</em>).</p></li>
+        <li class="paso"><h4><span class="paso__n">3</span>Reconocer claves</h4><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-llave"/></svg><p>Identifica la clave primaria (PK) de cada entidad y las claves foráneas (FK) que relacionan entidades (por ejemplo: id_cliente en PEDIDO).</p></li>
+        <li class="paso"><h4><span class="paso__n">4</span>Observar cardinalidad</h4><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-relaciones"/></svg><p>Revisa los símbolos y números de cardinalidad (1:1, 1:N, N:M) para entender cuántos registros de una entidad se relacionan con otra.</p></li>
+      </ol>
+    </section>
+
+    <section class="panel panel--fila" aria-labelledby="l5">
+      <div class="panel__cab"><h3 class="subtitulo" id="l5">Leyenda</h3></div>
+      <ul class="comun comun--2">
+        <li><span class="clave clave--grande">PK</span><p><strong>Clave Primaria (Primary Key)</strong> Identifica de forma única cada registro de una entidad.</p></li>
+        <li><span class="clave clave--fk clave--grande">FK</span><p><strong>Clave Foránea (Foreign Key)</strong> Referencia la clave primaria de otra entidad.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Un DER muestra la estructura de los datos (entidades, atributos y relaciones), no los valores reales de los datos.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 5">5</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 6 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina" id="pag-6" aria-labelledby="t6" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°2</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t6"><span class="tit__num">6.</span> Del DER a las tablas</h2>
+      <p class="tit__sub">Cómo se pasa el diagrama a la base de datos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-der-tablas"/></svg>
+      <p>Para construir la base de datos, cada parte del DER se convierte en una <strong>tabla</strong>, una <strong>columna</strong> o una <strong>clave</strong>.</p>
+    </div>
+
+    <ol class="secuencia secuencia--linea" aria-label="Reglas para pasar un DER a tablas">
+      <li class="paso"><h3>Entidad</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><p>Cada entidad, una <strong>tabla</strong>.</p></li>
+      <li class="paso"><h3>Atributo</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-columna"/></svg><p>Cada atributo, una <strong>columna</strong>.</p></li>
+      <li class="paso"><h3>Identificador</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-llave"/></svg><p>El identificador, la <strong>clave primaria</strong> (PK).</p></li>
+      <li class="paso"><h3>Relación 1:N</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-1n"/></svg><p>La <strong>clave foránea</strong> (FK) va en la tabla del lado N.</p></li>
+      <li class="paso"><h3>Relación N:M</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-nm"/></svg><p>Una <strong>tabla intermedia</strong> con las dos claves foráneas.</p></li>
+    </ol>
+
+    <section class="panel" aria-labelledby="e6">
+      <div class="panel__cab"><h3 class="subtitulo" id="e6">Ejemplo: el DER de la lámina 4, en tablas</h3></div>
+      <p class="texto"><strong>ALUMNO</strong> y <strong>CURSO</strong> son entidades: cada una es una tabla (por costumbre, con el nombre en plural). <strong>INSCRIPCIÓN</strong> es una relación N:M: se convierte en una tabla intermedia, con una clave foránea hacia cada entidad.</p>
+      <div class="der-tablas">
+        <table class="tabla-ej grupo">
+          <caption>ALUMNOS</caption>
+          <thead>
+            <tr><th scope="col"><span class="clave">PK</span>id_alumno</th><th scope="col">nombre</th><th scope="col">email</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>ana@mail.com</td></tr>
+            <tr><td>2</td><td>Luis</td><td>luis@mail.com</td></tr>
+            <tr><td>3</td><td>Marta</td><td>marta@mail.com</td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej grupo grupo--naranja">
+          <caption>INSCRIPCIONES</caption>
+          <thead>
+            <tr><th scope="col"><span class="clave">PK</span>id_inscripcion</th><th scope="col"><span class="clave clave--fk">FK</span>id_alumno</th><th scope="col"><span class="clave clave--fk">FK</span>id_curso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>101</td></tr>
+            <tr><td>2</td><td>2</td><td>102</td></tr>
+            <tr><td>3</td><td>1</td><td>102</td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej grupo">
+          <caption>CURSOS</caption>
+          <thead>
+            <tr><th scope="col"><span class="clave">PK</span>id_curso</th><th scope="col">nombre</th><th scope="col">creditos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>101</td><td>Matemática</td><td>4</td></tr>
+            <tr><td>102</td><td>Historia</td><td>3</td></tr>
+            <tr><td>103</td><td>Inglés</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="texto">Son las tres tablas de la lámina 3. Cada fila de INSCRIPCIONES une un alumno con un curso: Ana (1) está inscripta en Matemática (101) y en Historia (102).</p>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Cada entidad es una tabla; cada relación, una clave foránea o, si es N:M, una tabla intermedia.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 6">6</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°2</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 4</p>
+      <h3 class="pf__titulo" id="pf1">La notación de Chen</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Peter Chen propuso el modelo entidad-relación en 1976. Los símbolos de la lámina 4 son los de su notación.</p>
+          <p>El <strong>atributo identificador</strong>, el que distingue a cada ejemplar, va <strong>subrayado</strong>. Y cada relación se nombra con un <strong>verbo</strong>: “un alumno <em>se inscribe en</em> un curso”.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: una biblioteca</h4>
+          <svg class="der der--pf" viewBox="0 0 300 120" role="img" aria-label="Diagrama en notación de Chen: la entidad SOCIO, con los atributos id_socio (subrayado) y nombre, se vincula con la entidad LIBRO, con los atributos id_libro (subrayado) y titulo, mediante la relación pide prestado. Cardinalidad: N del lado de SOCIO y M del lado de LIBRO.">
+            <path class="der__linea" d="M41 28V44M41 76V92M259 28V44M259 76V92M76 60H94M206 60H224"/>
+            <ellipse class="der__atr" cx="41" cy="16" rx="38" ry="12"/>
+            <ellipse class="der__atr" cx="41" cy="104" rx="38" ry="12"/>
+            <ellipse class="der__atr" cx="259" cy="16" rx="38" ry="12"/>
+            <ellipse class="der__atr" cx="259" cy="104" rx="38" ry="12"/>
+            <text class="der__id" x="41" y="20" text-anchor="middle">id_socio</text>
+            <text x="41" y="108" text-anchor="middle">nombre</text>
+            <text class="der__id" x="259" y="20" text-anchor="middle">id_libro</text>
+            <text x="259" y="108" text-anchor="middle">titulo</text>
+            <rect class="der__ent" x="6" y="44" width="70" height="32" rx="4"/>
+            <text class="der__nom" x="41" y="65" text-anchor="middle">SOCIO</text>
+            <text class="der__card" x="85" y="53" text-anchor="middle">N</text>
+            <path class="der__rel" d="M150 34 206 60 150 86 94 60z"/>
+            <text class="der__card" x="150" y="64" text-anchor="middle">pide prestado</text>
+            <text class="der__card" x="215" y="53" text-anchor="middle">M</text>
+            <rect class="der__ent" x="224" y="44" width="70" height="32" rx="4"/>
+            <text class="der__nom" x="259" y="65" text-anchor="middle">LIBRO</text>
+          </svg>
+          <p>Se lee: un socio pide prestados muchos libros, y un libro lo piden prestado muchos socios.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 5</p>
+      <h3 class="pf__titulo" id="pf2">La notación pata de gallo</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Es la de la lámina 5. La cantidad se dibuja en cada punta de la línea, junto a la entidad a la que se refiere:</p>
+          <ul class="simbolos">
+            <li><svg class="pata" viewBox="0 0 44 20" aria-hidden="true" focusable="false"><path class="der__linea" d="M1 10H32M26 3v14"/><rect class="der__ent" x="32" y="3" width="11" height="14" rx="2"/></svg><span><strong>Uno:</strong> una raya.</span></li>
+            <li><svg class="pata" viewBox="0 0 44 20" aria-hidden="true" focusable="false"><path class="der__linea" d="M1 10H32M22 10 32 3M22 10 32 17"/><rect class="der__ent" x="32" y="3" width="11" height="14" rx="2"/></svg><span><strong>Muchos:</strong> la pata de gallo.</span></li>
+            <li><svg class="pata" viewBox="0 0 44 20" aria-hidden="true" focusable="false"><path class="der__linea" d="M1 10H9M17 10H32M22 10 32 3M22 10 32 17"/><circle class="der__atr" cx="13" cy="10" r="4"/><rect class="der__ent" x="32" y="3" width="11" height="14" rx="2"/></svg><span><strong>Opcional:</strong> un círculo; puede haber cero.</span></li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Cuadro de equivalencias</h4>
+          <table class="tabla-comp">
+            <caption class="sr-only">Cómo se dibuja cada elemento en la notación de Chen y en la notación pata de gallo</caption>
+            <thead>
+              <tr><th scope="col">Elemento</th><th scope="col">Chen</th><th scope="col">Pata de gallo</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Entidad</th><td>rectángulo</td><td>caja</td></tr>
+              <tr><th scope="row">Atributo</th><td>elipse</td><td>renglón</td></tr>
+              <tr><th scope="row">Identificador</th><td>subrayado</td><td>PK</td></tr>
+              <tr><th scope="row">Relación</th><td>rombo</td><td>línea</td></tr>
+              <tr><th scope="row">Cantidad</th><td>1, N o M</td><td>raya o pata</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 6</p>
+      <h3 class="pf__titulo" id="pf3">¿Por qué una tabla intermedia?</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Una clave foránea guarda un solo valor por fila. Si id_curso fuera una columna de ALUMNOS, cada alumno podría estar en un solo curso.</p>
+          <p>La tabla intermedia guarda una fila por cada par alumno–curso. Y puede tener <strong>atributos propios</strong>: datos que no son del alumno ni del curso, sino de la inscripción.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: INSCRIPCIONES, con fecha y nota</h4>
+          <table class="tabla-ej grupo grupo--naranja">
+            <caption>INSCRIPCIONES</caption>
+            <thead>
+              <tr><th scope="col">id_<wbr>inscripcion</th><th scope="col">id_<wbr>alumno</th><th scope="col">id_<wbr>curso</th><th scope="col">fecha</th><th scope="col">nota</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>1</td><td>101</td><td>03/03</td><td>8</td></tr>
+              <tr><td>2</td><td>2</td><td>102</td><td>03/03</td><td>7</td></tr>
+              <tr><td>3</td><td>1</td><td>102</td><td>05/03</td><td>6</td></tr>
+            </tbody>
+          </table>
+          <p>El 6 no es la nota de Ana ni la de Historia: es la nota de Ana en Historia.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">De un enunciado a un DER</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>En el texto se marcan tres tipos de palabras:</p>
+          <ul class="pf__lista">
+            <li><strong>Sustantivos:</strong> candidatos a entidades.</li>
+            <li><strong>Verbos:</strong> candidatos a relaciones.</li>
+            <li><strong>Características</strong> de cada cosa: atributos.</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: un club deportivo</h4>
+          <p class="pf__enunciado">En un club, cada socio tiene número, nombre y teléfono, y se anota en actividades (nombre, día y cuota). Cada actividad la da un profesor, que puede dar varias.</p>
+          <ul class="pf__lista">
+            <li><strong>Entidades:</strong> SOCIO, ACTIVIDAD y PROFESOR. “Club” no: es todo el sistema.</li>
+            <li><strong>Relaciones:</strong> SOCIO <em>se anota en</em> ACTIVIDAD (N:M); PROFESOR <em>da</em> ACTIVIDAD (1:N).</li>
+            <li><strong>Atributos:</strong> número, nombre, teléfono, día y cuota.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 2</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°2</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°2 — Modelo Entidad-Relación</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°2.</p>
+
+    <!-- Puntos 1 a 3: uno por lámina (1 y 2, del PDF; 3, nuevo) · Punto 4: caso nuevo -->
+    <ol class="acts acts--2col">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> Introducción al DER</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Identifica las entidades que aparecen en el ejemplo de DER de la lámina 4.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribe dos atributos que podría tener la entidad DOCENTE.</div></li>
+          <li><b class="act__letra">c)</b><div>Dibuja un diagrama entidad-relación simple para las entidades CLIENTE y PEDIDO (incluye al menos un atributo en cada entidad y la relación entre ellas).</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> Cómo interpretar un DER</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Cuál es la clave primaria de la entidad PEDIDO?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué campo conecta la entidad PEDIDO con la entidad CLIENTE?</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus propias palabras qué significa una relación 1:N.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> Del DER a las tablas</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿En qué se convierte cada entidad? ¿Y cada atributo?</div></li>
+          <li><b class="act__letra">b)</b><div>En una relación 1:N, ¿en qué tabla va la clave foránea?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Por qué INSCRIPCIONES tiene dos claves foráneas?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Caso para analizar</h3>
+        <p class="act__caso">Una escuela de música guarda de cada profesor el DNI, el nombre y el instrumento que enseña, y de cada alumno, el DNI, el nombre y el teléfono. Cada alumno toma clases con un solo profesor; un profesor tiene muchos alumnos.</p>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Cuáles son las entidades? ¿Y los atributos de cada una?</div></li>
+          <li><b class="act__letra">b)</b><div>Dibujá el DER con la notación de Chen. Subrayá los identificadores.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué cardinalidad tiene la relación? ¿Por qué?</div></li>
+          <li><b class="act__letra">d)</b><div>Pasá el DER a tablas. Marcá la PK y la FK.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 2</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2 (consignas nuevas) =================== -->
+  <article class="lamina lamina--act" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°2</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la carpeta</h2>
+        <p>TP N°2 — Modelo Entidad-Relación</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <ol class="acts acts--amplio" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Cuadro para completar</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Copiá y completá el cuadro con el DER de la lámina 5.
+            <table class="act-tabla">
+              <caption class="sr-only">Entidades del DER de la lámina 5, para completar</caption>
+              <thead><tr><th scope="col">Entidad</th><th scope="col">Clave primaria</th><th scope="col">Clave foránea</th><th scope="col">Se relaciona con (cardinalidad)</th></tr></thead>
+              <tbody>
+                <tr><th scope="row">CLIENTE</th><td></td><td></td><td></td></tr>
+                <tr><th scope="row">PEDIDO</th><td></td><td></td><td></td></tr>
+                <tr><th scope="row">PRODUCTO</th><td></td><td></td><td></td></tr>
+              </tbody>
+            </table></div></li>
+          <li><b class="act__letra">b)</b><div>Pasá ese DER a tablas: escribí el nombre y las columnas de cada una. ¿Qué tabla nueva aparece?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> La biblioteca</h3>
+        <p class="act__caso">Lucía y Tomás pasan a tablas el DER de la biblioteca de “Para profundizar” (SOCIO pide prestado LIBRO). Lucía agrega la columna id_libro a la tabla SOCIOS. Tomás arma una tabla PRESTAMOS, con id_socio e id_libro.</p>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué pasa con la propuesta de Lucía si un socio pide tres libros?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Cuál de las dos propuestas sigue las reglas de la lámina 6? Justificá.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué atributos propios le agregarías a PRESTAMOS?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 2</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>
