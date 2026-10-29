@@ -31,7 +31,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | 3 | UML y otros modelos | ✅ Disponible |
 | **Módulo 2 · Diseño de bases de datos** | | |
 | 4 | Claves y restricciones | ✅ Disponible |
-| 5 | Normalización | Próximamente |
+| 5 | Normalización | ✅ Disponible |
 | Integrador 1 | La tienda, de nuevo | Próximamente |
 | **Módulo 3 · Lenguajes de consulta** | | |
 | 6 | Del álgebra relacional a SQL | Próximamente |

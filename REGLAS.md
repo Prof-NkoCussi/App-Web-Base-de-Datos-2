@@ -117,6 +117,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 | 7 | TP3 | La actividad 1 dice "Marcá cuáles ejemplos usarían una base relacional y cuáles una NoSQL", pero la lámina ya marca el tipo de cada ejemplo | "Para cada ejemplo, explicá por qué usaría una base relacional o una NoSQL." |
 | 15 | TP2 | En el ejemplo de DER, `id_alumno` está subrayado (identificador) y `id_curso` no | Subrayar también `id_curso`. |
 | 16 | TP2 | La relación PEDIDO–PRODUCTO dice `1 : N`, con pata de gallo solo del lado de PEDIDO, y "Un producto puede estar en muchos pedidos" | `N : M`, con pata de gallo de los dos lados, y "Un pedido puede tener muchos productos y un producto puede estar en muchos pedidos". |
+| 20 | TP5 | En "Después de normalizar", la tabla CURSOS no tiene la columna profesor: ese dato se pierde | CURSOS suma la columna profesor: 10 Matemáticas López · 11 Historia Pérez · 12 Inglés Torres. |
 | 22 | Integrador 1 | El diagrama del Paso 3 dice `DETALLE_VENTA 1:N PRODUCTOS` (al revés) | `PRODUCTOS 1:N DETALLE_VENTA`: el "1" del lado de PRODUCTOS y la "N" del lado de DETALLE_VENTA. El texto de abajo ya está bien. |
 | 31 | TP9 | El ejemplo de OR dice `'Resario'` | `'Rosario'` |
 | 32 | TP9 | `LIKE 'Lap%'` devuelve "Lápiz". En MariaDB (XAMPP, cotejamiento `utf8mb4_general_ci`) es correcto porque ignora tildes; en SQLite (consola web) no lo trae | La lámina queda igual. En "Para profundizar" va una nota: el resultado de `LIKE` con tildes y mayúsculas depende del gestor y del cotejamiento. |

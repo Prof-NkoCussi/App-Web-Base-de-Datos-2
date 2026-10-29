@@ -910,6 +910,99 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
 .act-tabla--filas thead th { vertical-align: bottom; }
 
 /* ==========================================================
+   De 6.º (TP5): redundancia, normalización, dependencias y formas normales
+   ========================================================== */
+/* Cinco tarjetas (Problemas que causa): de a dos en el celular, la última a lo ancho */
+.ambitos--5 .tarjeta:last-child { grid-column: 1 / -1; }
+.problemas .tarjeta, .sirve .tarjeta { gap: 6px; padding: 8px 6px 10px; }
+
+/* Antes → después con una flecha en el medio (lámina 14): uno debajo del otro en el celular */
+.redundancia { display: grid; gap: 10px; }
+.redundancia > .flecha { justify-self: center; }
+.tabla-ej .caption__nota { font-size: .72em; letter-spacing: 0; font-weight: 600; }
+/* Celda que repite un dato de otra fila */
+.tabla-ej .repite { background: var(--naranja-claro); box-shadow: inset 0 0 0 2px var(--naranja); }
+/* Aviso con ícono al pie de un ejemplo, en el color de su grupo */
+.aviso {
+  display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; margin-top: 10px;
+  background: var(--grupo-claro); border-radius: 8px; padding: 8px 12px; box-shadow: inset 4px 0 0 var(--grupo);
+}
+.aviso .ico { width: 34px; height: 34px; }
+.aviso p { font-size: 15.5px; line-height: 1.35; }
+/* Tabla con una nota al costado (en el celular, debajo) */
+.tabla-nota { display: grid; gap: 6px; align-items: center; }
+.tabla-nota + .tabla-nota { margin-top: 10px; }
+.tabla-nota__txt { background: var(--acento-suave); border-radius: 8px; padding: 8px 10px; font-size: 15px; line-height: 1.3; }
+.redundancia .tabla-ej, .normalizar .tabla-ej, .forma .tabla-ej { table-layout: auto; font-size: 14px; }
+
+/* ¿Cómo funciona?: número y título, texto e ilustración, uno debajo del otro */
+.pasos-norm .paso { grid-template-columns: 1fr; grid-template-areas: "tit" "txt" "ico"; text-align: left; background: var(--blanco); row-gap: 6px; }
+.ilus { grid-area: ico; justify-self: center; width: 100%; max-width: 220px; height: auto; margin-top: 4px; }
+.ilus__marco { fill: none; stroke: var(--tinta); stroke-width: 2; }
+.ilus__cab { fill: var(--acento); }
+.ilus__lineas { fill: none; stroke: var(--tinta); stroke-width: 1; }
+.ilus__union { fill: none; stroke: var(--tinta); stroke-width: 1.6; }
+.ilus__nodo { fill: var(--acento); stroke: var(--tinta); stroke-width: 1.4; }
+
+/* Antes de normalizar (naranja) y después (verde); varias tablas una al lado de la otra */
+.tablas-fila { display: flex; flex-wrap: wrap; gap: 0 8px; align-items: flex-start; }
+.tablas-fila .tabla-ej { width: auto; }
+.veredicto--ico { display: flex; align-items: center; gap: 8px; }
+.veredicto--ico .ico { width: 26px; height: 26px; }
+.comparar--ej h4 { font-size: 21px; }
+
+/* Dependencias funcionales: la dependencia en una etiqueta y lo que significa */
+.dfs { display: grid; gap: 8px; }
+.dfs li { display: grid; gap: 6px; align-content: start; background: var(--blanco); border-radius: 8px; padding: 10px 12px; }
+.df { justify-self: start; background: var(--acento-claro); border-radius: 6px; padding: 2px 10px; font-weight: 700; font-size: 16px; color: var(--tinta); }
+.dfs p { font-size: 15.5px; line-height: 1.35; }
+.dfs + .tipos-df { margin-top: 10px; }
+.condiciones { margin: 8px 0 10px; }
+/* Esquemas: el nombre de la tabla con sus campos y la clave subrayada */
+.lamina u { text-decoration-thickness: 1.5px; text-underline-offset: 2px; }
+.esquemas { display: grid; gap: 4px; margin-top: 8px; }
+.esquemas li { background: var(--blanco); border-radius: 6px; padding: 4px 10px; font-size: 15px; line-height: 1.3; }
+.particion__ej { font-size: 16px; }
+.particion { margin-top: 8px; }
+
+/* Las tres formas normales: una debajo de otra en el celular, en tres columnas en la hoja A4 */
+.formas { display: grid; gap: 12px; }
+.forma { display: grid; gap: 8px; align-content: start; background: var(--panel); border-radius: 12px; overflow: hidden; padding: 0 12px 12px; }
+.forma__cab { display: grid; gap: 8px; margin: 0 -12px; }
+.forma__fn {
+  background: var(--acento); color: var(--tinta); text-align: center;
+  font-family: var(--fuente-titular); font-weight: 800; font-size: 30px; line-height: 1.25;
+}
+.forma__tit {
+  margin: 0 12px; background: var(--acento-claro); border-radius: 6px; padding: 4px 6px; text-align: center;
+  font-family: var(--fuente-titulo); font-weight: 700; font-size: 19px; line-height: 1.15; color: var(--tinta);
+}
+.forma__txt, .forma__nota { font-size: 16px; line-height: 1.35; }
+.forma__evita { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 10px; background: var(--blanco); border-radius: 8px; padding: 8px 10px; }
+.forma__evita .ico { width: 40px; height: 40px; }
+.forma__evita p { font-size: 15.5px; line-height: 1.3; }
+.forma__rotulo { font-family: var(--fuente-titulo); font-weight: 700; font-size: 17px; line-height: 1.15; color: var(--tinta); margin-top: 4px; }
+.forma > .flecha { justify-self: center; transform: rotate(90deg); }
+/* En resumen */
+.resumen { display: grid; gap: 10px; background: var(--panel); border-radius: var(--radio); padding: 12px 14px; }
+.resumen__cab { display: flex; align-items: center; gap: 12px; }
+.resumen__cab h3 { font-family: var(--fuente-titulo); font-weight: 700; font-size: 24px; color: var(--tinta); }
+.resumen__lista { display: grid; gap: 5px; }
+.resumen__lista li { display: flex; align-items: baseline; font-size: 16px; line-height: 1.35; }
+
+/* "Para profundizar": de 1FN a 3FN, paso a paso */
+.pasos-fn { display: grid; gap: 6px; }
+.pasos-fn__etq {
+  display: inline-block; min-width: 3.4em; margin-right: 3px; padding: 0 5px; border-radius: 5px;
+  background: var(--acento-claro); text-align: center; font-weight: 700; font-size: 13px; line-height: 1.5; color: var(--tinta);
+}
+.pf .pasos-fn__por { color: var(--gris); }
+/* Actividad con una tabla ancha: en el celular se desliza dentro de su recuadro */
+.act { min-width: 0; }
+.act-tabla-desliza { overflow-x: auto; margin-top: 8px; }
+.act-tabla-desliza > .act-tabla { width: 100%; min-width: 36em; margin: 0; font-size: 14px; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -971,12 +1064,21 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
   .eleccion { grid-template-columns: 1.3fr auto 1fr 1fr; }
   .tablas-ri { grid-template-columns: 1.1fr 1fr; }
   .eleccion .flecha { transform: none; }
+  /* TP5: cinco tarjetas en dos filas (3 + 2); dependencias en una fila; antes y después de normalizar,
+     uno debajo del otro hasta la hoja A4 */
+  .ambitos--5 { grid-template-columns: repeat(6, 1fr); }
+  .ambitos--5 .tarjeta, .ambitos--5 .tarjeta:last-child { grid-column: span 2; }
+  .ambitos--5 .tarjeta:nth-child(n+4) { grid-column: span 3; }
+  .dfs { grid-template-columns: repeat(3, 1fr); }
+  .comparar.normalizar { grid-template-columns: 1fr; }
+  .act-tabla-desliza > .act-tabla { min-width: 0; }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
-   no entran en una fila hasta la hoja A4: siguen verticales. Los 4 pasos para interpretar un DER, de a dos */
+   no entran en una fila hasta la hoja A4: siguen verticales. Los 4 pasos para interpretar un DER y las
+   4 tarjetas de "¿Para qué sirve?" (TP5), de a dos */
 @media screen and (min-width: 600px) and (max-width: 859px) {
-  .pasos-der { grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
+  .pasos-der, .sirve { grid-auto-flow: row; grid-template-columns: 1fr 1fr; }
   .secuencia--linea { grid-auto-flow: row; gap: 26px; }
   .secuencia--linea > li:not(:last-child)::after {
     left: 50%; right: auto; top: auto; bottom: -21px;
@@ -1247,6 +1349,111 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
   .acts--ajustado .act-tabla__nota::before { content: "· "; }
   .act-tabla--campos thead th:first-child { width: 48%; }
   .acts--amplio .act-tabla--campos th, .acts--amplio .act-tabla--campos td { height: 38px; padding-top: 4px; padding-bottom: 4px; }
+
+  /* De 6.º (TP5) */
+  /* Lámina 14: cinco tarjetas en una fila; antes → después lado a lado */
+  .ambitos--5 { grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .ambitos--5 .tarjeta, .ambitos--5 .tarjeta:last-child, .ambitos--5 .tarjeta:nth-child(n+4) { grid-column: auto; }
+  .problemas .tarjeta { gap: 4px; padding: 6px 4px 8px; }
+  .problemas .ico--l { width: 36px; height: 36px; }
+  .problemas .tarjeta__tit { font-size: 15px; }
+  .problemas .tarjeta p { font-size: 13px; line-height: 1.25; padding: 0 2px; }
+  .redundancia { grid-template-columns: 1.06fr auto 1fr; align-items: stretch; gap: 8px; }
+  .redundancia > .flecha { align-self: center; }
+  .redundancia .panel__cab--texto { gap: 2px; }
+  .redundancia .panel__cab--texto .texto { font-size: 14.5px; line-height: 1.3; }
+  .lamina--compacta .redundancia .tabla-ej { font-size: 12.5px; }
+  .lamina--compacta .redundancia .tabla-ej th, .lamina--compacta .redundancia .tabla-ej td { padding: 3px; }
+  .tabla-nota { gap: 5px; }
+  .tabla-nota + .tabla-nota { margin-top: 8px; }
+  .tabla-nota__txt { font-size: 13.5px; padding: 5px 9px; }
+  .aviso { margin-top: 8px; padding: 6px 10px; }
+  .aviso .ico { width: 30px; height: 30px; }
+  .aviso p { font-size: 14px; }
+  /* Lámina 15: pasos e ilustraciones más chicos; tarjetas con el ícono al costado;
+     antes y después de normalizar lado a lado, con las tablas de "después" en dos columnas */
+  .lamina--justa { gap: 1.2mm; }
+  .lamina--justa .intro { padding: 8px 16px; }
+  .lamina--justa .intro .ico--xl { width: 56px; height: 56px; }
+  .lamina--justa .intro p { font-size: 15px; line-height: 1.35; }
+  .lamina--justa .idea p { font-size: 16px; padding: 8px 18px; }
+  .lamina--justa .idea strong { font-size: 22px; }
+  .lamina--justa .panel { padding: 8px 12px 10px; }
+  .lamina--justa .panel__cab { margin-bottom: 4px; }
+  .lamina--justa .subtitulo { font-size: 20px; }
+  .lamina--justa .subtitulo::after { height: 4px; margin-top: 4px; }
+  .pasos-norm { gap: 20px; }
+  .pasos-norm > li:not(:last-child)::after { right: -17px; width: 14px; height: 13px; }
+  .pasos-norm .paso, .lamina--densa .pasos-norm .paso { padding: 7px 10px 8px; row-gap: 3px; }
+  .pasos-norm .paso h4 { font-size: 14.5px; }
+  .pasos-norm .paso p { font-size: 12.5px; line-height: 1.28; }
+  .pasos-norm .ilus { max-width: 86px; margin-top: 2px; }
+  .sirve .tarjeta { padding: 6px 10px 7px; gap: 4px 8px; }
+  .sirve .ico--l { width: 32px; height: 32px; }
+  .sirve .tarjeta__tit { font-size: 15px; }
+  .sirve .tarjeta p { font-size: 13px; line-height: 1.28; }
+  .comparar.normalizar { grid-template-columns: .9fr 1.1fr; }
+  .lamina--justa .comparar--ej > li { padding: 8px 12px 10px; }
+  .lamina--justa .comparar--ej h4 { font-size: 17px; }
+  .lamina--justa .comparar--ej .veredicto { margin-top: 6px; padding-top: 4px; padding-bottom: 4px; }
+  .lamina--compacta .normalizar .tabla-ej { font-size: 11.5px; }
+  .lamina--compacta .normalizar .tabla-ej th, .lamina--compacta .normalizar .tabla-ej td { padding: 2px 4px; }
+  .lamina--compacta .comparar--ej .tabla-ej caption { font-size: 14px; }
+  .tablas-norm { display: grid; grid-template-columns: auto auto; justify-content: start; gap: 6px 10px; margin-top: 8px; }
+  .tablas-norm > :last-child { grid-column: 2; grid-row: 1 / span 2; }
+  .tablas-norm .tabla-ej { margin-top: 0; }
+  .tablas-norm th { white-space: nowrap; }
+  .comparar--ej h4 { font-size: 19px; }
+  .veredicto--ico .ico { width: 24px; height: 24px; }
+  /* Lámina 16 */
+  .dfs { grid-template-columns: 1fr 1fr 1.3fr; }
+  .df { font-size: 15px; }
+  .dfs li { padding: 7px 10px 8px; gap: 3px; }
+  .dfs p { font-size: 14px; line-height: 1.3; }
+  .dfs + .tipos-df { margin-top: 8px; }
+  .comun.tipos-df li { font-size: 14.5px; padding: 7px 14px; }
+  .lamina--compacta .nota { padding: 8px 14px 9px 18px; gap: 2px; }
+  .lamina--compacta .nota h3 { font-size: 18px; }
+  .lamina--compacta .nota p { font-size: 15px; line-height: 1.35; }
+  .nota--fila { grid-template-columns: auto 1fr; align-items: stretch; column-gap: 16px; }
+  .nota--fila h3 { display: flex; align-items: center; padding-right: 16px; border-right: 2px solid var(--naranja-claro); border-right-color: color-mix(in srgb, var(--naranja) 45%, var(--naranja-claro)); }
+  .nota--fila p { align-self: center; }
+  .lamina--compacta .panel > .texto { font-size: 15.5px; line-height: 1.38; }
+  .condiciones { margin: 6px 0 8px; gap: 4px; }
+  .condiciones > li { font-size: 15px; padding: 3px 10px 3px 7px; }
+  .esquemas { gap: 3px; margin-top: 6px; }
+  .esquemas li { font-size: 14px; padding: 2px 9px; }
+  .comparar--ej .veredicto { font-size: 14px; }
+  .particion { margin-top: 6px; }
+  /* Lámina 17: las tres formas normales en tres columnas; en la 2FN, las dos tablas de "después" juntas */
+  .formas { grid-template-columns: .94fr 1fr 1.06fr; gap: 3mm; }
+  .forma { gap: 5px; padding: 0 9px 9px; }
+  .forma__cab { gap: 5px; margin: 0 -9px; }
+  .forma__fn { font-size: 26px; line-height: 1.2; }
+  .forma__tit { margin: 0 9px; font-size: 15px; padding: 3px 4px; }
+  .forma__txt, .forma__nota { font-size: 13px; line-height: 1.3; }
+  .forma__evita { padding: 5px 8px; gap: 8px; }
+  .forma__evita .ico { width: 30px; height: 30px; }
+  .forma__evita p { font-size: 13px; line-height: 1.25; }
+  .forma__rotulo { font-size: 15px; }
+  .forma > .flecha { width: 16px; height: 15px; }
+  .lamina--compacta .forma .tabla-ej { font-size: 11.5px; }
+  .lamina--compacta .forma .tabla-ej th, .lamina--compacta .forma .tabla-ej td { padding: 2px 3px; }
+  .lamina--compacta .forma .tabla-ej th { white-space: normal; }
+  .lamina--compacta .forma .tabla-ej caption { font-size: 12.5px; letter-spacing: .02em; }
+  .tablas-fila--juntas { flex-wrap: nowrap; gap: 5px; }
+  .tablas-fila--juntas .tabla-ej { flex: 1 1 auto; min-width: 0; }
+  .resumen { grid-template-columns: auto 1fr; align-items: center; column-gap: 20px; padding: 6px 18px; }
+  .resumen__cab { padding-right: 20px; border-right: 2px solid var(--panel-linea); }
+  .resumen__cab .ico { width: 40px; height: 40px; }
+  .resumen__lista { gap: 2px; }
+  .resumen__lista li { font-size: 15px; }
+  /* Para profundizar y actividades */
+  .pasos-fn { gap: 5px; }
+  .pf .pasos-fn p { font-size: 12.5px; line-height: 1.32; }
+  .pasos-fn__etq { font-size: 12px; }
+  .act-tabla-desliza { overflow: visible; margin-top: 9px; }
+  .act-tabla-desliza > .act-tabla { font-size: 14.5px; }
 }
 
 /* ==========================================================
