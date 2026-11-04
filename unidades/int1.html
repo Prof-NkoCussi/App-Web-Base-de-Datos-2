@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Integrador 1 — La tienda, de nuevo · Base de Datos II</title>
+  <meta name="description" content="Integrador 1 de Base de Datos II: el diseño de la base de datos de una tienda desde cero, con el DER, las tablas, las claves, las restricciones y la normalización. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#A78BFA">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="int1" class="modulo-2">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-tienda" viewBox="0 0 48 48">
+      <path d="M8 22v21h32V22" style="fill:#fff"/>
+      <path d="M9 6h30l5 12H4z" style="fill:var(--ac)"/>
+      <path d="M4 18a5 5 0 0 0 10 0 5 5 0 0 0 10 0 5 5 0 0 0 10 0 5 5 0 0 0 10 0" style="fill:var(--ac)"/>
+      <path d="M17 6l-3 12M24 6v12M31 6l3 12"/>
+      <rect x="12" y="29" width="9" height="14" style="fill:var(--ac)"/>
+      <rect x="26" y="29" width="10" height="8" style="fill:var(--ac)"/>
+      <path d="M31 29v8M4 43h40"/>
+    </symbol>
+    <symbol id="i-persona" viewBox="0 0 48 48">
+      <circle cx="24" cy="15" r="8.5" style="fill:var(--ac)"/>
+      <path d="M8.5 42c0-8.8 6.9-15 15.5-15s15.5 6.2 15.5 15z" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-caja" viewBox="0 0 48 48">
+      <path d="M24 4.5 42 12.5 24 20.5 6 12.5z" style="fill:var(--ac)"/>
+      <path d="M6 12.5v21L24 42l18-8.5v-21" style="fill:#fff"/>
+      <path d="M24 20.5V42M15 8.5l18 8v7"/>
+    </symbol>
+    <symbol id="i-boleta" viewBox="0 0 48 48">
+      <path d="M10 5h19l9 9v29H10z" style="fill:#fff"/>
+      <path d="M29 5v9h9z" style="fill:var(--ac)"/>
+      <path d="M16 21h16M16 28h16M16 35h10"/>
+    </symbol>
+    <symbol id="i-carrito" viewBox="0 0 48 48">
+      <path d="M11 14h32l-4.5 15H14.5z" style="fill:var(--ac)"/>
+      <path d="M3 8h6.5l5.5 21-2 6h26"/>
+      <circle cx="16" cy="40.5" r="3"/>
+      <circle cx="35" cy="40.5" r="3"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">Integrador 1 — La tienda, de nuevo</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del Integrador 1">
+    <a href="#pag-18">18 · Caso práctico</a>
+    <a href="#guia">Guía del integrador</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">Integrador 1 — La tienda, de nuevo</h1>
+
+  <!-- =================== LÁMINA 18 (PDF pág. 22) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-18" aria-labelledby="t18">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">INTEGRADOR <span class="cab__lema-n">1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--caso" id="t18"><span class="tit__num">18.</span> Caso práctico: diseñamos una base de datos desde cero</h2>
+      <p class="tit__sub">Del problema real a las tablas</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-tienda"/></svg>
+      <p>En este caso práctico vamos a diseñar una base de datos para una tienda. Queremos guardar <strong>clientes, productos y ventas</strong> de forma ordenada, sin repetir información.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="p1">
+      <div class="panel__cab"><h3 class="subtitulo" id="p1">Paso 1: identificar la información</h3></div>
+      <ul class="ambitos ambitos--4 info-tienda">
+        <li class="tarjeta"><h4 class="tarjeta__cab">Clientes</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-persona"/></svg><ul class="datos"><li>nombre</li><li>email</li><li>ciudad</li></ul></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Productos</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-caja"/></svg><ul class="datos"><li>nombre</li><li>precio</li><li>stock</li></ul></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Ventas</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-boleta"/></svg><ul class="datos"><li>fecha</li><li>cliente</li><li>total</li></ul></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Detalle de venta</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-carrito"/></svg><ul class="datos"><li>producto</li><li>cantidad</li><li>subtotal</li></ul></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="p2">
+      <div class="panel__cab"><h3 class="subtitulo" id="p2">Paso 2: definir tablas</h3></div>
+      <div class="tablas-tienda">
+        <table class="tabla-ej tabla-esq">
+          <caption>CLIENTES</caption>
+          <tbody>
+            <tr class="pk"><th scope="row">id_cliente</th><td>PK</td></tr>
+            <tr><th scope="row">nombre</th><td></td></tr>
+            <tr><th scope="row">email</th><td></td></tr>
+            <tr><th scope="row">ciudad</th><td></td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej tabla-esq">
+          <caption>PRODUCTOS</caption>
+          <tbody>
+            <tr class="pk"><th scope="row">id_producto</th><td>PK</td></tr>
+            <tr><th scope="row">nombre</th><td></td></tr>
+            <tr><th scope="row">precio</th><td></td></tr>
+            <tr><th scope="row">stock</th><td></td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej tabla-esq">
+          <caption>VENTAS</caption>
+          <tbody>
+            <tr class="pk"><th scope="row">id_venta</th><td>PK</td></tr>
+            <tr><th scope="row">id_cliente</th><td>FK</td></tr>
+            <tr><th scope="row">fecha</th><td></td></tr>
+            <tr><th scope="row">total</th><td></td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej tabla-esq">
+          <caption>DETALLE_VENTA</caption>
+          <tbody>
+            <tr class="pk"><th scope="row">id_venta</th><td>PK, FK</td></tr>
+            <tr class="pk"><th scope="row">id_producto</th><td>PK, FK</td></tr>
+            <tr><th scope="row">cantidad</th><td></td></tr>
+            <tr><th scope="row">subtotal</th><td></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="p3">
+      <div class="panel__cab"><h3 class="subtitulo" id="p3">Paso 3: relaciones</h3></div>
+      <div class="der-lienzo">
+        <!-- Pantalla ancha y A4 -->
+        <svg class="der der--ancho der--rel" viewBox="0 0 682 104" role="img" aria-label="Diagrama de relaciones de la tienda, con cuatro tablas en fila: CLIENTES, VENTAS, DETALLE_VENTA y PRODUCTOS. Entre CLIENTES y VENTAS, relación 1 : N: un cliente puede tener muchas ventas. Entre VENTAS y DETALLE_VENTA, relación 1 : N: una venta puede tener muchos detalles. Entre PRODUCTOS y DETALLE_VENTA, relación 1 : N, con el 1 del lado de PRODUCTOS y la N del lado de DETALLE_VENTA: un producto puede estar en muchos detalles de venta.">
+          <path class="der__linea" d="M114 26H184M176 18v16M288 26H358M350 18v16M504 26H574M512 18v16"/>
+          <text class="der__card" x="149" y="18" text-anchor="middle">1 : N</text>
+          <text class="der__card" x="323" y="18" text-anchor="middle">1 : N</text>
+          <text class="der__card" x="539" y="18" text-anchor="middle">N : 1</text>
+
+          <rect class="der__ent" x="2" y="4" width="112" height="44" rx="7"/>
+          <text class="der__nom" x="58" y="31" text-anchor="middle">CLIENTES</text>
+          <rect class="der__ent" x="184" y="4" width="104" height="44" rx="7"/>
+          <text class="der__nom" x="236" y="31" text-anchor="middle">VENTAS</text>
+          <rect class="der__ent" x="358" y="4" width="146" height="44" rx="7"/>
+          <text class="der__nom" x="431" y="31" text-anchor="middle">DETALLE_VENTA</text>
+          <rect class="der__ent" x="574" y="4" width="106" height="44" rx="7"/>
+          <text class="der__nom" x="627" y="31" text-anchor="middle">PRODUCTOS</text>
+
+          <rect class="der__nota-caja" x="70" y="60" width="158" height="42" rx="6"/>
+          <text class="der__nota" text-anchor="middle"><tspan x="149" y="77">Un cliente puede</tspan><tspan x="149" y="94">tener muchas ventas.</tspan></text>
+          <rect class="der__nota-caja" x="242" y="60" width="162" height="42" rx="6"/>
+          <text class="der__nota" text-anchor="middle"><tspan x="323" y="77">Una venta puede tener</tspan><tspan x="323" y="94">muchos detalles.</tspan></text>
+          <rect class="der__nota-caja" x="440" y="60" width="198" height="42" rx="6"/>
+          <text class="der__nota" text-anchor="middle"><tspan x="539" y="77">Un producto puede estar</tspan><tspan x="539" y="94">en muchos detalles de venta.</tspan></text>
+        </svg>
+        <!-- Celular: el mismo diagrama, de arriba hacia abajo -->
+        <svg class="der der--angosto der--rel" viewBox="0 0 300 392" role="img" aria-label="Diagrama de relaciones de la tienda, con cuatro tablas una debajo de otra: CLIENTES, VENTAS, DETALLE_VENTA y PRODUCTOS. Entre CLIENTES y VENTAS, relación 1 : N: un cliente puede tener muchas ventas. Entre VENTAS y DETALLE_VENTA, relación 1 : N: una venta puede tener muchos detalles. Entre PRODUCTOS y DETALLE_VENTA, relación 1 : N, con el 1 del lado de PRODUCTOS y la N del lado de DETALLE_VENTA: un producto puede estar en muchos detalles de venta.">
+          <path class="der__linea" d="M79 42V118M71 110h16M79 158V234M71 226h16M79 274V350M71 282h16"/>
+
+          <rect class="der__ent" x="4" y="2" width="150" height="40" rx="7"/>
+          <text class="der__nom" x="79" y="27" text-anchor="middle">CLIENTES</text>
+          <text class="der__card" x="92" y="62">1 : N</text>
+          <rect class="der__nota-caja" x="90" y="69" width="208" height="38" rx="6"/>
+          <text class="der__nota"><tspan x="98" y="84">Un cliente puede tener</tspan><tspan x="98" y="100">muchas ventas.</tspan></text>
+
+          <rect class="der__ent" x="4" y="118" width="150" height="40" rx="7"/>
+          <text class="der__nom" x="79" y="143" text-anchor="middle">VENTAS</text>
+          <text class="der__card" x="92" y="178">1 : N</text>
+          <rect class="der__nota-caja" x="90" y="185" width="208" height="38" rx="6"/>
+          <text class="der__nota"><tspan x="98" y="200">Una venta puede tener</tspan><tspan x="98" y="216">muchos detalles.</tspan></text>
+
+          <rect class="der__ent" x="4" y="234" width="150" height="40" rx="7"/>
+          <text class="der__nom" x="79" y="259" text-anchor="middle">DETALLE_VENTA</text>
+          <text class="der__card" x="92" y="298">N : 1</text>
+          <rect class="der__nota-caja" x="90" y="305" width="208" height="38" rx="6"/>
+          <text class="der__nota"><tspan x="98" y="320">Un producto puede estar</tspan><tspan x="98" y="336">en muchos detalles de venta.</tspan></text>
+
+          <rect class="der__ent" x="4" y="350" width="150" height="40" rx="7"/>
+          <text class="der__nom" x="79" y="375" text-anchor="middle">PRODUCTOS</text>
+        </svg>
+      </div>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Diseñar una base de datos consiste en identificar entidades, separar la información en tablas y conectarlas mediante claves.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 18">18</span>
+    </footer>
+  </article>
+
+  <!-- =================== GUÍA DEL INTEGRADOR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="guia" aria-labelledby="tguia" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">INTEGRADOR <span class="cab__lema-n">1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tguia"><span class="tit__num">+</span> Guía del integrador</h2>
+      <p class="tit__sub">Los cuatro pasos y dónde repasar cada uno</p>
+    </div>
+
+    <div class="pf-grid">
+    <section class="pf" aria-labelledby="g1">
+      <p class="pf__etiqueta">TP2 y TP3</p>
+      <h3 class="pf__titulo" id="g1">1. Modelar</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>En el problema se marcan tres tipos de palabras:</p>
+          <ul class="pf__lista">
+            <li><strong>Sustantivos:</strong> candidatos a entidades (socio, libro).</li>
+            <li><strong>Verbos:</strong> candidatos a relaciones (un socio <em>pide prestado</em> un libro).</li>
+            <li><strong>Características</strong> de cada cosa: atributos.</li>
+          </ul>
+          <p>Con eso se dibuja el <strong>DER</strong>, con la <strong>cardinalidad</strong> de cada relación (1:1, 1:N o N:M). En <strong>UML</strong>, cada entidad es una clase, con atributos y métodos.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Para repasar</h4>
+          <ul class="pf__lista">
+            <li><a href="tp02.html#pag-4">TP2, lámina 4</a>: el DER.</li>
+            <li><a href="tp02.html#pag-5">TP2, lámina 5</a>: la cardinalidad.</li>
+            <li><a href="tp03.html#pag-7">TP3, lámina 7</a>: el diagrama de clases.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="g2">
+      <p class="pf__etiqueta">TP2</p>
+      <h3 class="pf__titulo" id="g2">2. Pasar a tablas</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <ul class="pf__lista">
+            <li>Cada <strong>entidad</strong>, una <strong>tabla</strong>; cada atributo, una columna, y el identificador, la clave primaria.</li>
+            <li>En una relación <strong>1:N</strong>, la <strong>clave foránea</strong> va en la tabla del lado N.</li>
+            <li>En una relación <strong>N:M</strong>, se agrega una <strong>tabla intermedia</strong>, con una clave foránea hacia cada tabla.</li>
+          </ul>
+          <p><strong>Ejemplo:</strong> una editorial publica muchos libros (1:N): id_editorial va en LIBROS. Un socio pide prestados muchos libros y a un libro lo piden muchos socios (N:M): la tabla intermedia es PRESTAMOS, con id_socio e id_libro.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Para repasar</h4>
+          <ul class="pf__lista">
+            <li><a href="tp02.html#pag-6">TP2, lámina 6</a>: del DER a las tablas.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="g3">
+      <p class="pf__etiqueta">TP4</p>
+      <h3 class="pf__titulo" id="g3">3. Claves y restricciones</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <ul class="pf__lista">
+            <li><strong>Clave primaria:</strong> identifica cada fila; no se repite ni queda vacía.</li>
+            <li><strong>Candidatas y alternativas:</strong> las candidatas podrían ser la primaria; las que no se eligen son alternativas, con UNIQUE y NOT NULL.</li>
+            <li><strong>Clave foránea:</strong> la clave primaria de otra tabla.</li>
+            <li><strong>Restricciones:</strong> NOT NULL, UNIQUE, DEFAULT y CHECK (una condición, como precio &gt; 0).</li>
+          </ul>
+          <p>Una clave primaria de dos campos va al final: <code class="cod-sql">PRIMARY KEY (id_alumno, id_curso)</code>.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Para repasar</h4>
+          <ul class="pf__lista">
+            <li><a href="tp04.html#pag-11">TP4, lámina 11</a>: las restricciones.</li>
+            <li><a href="tp04.html#pag-12">TP4, lámina 12</a>: la integridad referencial.</li>
+            <li><a href="tp04.html#pag-13">TP4, lámina 13</a>: las claves.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="g4">
+      <p class="pf__etiqueta">TP5</p>
+      <h3 class="pf__titulo" id="g4">4. Normalizar</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <ul class="pf__lista">
+            <li><strong>Dependencias funcionales:</strong> qué campo determina a cuál (A → B).</li>
+            <li><strong>Formas normales:</strong> 1FN, un valor por celda; 2FN, todo depende de la clave completa; 3FN, nada depende de un campo que no es clave.</li>
+            <li><strong>Datos que se pueden calcular:</strong> guardarlos es repetir información; si cambia un dato del que salen, hay que recalcularlos.</li>
+          </ul>
+          <p><strong>Ejemplo:</strong> edad se calcula con fecha_nacimiento y, además, cambia todos los años.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Para repasar</h4>
+          <ul class="pf__lista">
+            <li><a href="tp05.html#pag-14">TP5, láminas 14 y 15</a>: la redundancia.</li>
+            <li><a href="tp05.html#pag-16">TP5, lámina 16</a>: las dependencias.</li>
+            <li><a href="tp05.html#pag-17">TP5, lámina 17</a>: las formas normales.</li>
+            <li><a href="tp05.html#profundizar">TP5, “Para profundizar”</a>: repetir a propósito.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">Integrador 1</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">INTEGRADOR <span class="cab__lema-n">1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>Integrador 1 — La tienda, de nuevo</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Resolvé cada punto en la carpeta, con la tienda de la lámina 18. Podés apoyarte en la “Guía del integrador” y en las láminas que indica cada paso.</p>
+
+    <!-- Punto 1, del PDF; puntos 2 a 4, nuevos -->
+    <ol class="acts acts--2col acts--int1">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> Caso práctico</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Nombra otra tabla que podría agregarse a este caso.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué campo conecta VENTAS con CLIENTES?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Para qué sirve DETALLE_VENTA?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> DER</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Dibujá el DER de la tienda con cardinalidades.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> UML</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Dibujá la clase Producto con sus atributos y un método.</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Claves y restricciones</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Para cada tabla, indicá la clave primaria, las foráneas, una clave alternativa si la hay, y dos restricciones (por ejemplo, CHECK stock &gt;= 0).</div></li>
+        </ol>
+        <div class="act-tabla-desliza">
+          <table class="act-tabla act-tabla--filas act-tabla--claves">
+            <caption class="sr-only">Cuadro para completar con las claves y las restricciones de cada tabla de la tienda</caption>
+            <thead><tr><th scope="col">Tabla</th><th scope="col">Clave primaria</th><th scope="col">Claves foráneas</th><th scope="col">Clave alternativa</th><th scope="col">Dos restricciones</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">CLIENTES</th><td></td><td></td><td></td><td></td></tr>
+              <tr><th scope="row">PRODUCTOS</th><td></td><td></td><td></td><td></td></tr>
+              <tr><th scope="row">VENTAS</th><td></td><td></td><td></td><td></td></tr>
+              <tr><th scope="row">DETALLE_VENTA</th><td></td><td></td><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">Integrador 1</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2 (consignas nuevas) =================== -->
+  <article class="lamina lamina--act" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">INTEGRADOR <span class="cab__lema-n">1</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la carpeta</h2>
+        <p>Integrador 1 — La tienda, de nuevo</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <ol class="acts acts--amplio" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Normalización</h3>
+        <p class="act__caso">En la tienda de la lámina 18, total y subtotal se pueden calcular.</p>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué dependencia funcional hay?</div></li>
+          <li><b class="act__letra">b)</b><div>¿En qué forma normal están VENTAS y DETALLE_VENTA?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Dejarías total y subtotal en las tablas? Justificá.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Ampliación</h3>
+        <p class="act__caso">La tienda quiere agrupar los productos en categorías.</p>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Sumá la tabla al DER y a las tablas, con sus claves.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> Cierre</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribí el CREATE TABLE de DETALLE_VENTA con su clave primaria compuesta y sus dos claves foráneas.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">Integrador 1</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

@@ -32,7 +32,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | **Módulo 2 · Diseño de bases de datos** | | |
 | 4 | Claves y restricciones | ✅ Disponible |
 | 5 | Normalización | ✅ Disponible |
-| Integrador 1 | La tienda, de nuevo | Próximamente |
+| Integrador 1 | La tienda, de nuevo | ✅ Disponible |
 | **Módulo 3 · Lenguajes de consulta** | | |
 | 6 | Del álgebra relacional a SQL | ✅ Disponible |
 | 7 | Definir y cargar tablas | Próximamente |

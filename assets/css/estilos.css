@@ -1105,6 +1105,25 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
 .act__items--2col .alg { font-size: 1.05em; }
 
 /* ==========================================================
+   De 6.º (Integrador 1): la tienda, del problema a las tablas
+   ========================================================== */
+/* Paso 1: los datos de cada tarjeta, con viñetas */
+.datos { display: grid; gap: 2px; text-align: left; }
+.datos li { position: relative; padding-left: 14px; font-size: 16px; line-height: 1.3; }
+.datos li::before { content: ""; position: absolute; left: 0; top: .5em; width: 6px; height: 6px; border-radius: 50%; background: var(--tinta); }
+/* Paso 2: cada tabla con sus campos y sus claves; la clave primaria resaltada */
+.tablas-tienda { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; align-items: start; }
+.tabla-esq { table-layout: auto; font-size: 14px; text-align: left; }
+.tabla-esq caption { font-size: 15px; letter-spacing: .03em; }
+.tabla-esq tbody th { background: var(--blanco); font-weight: 400; color: var(--texto); padding: 4px 6px; border-top: 1px solid var(--linea); }
+.tabla-esq td { padding: 4px 6px; white-space: nowrap; }
+.tabla-esq th + td { border-left: 1px solid var(--linea); }
+.tabla-esq .pk th, .tabla-esq .pk td { background: var(--acento-claro); font-weight: 700; color: var(--tinta); }
+/* Paso 3: lo que significa cada relación, debajo (en el celular, al costado) */
+.der__nota-caja { fill: var(--acento-suave); }
+.der--rel .der__nota { font-size: 13px; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -1631,6 +1650,17 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .pf .alg { font-size: .95em; }
   /* Actividades: el punto 5, a lo ancho, con los incisos de a dos */
   .act__items--2col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+  /* De 6.º (Integrador 1) */
+  /* Lámina 18: el título largo del PDF en una línea; las cuatro tablas en una fila */
+  .tit__h--caso { font-size: 32px; letter-spacing: -.02em; }
+  .tablas-tienda { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+  .lamina--compacta .tabla-esq { font-size: 15px; }
+  .lamina--compacta .tabla-esq th, .lamina--compacta .tabla-esq td { padding: 5px 8px; }
+  .lamina--densa .info-tienda .tarjeta .ico--l { width: 54px; height: 54px; }
+  .info-tienda .datos li { font-size: 16.5px; }
+  /* Actividades: el punto 1 a la izquierda, el 2 y el 3 a la derecha; el 4, a lo ancho */
+  .acts--int1 > .act:first-child { grid-row: span 2; }
 }
 
 /* ==========================================================

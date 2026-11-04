@@ -120,6 +120,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 | 16 | TP2 | La relación PEDIDO–PRODUCTO dice `1 : N`, con pata de gallo solo del lado de PEDIDO, y "Un producto puede estar en muchos pedidos" | `N : M`, con pata de gallo de los dos lados, y "Un pedido puede tener muchos productos y un producto puede estar en muchos pedidos". |
 | 20 | TP5 | En "Después de normalizar", la tabla CURSOS no tiene la columna profesor: ese dato se pierde | CURSOS suma la columna profesor: 10 Matemáticas López · 11 Historia Pérez · 12 Inglés Torres. |
 | 22 | Integrador 1 | El diagrama del Paso 3 dice `DETALLE_VENTA 1:N PRODUCTOS` (al revés) | `PRODUCTOS 1:N DETALLE_VENTA`: el "1" del lado de PRODUCTOS y la "N" del lado de DETALLE_VENTA. El texto de abajo ya está bien. |
+| 22 | Integrador 1 | En el Paso 2, `id_cliente` de VENTAS no tiene ninguna marca, aunque es clave foránea | Marcarlo con "FK". |
 | 31 | TP9 | El ejemplo de OR dice `'Resario'` | `'Rosario'` |
 | 32 | TP9 | `LIKE 'Lap%'` devuelve "Lápiz". En MariaDB (XAMPP, cotejamiento `utf8mb4_general_ci`) es correcto porque ignora tildes; en SQLite (consola web) no lo trae | La lámina queda igual. En "Para profundizar" va una nota: el resultado de `LIKE` con tildes y mayúsculas depende del gestor y del cotejamiento. |
 | 33 | TP10 | El resultado de `ORDER BY precio DESC LIMIT 3` aparece como Auriculares 15000, Notebook 45000, Monitor 12000 | Notebook 45000 · Auriculares 15000 · Monitor 12000 (ids 4, 5, 3) |
