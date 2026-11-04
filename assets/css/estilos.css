@@ -559,7 +559,7 @@ code.cod-archivo { background: var(--archivo-claro); color: var(--archivo-texto)
 code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow: inset 0 0 0 1px var(--sql-claro); }
 
 /* Ventanas: los tres puntos de color delante del nombre */
-.archivo__nombre::before, .ventana-cod__barra::before {
+.archivo__nombre::before, .ventana-cod__barra::before, .xampp__barra::before {
   content: ""; flex: none; width: 8px; height: 8px; border-radius: 50%;
   background: var(--punto-rojo); box-shadow: 12px 0 var(--punto-amarillo), 24px 0 var(--punto-verde);
   margin-right: 24px;
@@ -872,8 +872,8 @@ code.cod-sql { background: var(--sql-suave); color: var(--sql-texto); box-shadow
 .pseudo--sql .pseudo__c { padding-left: 2ch; text-indent: -2ch; }
 .pseudo--sql .i1 .pseudo__c { padding-left: 4ch; }
 .pf .pseudo li { font-size: inherit; line-height: inherit; }   /* no toma la letra de los ítems de "Para profundizar" */
-/* Mensaje de error del gestor: puede cortarse en dos renglones */
-code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* Mensaje de error del gestor, o una instrucción larga dentro del texto: puede cortarse en dos renglones */
+code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
 
 /* Integridad referencial: CLIENTES y VENTAS; ejemplo incorrecto (naranja) y correcto (verde) */
 .tablas-ri { margin-top: 10px; }
@@ -1003,6 +1003,108 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
 .act-tabla-desliza > .act-tabla { width: 100%; min-width: 36em; margin: 0; font-size: 14px; }
 
 /* ==========================================================
+   De 6.º (TP6): álgebra relacional, SQL, XAMPP y familias de comandos
+   ========================================================== */
+/* Símbolos del álgebra que Barlow no trae (⋈, ∪, ∩): SVG del alto de la letra */
+.sim {
+  display: inline-block; width: .8em; height: .8em; vertical-align: -.06em;
+  fill: none; stroke: currentColor; stroke-width: 2.4; stroke-linecap: round; stroke-linejoin: round;
+}
+/* Expresión de álgebra relacional: como code, pero con la letra del texto */
+.alg {
+  font-weight: 600; color: var(--tinta);
+  background: var(--acento-suave); box-shadow: inset 0 0 0 1px var(--acento-claro); border-radius: 4px; padding: 0 5px;
+  -webkit-box-decoration-break: clone; box-decoration-break: clone;
+}
+.alg--grande { display: block; width: fit-content; max-width: 100%; font-size: 20px; padding: 4px 12px; border-radius: 6px; }
+
+/* Lámina 19: las tablas de los ejemplos (como en el TP2) y las cuatro operaciones */
+.tablas-alg { margin: 0 0 10px; }
+.ops { display: grid; gap: 10px; }
+.op { display: grid; gap: 6px; align-content: start; min-width: 0; background: var(--blanco); border-radius: 8px; padding: 10px 12px 12px; }
+.op__cab { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
+.op__cab h4 { font-family: var(--fuente-titulo); font-weight: 700; font-size: 20px; line-height: 1.1; color: var(--tinta); }
+.op__sim {
+  flex: none; display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 8px;
+  background: var(--acento); color: var(--tinta); font-size: 26px; font-weight: 700; line-height: 1;
+}
+.op__sim .sim { width: 22px; height: 22px; stroke-width: 2.6; }
+.op__sim--por { font-size: 32px; }   /* × es más chico que σ y π */
+.op .op__en-sql { margin-left: auto; font-size: 13px; font-weight: 600; color: var(--gris); }
+.op p { font-size: 15.5px; line-height: 1.35; }
+.op__nota { padding-left: 10px; border-left: 3px solid var(--acento-claro); }
+/* Operaciones encadenadas: la expresión y su SQL; al lado, el orden en que trabaja el gestor */
+.encadenada { display: grid; gap: 12px; }
+.encadenada__expr { display: grid; gap: 8px; justify-items: start; }
+.encadenada__expr .ventana-cod { justify-self: stretch; }
+.encadenada .texto { font-size: 16px; line-height: 1.35; }
+.encadenada .instrucciones { margin-top: 8px; }
+
+/* Ejemplos en SQL: un título y su ventana de código (lámina 20: tres; lámina 22: cuatro) */
+.ej-sql { display: grid; gap: 10px; }
+.ej-sql > li { display: grid; gap: 6px; align-content: start; min-width: 0; background: var(--blanco); border-radius: 8px; padding: 6px 6px 8px; }
+.ej-sql__tit { background: var(--acento-claro); border-radius: 6px; padding: 4px 10px; font-weight: 700; font-size: 16px; line-height: 1.25; color: var(--tinta); }
+.ej-sql .ventana-cod { box-shadow: none; }
+
+/* Lámina 21: el panel de control de XAMPP con Apache y MySQL en marcha
+   (el verde es el del programa, no el de "Recomendación") */
+.xampp-col { display: grid; gap: 12px; align-content: start; }
+.xampp { margin: 0; background: var(--blanco); border: 1.5px solid var(--linea); border-radius: 8px; overflow: hidden; }
+.xampp__barra {
+  display: flex; align-items: center; gap: 8px; background: var(--tinta); color: var(--blanco); box-shadow: inset 0 3px 0 var(--acento);
+  font-size: 13px; font-weight: 600; padding: 4px 12px;
+}
+.xampp__tabla { width: 100%; border-collapse: collapse; font-size: 14.5px; line-height: 1.3; }
+.xampp__tabla th, .xampp__tabla td { padding: 5px 8px; text-align: left; font-weight: 400; border-top: 1px solid var(--linea); }
+.xampp__tabla thead th { border-top: 0; padding-bottom: 3px; font-size: 12px; font-weight: 700; color: var(--gris); }
+.xampp__tabla tbody th { font-weight: 700; color: var(--tinta); }
+.xampp__tabla .xampp__on { background: var(--ok-claro); color: var(--ok-oscuro); }
+.xampp__btn {
+  display: inline-block; margin: 1px 4px 1px 0; padding: 0 8px; border: 1px solid var(--linea); border-radius: 4px;
+  background: var(--panel); font-size: 13px; font-weight: 600; color: var(--tinta);
+}
+.xampp__log {
+  display: grid; padding: 5px 10px; border-top: 1px solid var(--linea); background: var(--panel);
+  font-family: var(--fuente-mono); font-size: 12px; line-height: 1.5; color: var(--texto); overflow-wrap: anywhere;
+}
+
+/* Lámina 22: las cuatro familias (la sigla con el ícono al costado; la función, el texto y los ejemplos debajo) */
+.familias { display: grid; gap: 10px; }
+.familia { display: grid; gap: 8px; align-content: start; min-width: 0; background: var(--panel); border-radius: 10px; padding: 10px 12px 12px; }
+.familia__nom { display: grid; grid-template-columns: 1fr auto; align-items: center; line-height: 1.1; }
+.familia__nom .ico { width: 40px; height: 40px; }
+.familia__fun, .familia__nom::after { grid-column: 1 / -1; }
+.familia__nom::after { content: ""; width: 36px; height: 4px; margin-top: 6px; background: var(--acento); }
+.familia__sigla { font-family: var(--fuente-titulo); font-weight: 700; font-size: 24px; color: var(--tinta); }
+.familia__fun { font-family: var(--fuente-titulo); font-weight: 600; font-size: 18px; color: var(--gris); }
+.familia__txt { background: var(--blanco); border-radius: 8px; padding: 8px 10px; font-size: 15.5px; line-height: 1.3; }
+.familia__ej { background: var(--acento-suave); border-radius: 6px; padding: 5px 10px; font-size: 15px; line-height: 1.6; }
+.familia__ej strong { color: var(--acento-texto); margin-right: 2px; }
+.tabla-familias thead th:first-child, .tabla-familias tbody th { width: 23%; text-align: center; }
+.tabla-familias tbody th, .tabla-familias td { background: var(--blanco); }   /* la tabla va dentro de un panel gris */
+.tabla-familias td { text-align: left; }
+.tabla-familias td:last-child { width: 34%; line-height: 1.7; }
+
+/* "Para profundizar": tablas con código, y el camino de un pedido dentro de la computadora */
+.tabla-conj tbody th, .tabla-partes tbody th { white-space: nowrap; }
+.tabla-conj td, .tabla-partes td { text-align: left; }
+.tabla-conj code, .tabla-partes code { font-size: .88em; }
+.flujo-marco { display: grid; gap: 5px; border: 2px dashed var(--acento); border-radius: 8px; padding: 5px 8px 8px; }
+.pf .flujo-marco__rotulo { font-size: 10.5px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--acento-texto); }
+.flujo { display: flex; align-items: stretch; gap: 18px; }
+.flujo li {
+  position: relative; flex: 1 1 0; min-width: 0; display: grid; align-content: center; text-align: center;
+  background: var(--acento-suave); border-radius: 6px; padding: 5px 4px; font-size: 14px; line-height: 1.25;
+}
+.flujo li span { font-size: 12px; color: var(--texto); }
+.flujo li:not(:last-child)::after {
+  content: ""; position: absolute; right: -15px; top: 50%; width: 12px; height: 12px; transform: translateY(-50%);
+  background: var(--acento-texto); clip-path: polygon(0 32%, 52% 32%, 52% 0, 100% 50%, 52% 100%, 52% 68%, 0 68%);
+}
+/* Actividades: cuatro incisos cortos, de a dos en la hoja A4 */
+.act__items--2col .alg { font-size: 1.05em; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -1072,6 +1174,13 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
   .dfs { grid-template-columns: repeat(3, 1fr); }
   .comparar.normalizar { grid-template-columns: 1fr; }
   .act-tabla-desliza > .act-tabla { min-width: 0; }
+  /* TP6: operaciones, ejemplos y familias de a dos; la expresión encadenada al lado de sus pasos */
+  .ops, .familias { grid-template-columns: 1fr 1fr; }
+  .encadenada { grid-template-columns: 1fr 1fr; align-items: start; }
+  .ej-sql { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .ej-sql--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lado-a-lado--xampp { grid-template-columns: 1.1fr 1fr; }
+  .act__items--2col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
@@ -1454,6 +1563,74 @@ code.cod-error { white-space: normal; -webkit-box-decoration-break: clone; box-d
   .pasos-fn__etq { font-size: 12px; }
   .act-tabla-desliza { overflow: visible; margin-top: 9px; }
   .act-tabla-desliza > .act-tabla { font-size: 14.5px; }
+
+  /* De 6.º (TP6) */
+  /* Lámina 19: tablas, operaciones y expresión encadenada con menos aire */
+  .tablas-alg .tabla-ej { font-size: 12.5px; }
+  .lamina--compacta .tablas-alg .tabla-ej th, .lamina--compacta .tablas-alg .tabla-ej td { padding: 2px 5px; }
+  .encadenada { grid-template-columns: auto 1fr; }
+  .encadenada .alg--grande { white-space: nowrap; }
+  .ops { gap: 7px; }
+  .op { gap: 4px; padding: 6px 10px 8px; }
+  .op__cab { gap: 4px 8px; }
+  .op__cab h4 { font-size: 18px; }
+  .op__sim { width: 28px; height: 28px; font-size: 21px; border-radius: 6px; }
+  .op__sim .sim { width: 17px; height: 17px; }
+  .op__sim--por { font-size: 26px; }
+  .op p { font-size: 14px; line-height: 1.3; }
+  .op .op__en-sql { font-size: 12px; }
+  .encadenada { gap: 14px; }
+  .encadenada__expr { gap: 5px; }
+  .encadenada .texto { font-size: 14.5px; }
+  .alg--grande { font-size: 17px; padding: 2px 10px; }
+  .encadenada .instrucciones { gap: 4px; margin-top: 5px; }
+  .encadenada .instrucciones > li { font-size: 14px; line-height: 1.35; padding: 4px 8px 4px 6px; }
+  /* Lámina 20: tarjetas más bajas; tres ventanas de código en una fila */
+  .usos-sql { gap: 8px; }
+  .usos-sql .tarjeta { gap: 4px; padding: 8px 6px 10px; }
+  .usos-sql .ico--l { width: 46px; height: 46px; }
+  .usos-sql .tarjeta__tit { font-size: 17px; }
+  .usos-sql .tarjeta p { font-size: 15px; line-height: 1.3; }
+  .ej-sql { gap: 8px; }
+  .ej-sql__tit { font-size: 15.5px; padding: 3px 10px; }
+  .ej-sql .pseudo--sql { font-size: 12px; }
+  /* Lámina 21: los pasos a la izquierda; el panel de XAMPP y "Si no arranca" a la derecha */
+  .lado-a-lado--xampp { grid-template-columns: 1.25fr 1fr; gap: 14px; }
+  .lado-a-lado--xampp .instrucciones { gap: 7px; }
+  .lado-a-lado--xampp .instrucciones > li { font-size: 16px; line-height: 1.4; padding: 7px 10px 7px 7px; }
+  .xampp__tabla { font-size: 15px; }
+  .xampp__tabla th, .xampp__tabla td { padding: 6px 10px; }
+  .xampp-col .nota p { font-size: 15.5px; }
+  /* Lámina 22: subtítulo largo; las cuatro familias en una fila, con el ícono arriba */
+  .tit__sub--largo { font-size: 26px; }
+  .familias { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+  .familia { gap: 6px; padding: 8px 9px 9px; }
+  .familia__sigla { font-size: 22px; }
+  .familia__fun { font-size: 16px; }
+  .familia__nom::after { margin-top: 4px; }
+  .familia__nom .ico { width: 32px; height: 32px; margin: -4px 0; }
+  .familia__txt { font-size: 13.5px; line-height: 1.28; padding: 6px 8px; }
+  .familia__ej { font-size: 13px; padding: 3px 8px; line-height: 1.55; }
+  .familia__ej code { font-size: .85em; }
+  .lamina--compacta .tabla-familias th, .lamina--compacta .tabla-familias td { font-size: 14.5px; padding: 4px 8px; }
+  .tabla-familias td:last-child { line-height: 1.4; }
+  .tabla-familias thead th:first-child, .tabla-familias tbody th { width: 14%; }
+  .tabla-familias code { font-size: .85em; }
+  /* "Ejemplo rápido": cada columna, del ancho de su línea de código más larga */
+  .ej-sql--4 { grid-template-columns: max-content max-content 1fr 1fr; }
+  .ej-sql--4 > li { min-width: auto; grid-row: span 2; grid-template-rows: subgrid; row-gap: 6px; }   /* las ventanas, alineadas */
+  .ej-sql--4 .ventana-cod { min-width: min-content; }
+  .ej-sql--4 .pseudo__c { white-space: nowrap; min-width: auto; }
+  .ej-sql--4 .ej-sql__tit { font-size: 13.5px; line-height: 1.2; padding: 3px 7px; }
+  .ej-sql--4 .pseudo--sql { font-size: 11.5px; }
+  /* Para profundizar: código y tablas chicas; el camino del pedido en una fila */
+  .tabla-conj code, .tabla-partes code { font-size: .9em; }
+  .tabla-conj td:nth-child(2) { white-space: nowrap; }
+  .flujo li { font-size: 12.5px; padding: 4px 3px; }
+  .flujo li span { font-size: 11px; }
+  .pf .alg { font-size: .95em; }
+  /* Actividades: el punto 5, a lo ancho, con los incisos de a dos */
+  .act__items--2col { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* ==========================================================

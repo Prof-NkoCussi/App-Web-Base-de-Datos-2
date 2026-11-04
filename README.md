@@ -34,7 +34,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | 5 | Normalización | ✅ Disponible |
 | Integrador 1 | La tienda, de nuevo | Próximamente |
 | **Módulo 3 · Lenguajes de consulta** | | |
-| 6 | Del álgebra relacional a SQL | Próximamente |
+| 6 | Del álgebra relacional a SQL | ✅ Disponible |
 | 7 | Definir y cargar tablas | Próximamente |
 | 8 | Consultar | Próximamente |
 | 9 | Filtrar | Próximamente |
@@ -55,6 +55,7 @@ assets/css/estilos.css   estilos y paleta de colores
 assets/js/actividades.js botón PDF, barra de navegación y marca de "Visto"
 assets/fonts/            tipografías
 assets/img/              imágenes
+assets/datos/            archivos para descargar desde las actividades en la computadora
 ```
 
 Es un sitio estático: HTML, CSS y JavaScript, sin instalación ni servidor. Para verlo en tu computadora, descargá el repositorio y abrí `index.html` en el navegador.

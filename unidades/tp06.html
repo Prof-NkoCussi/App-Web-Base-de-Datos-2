@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°6 — Del álgebra relacional a SQL · Base de Datos II</title>
+  <meta name="description" content="TP N°6 de Base de Datos II: álgebra relacional (selección, proyección, producto cartesiano y reunión), qué es SQL, la puesta en marcha de XAMPP y phpMyAdmin, y las familias de comandos DDL, DML, DQL y TCL. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="6" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-tablas-rel" viewBox="0 0 48 48">
+      <path d="M4.3 5.3h21.4V10H4.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="3" y="4" width="24" height="17" rx="2"/>
+      <path d="M3 10h24M3 15.5h24M11 10v11M19 10v11"/>
+      <path d="M9 21v5M9 32v5h12"/>
+      <circle cx="9" cy="29" r="3" style="fill:var(--ac)"/>
+      <path d="M22.3 28.3h21.4V33H22.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="21" y="27" width="24" height="17" rx="2"/>
+      <path d="M21 33h24M21 38.5h24M29 33v11M37 33v11"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-doc-mas" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M36 31.5v9M31.5 36h9" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-tacho" viewBox="0 0 48 48">
+      <path d="M9 12h30M19 12V7h10v5"/>
+      <path d="M12.5 12l2.5 30h18l2.5-30z" style="fill:var(--ac)"/>
+      <path d="M20 18v18M28 18v18"/>
+    </symbol>
+    <symbol id="i-escuela" viewBox="0 0 48 48">
+      <path d="M24 13V4"/>
+      <path d="M24 4h7.5v4.5H24" style="fill:var(--ac)"/>
+      <path d="M12 23 24 13l12 10"/>
+      <path d="M14 21.5V43h20V21.5"/>
+      <path d="M14 28H5v15h38V28h-9"/>
+      <path d="M4 43h40"/>
+      <path d="M20 43v-7a4 4 0 0 1 8 0v7" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.5"/>
+      <path d="M9.5 32v4M38.5 32v4" style="stroke:var(--ac);stroke-width:3.2"/>
+    </symbol>
+    <symbol id="i-tienda" viewBox="0 0 48 48">
+      <path d="M8 22v21h32V22" style="fill:#fff"/>
+      <path d="M9 6h30l5 12H4z" style="fill:var(--ac)"/>
+      <path d="M4 18a5 5 0 0 0 10 0 5 5 0 0 0 10 0 5 5 0 0 0 10 0 5 5 0 0 0 10 0" style="fill:var(--ac)"/>
+      <path d="M17 6l-3 12M24 6v12M31 6l3 12"/>
+      <rect x="12" y="29" width="9" height="14" style="fill:var(--ac)"/>
+      <rect x="26" y="29" width="10" height="8" style="fill:var(--ac)"/>
+      <path d="M31 29v8M4 43h40"/>
+    </symbol>
+    <symbol id="i-banco" viewBox="0 0 48 48">
+      <path d="M24 4 5 14h38z" style="fill:var(--ac)"/>
+      <circle cx="24" cy="10" r="1.8" style="fill:#fff;stroke:none"/>
+      <path d="M7 18h34"/>
+      <g style="fill:var(--ac)">
+        <rect x="9.5" y="21" width="5" height="14"/><rect x="18" y="21" width="5" height="14"/>
+        <rect x="26" y="21" width="5" height="14"/><rect x="34.5" y="21" width="5" height="14"/>
+      </g>
+      <path d="M6 39h36M4 43h40"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-interruptor" viewBox="0 0 48 48">
+      <rect x="3" y="13" width="42" height="22" rx="11" style="fill:var(--ac)"/>
+      <circle cx="34" cy="24" r="7.5" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-alerta" viewBox="0 0 48 48">
+      <path d="M24 6 43.5 40.5h-39z" style="fill:var(--ac)"/>
+      <path d="M24 18v11" style="stroke-width:3.4"/>
+      <circle cx="24" cy="34.6" r="2.3" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-doc-engranaje" viewBox="0 0 48 48">
+      <path d="M22 43H9V5h18l9 9v6"/>
+      <path d="M27 5v9h9"/>
+      <path d="M14 18h12M14 24h8M14 30h5"/>
+      <g transform="translate(20.5 20.5) scale(.56)" style="stroke-width:4.6">
+        <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z" style="fill:var(--ac)"/>
+        <circle cx="24" cy="24" r="6" style="fill:#fff"/>
+      </g>
+    </symbol>
+    <symbol id="i-ciclo" viewBox="0 0 48 48">
+      <path d="M39 22A15 15 0 0 0 13.4 13.4" style="stroke:var(--ac);stroke-width:4.6"/>
+      <path d="M9 26a15 15 0 0 0 25.6 8.6" style="stroke:var(--ac);stroke-width:4.6"/>
+      <path d="M13.4 5.4v8h8M34.6 42.6v-8h-8"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <!-- Símbolos del álgebra que la tipografía no trae: reunión, unión e intersección -->
+    <symbol id="s-reunion" viewBox="0 0 24 24">
+      <path d="M4 6v12L20 6v12z"/>
+    </symbol>
+    <symbol id="s-union" viewBox="0 0 24 24">
+      <path d="M6 5v7a6 6 0 0 0 12 0V5"/>
+    </symbol>
+    <symbol id="s-interseccion" viewBox="0 0 24 24">
+      <path d="M6 19v-7a6 6 0 0 1 12 0v7"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°6 — Del álgebra relacional a SQL</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°6">
+    <a href="#pag-19">19 · Álgebra relacional</a>
+    <a href="#pag-20">20 · ¿Qué es SQL?</a>
+    <a href="#pag-21">21 · XAMPP</a>
+    <a href="#pag-22">22 · Familias de comandos</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°6 — Del álgebra relacional a SQL</h1>
+
+  <!-- =================== LÁMINA 19 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--justa" id="pag-19" aria-labelledby="t19" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t19"><span class="tit__num">19.</span> Álgebra relacional</h2>
+      <p class="tit__sub">Las operaciones detrás de cada consulta</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-tablas-rel"/></svg>
+      <p>El <strong>álgebra relacional</strong> es un conjunto de operaciones sobre tablas: cada una toma una o dos tablas y devuelve otra tabla. Es la base de los lenguajes de consulta, como SQL.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="o19">
+      <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="o19">Cuatro operaciones</h3><p class="texto">Los ejemplos usan las tablas del TP2 (lámina 6).</p></div>
+      <div class="der-tablas tablas-alg">
+        <table class="tabla-ej">
+          <caption>ALUMNOS</caption>
+          <thead>
+            <tr><th scope="col">id_alumno</th><th scope="col">nombre</th><th scope="col">email</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>ana@mail.com</td></tr>
+            <tr><td>2</td><td>Luis</td><td>luis@mail.com</td></tr>
+            <tr><td>3</td><td>Marta</td><td>marta@mail.com</td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej">
+          <caption>CURSOS</caption>
+          <thead>
+            <tr><th scope="col">id_curso</th><th scope="col">nombre</th><th scope="col">creditos</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>101</td><td>Matemática</td><td>4</td></tr>
+            <tr><td>102</td><td>Historia</td><td>3</td></tr>
+            <tr><td>103</td><td>Inglés</td><td>2</td></tr>
+          </tbody>
+        </table>
+        <table class="tabla-ej">
+          <caption>INSCRIPCIONES</caption>
+          <thead>
+            <tr><th scope="col">id_inscripcion</th><th scope="col">id_alumno</th><th scope="col">id_curso</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>1</td><td>101</td></tr>
+            <tr><td>2</td><td>2</td><td>102</td></tr>
+            <tr><td>3</td><td>1</td><td>102</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <ul class="ops">
+        <li class="op">
+          <div class="op__cab">
+            <span class="op__sim" aria-hidden="true">σ</span>
+            <h4>Selección</h4>
+            <p class="op__en-sql">En SQL: <code class="cod-sql">WHERE</code></p>
+          </div>
+          <p>Elige las <strong>filas</strong> que cumplen una condición.</p>
+          <p><span class="alg">σ creditos &gt; 2 (CURSOS)</span> devuelve las filas de Matemática y de Historia.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL de la selección">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">cursos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">creditos</span> &gt; <span class="t-num">2</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="op">
+          <div class="op__cab">
+            <span class="op__sim" aria-hidden="true">π</span>
+            <h4>Proyección</h4>
+            <p class="op__en-sql">En SQL: <code class="cod-sql">SELECT</code> columnas</p>
+          </div>
+          <p>Elige las <strong>columnas</strong> que se quieren ver.</p>
+          <p><span class="alg">π nombre (ALUMNOS)</span> devuelve solo la columna nombre: Ana, Luis y Marta.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL de la proyección">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>FROM</b> <span class="t-atr">alumnos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="op">
+          <div class="op__cab">
+            <span class="op__sim op__sim--por" aria-hidden="true">×</span>
+            <h4>Producto cartesiano</h4>
+            <p class="op__en-sql">En SQL: <code class="cod-sql">FROM a, b</code></p>
+          </div>
+          <p>Combina <strong>cada fila</strong> de una tabla con <strong>cada fila</strong> de otra.</p>
+          <p><span class="alg">ALUMNOS × CURSOS</span> devuelve 3 × 3 = 9 filas: cada alumno con cada curso.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL del producto cartesiano">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">alumnos</span>, <span class="t-atr">cursos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="op">
+          <div class="op__cab">
+            <span class="op__sim"><svg class="sim" role="img" aria-label="reunión"><use href="#s-reunion"/></svg></span>
+            <h4>Reunión</h4>
+            <p class="op__en-sql">En SQL: <code class="cod-sql">JOIN</code> (TP11)</p>
+          </div>
+          <p>Combina las filas que <strong>coinciden en un campo</strong>.</p>
+          <p><span class="alg">ALUMNOS <svg class="sim" role="img" aria-label="reunión"><use href="#s-reunion"/></svg> INSCRIPCIONES</span> devuelve 3 filas, unidas por id_alumno: Ana con 101, Luis con 102 y Ana con 102.</p>
+          <p class="op__nota">Es un × seguido de una σ: de las 9 combinaciones quedan las 3 en las que coincide id_alumno.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="c19">
+      <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="c19">Operaciones encadenadas</h3><p class="texto">Cada operación devuelve una tabla, que puede entrar en otra.</p></div>
+      <div class="encadenada">
+        <div class="encadenada__expr">
+          <p class="alg alg--grande">π nombre (σ id_alumno = 1 (ALUMNOS))</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL de la expresión encadenada">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">alumnos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_alumno</span> = <span class="t-num">1</span>;</span></li>
+            </ol>
+          </div>
+          <p class="texto">Resultado: <strong>Ana</strong>.</p>
+        </div>
+        <div>
+          <p class="texto">Se lee de adentro hacia afuera, como trabaja el gestor.</p>
+          <ol class="instrucciones">
+            <li><span><code class="cod-sql">FROM alumnos</code>: la tabla ALUMNOS.</span></li>
+            <li><span><code class="cod-sql">WHERE id_alumno = 1</code> es <span class="alg">σ id_alumno = 1</span>: queda la fila de Ana.</span></li>
+            <li><span><code class="cod-sql">SELECT nombre</code> es <span class="alg">π nombre</span>: queda la columna nombre.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> SQL dice qué datos se quieren; el álgebra relacional muestra las operaciones que hace el gestor para obtenerlos.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 19">19</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 20 (PDF pág. 23) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-20" aria-labelledby="t20">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t20"><span class="tit__num">20.</span> ¿Qué es SQL y para qué sirve?</h2>
+      <p class="tit__sub">El lenguaje para trabajar con bases de datos</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>SQL significa <strong>Structured Query Language.</strong> Es el lenguaje que usamos para crear, consultar, modificar y organizar la información dentro de una base de datos relacional.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="s20">
+      <div class="panel__cab"><h3 class="subtitulo" id="s20">¿Para qué sirve?</h3></div>
+      <ul class="ambitos ambitos--4 usos-sql">
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__tit">Consultar datos</h4><p>Permite buscar y obtener información.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg><h4 class="tarjeta__tit">Agregar información</h4><p>Permite insertar nuevos registros.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg><h4 class="tarjeta__tit">Modificar registros</h4><p>Permite actualizar datos existentes.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-tacho"/></svg><h4 class="tarjeta__tit">Eliminar datos</h4><p>Permite borrar registros.</p></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="e20">
+      <div class="panel__cab"><h3 class="subtitulo" id="e20">Ejemplos simples</h3></div>
+      <ul class="ej-sql">
+        <li>
+          <h4 class="ej-sql__tit">Consultar datos</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL para consultar datos">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Agregar información</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL para agregar información">
+              <li><span class="pseudo__c"><b>INSERT INTO</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c">(<span class="t-atr">nombre</span>, <span class="t-atr">precio</span>)</span></li>
+              <li><span class="pseudo__c"><b>VALUES</b> (<span class="t-str">'Mouse'</span>, <span class="t-num">25000</span>);</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Modificar registros</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL para modificar registros">
+              <li><span class="pseudo__c"><b>UPDATE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>SET</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Córdoba'</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_cliente</span> = <span class="t-num">1</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="u20">
+      <div class="panel__cab"><h3 class="subtitulo" id="u20">¿Dónde se usa?</h3></div>
+      <ul class="ambitos ambitos--4 usos-sql">
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-escuela"/></svg><h4 class="tarjeta__tit">Escuelas</h4><p>Para gestionar alumnos y cursos.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-tienda"/></svg><h4 class="tarjeta__tit">Comercios</h4><p>Para administrar productos y ventas.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-banco"/></svg><h4 class="tarjeta__tit">Bancos</h4><p>Para manejar cuentas y clientes.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg><h4 class="tarjeta__tit">Aplicaciones</h4><p>Para almacenar y gestionar datos.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> SQL no guarda los datos por sí solo: permite comunicarnos con la base de datos para administrarla.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 20">20</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 21 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-21" aria-labelledby="t21" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t21"><span class="tit__num">21.</span> Puesta en marcha de XAMPP</h2>
+      <p class="tit__sub">Del panel de control a phpMyAdmin <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-interruptor"/></svg>
+      <div class="intro__txt">
+        <p><strong>XAMPP</strong> instala en la computadora un servidor de bases de datos y <strong>phpMyAdmin</strong>, una página para manejarlo desde el navegador. Con él se hacen todas las actividades en la computadora de este año.</p>
+        <p>El módulo que XAMPP llama “MySQL” en realidad es <strong>MariaDB</strong>, un gestor hecho a partir de MySQL que se usa igual.</p>
+      </div>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--xampp">
+      <section class="panel" aria-labelledby="p21">
+        <div class="panel__cab"><h3 class="subtitulo" id="p21">Paso a paso</h3></div>
+        <ol class="instrucciones">
+          <li><span>Abrí el panel de control de XAMPP desde el menú Inicio: <span class="ui">XAMPP Control Panel</span>.</span></li>
+          <li><span>Hacé clic en <span class="ui">Start</span> en las filas de <span class="ui">Apache</span> y de <span class="ui">MySQL</span>. Cuando arrancan, el nombre se pone en verde y el botón dice <span class="ui">Stop</span>.</span></li>
+          <li><span>En el navegador, entrá a <code>localhost/phpmyadmin</code> (o hacé clic en <span class="ui">Admin</span>, en la fila de MySQL).</span></li>
+          <li><span>Para crear una base: <span class="ui">Nueva</span>, a la izquierda; escribí el nombre y hacé clic en <span class="ui">Crear</span>. Para cargar un archivo <code class="cod-archivo">.sql</code>: pestaña <span class="ui">Importar</span>, elegí el archivo y hacé clic en <span class="ui">Importar</span>.</span></li>
+          <li><span>Para escribir instrucciones: elegí la base a la izquierda, pestaña <span class="ui">SQL</span>. Escribí la instrucción y hacé clic en <span class="ui">Continuar</span>: el resultado aparece debajo.</span></li>
+        </ol>
+      </section>
+
+      <div class="xampp-col">
+        <figure class="xampp">
+          <figcaption class="xampp__barra">XAMPP Control Panel</figcaption>
+          <table class="xampp__tabla">
+            <caption class="sr-only">El panel de control de XAMPP con Apache y MySQL en marcha: los dos nombres en verde y el botón Stop</caption>
+            <thead>
+              <tr><th scope="col">Module</th><th scope="col">Port(s)</th><th scope="col">Actions</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row" class="xampp__on">Apache</th><td>80, 443</td><td><span class="xampp__btn">Stop</span><span class="xampp__btn">Admin</span></td></tr>
+              <tr><th scope="row" class="xampp__on">MySQL</th><td>3306</td><td><span class="xampp__btn">Stop</span><span class="xampp__btn">Admin</span></td></tr>
+            </tbody>
+          </table>
+          <p class="xampp__log"><span>[Apache] Status change detected: running</span><span>[mysql] Status change detected: running</span></p>
+        </figure>
+
+        <div class="nota nota--importante">
+          <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-alerta"/></svg>Si no arranca</h3>
+          <p>Si Apache o MySQL no se ponen en verde, casi siempre es porque otro programa ya usa su puerto: el <strong>80</strong> (Apache) o el <strong>3306</strong> (MySQL). El panel lo avisa en los mensajes de abajo.</p>
+          <p>Cerrá ese programa o cambiá el puerto en la configuración de XAMPP (se ve en el TP13).</p>
+        </div>
+      </div>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Con Apache y MySQL en verde se entra a phpMyAdmin, donde se crean las bases y se ejecuta el SQL.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 21">21</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 22 (PDF pág. 24) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--justa" id="pag-22" aria-labelledby="t22">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--extra-largo" id="t22"><span class="tit__num">22.</span> Familias de comandos SQL: DDL, DML, DQL y TCL</h2>
+      <p class="tit__sub tit__sub--largo">Cuatro grupos para entender qué hace cada instrucción</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Los comandos SQL suelen agruparse en <strong>familias</strong> según su función. Esto ayuda a entender para qué sirve cada instrucción.</p>
+    </div>
+
+    <ul class="familias">
+      <li class="familia">
+        <h3 class="familia__nom"><span class="familia__sigla">DDL</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc-engranaje"/></svg><span class="familia__fun">define la estructura</span></h3>
+        <p class="familia__txt">Se usa para crear, modificar o eliminar objetos de la base de datos (tablas, vistas, etc.).</p>
+        <p class="familia__ej"><strong>Ejemplos:</strong> <code class="cod-sql">CREATE</code>, <code class="cod-sql">ALTER</code>, <code class="cod-sql">DROP</code></p>
+      </li>
+      <li class="familia">
+        <h3 class="familia__nom"><span class="familia__sigla">DML</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><span class="familia__fun">manipula datos</span></h3>
+        <p class="familia__txt">Se usa para insertar, actualizar o eliminar registros de las tablas.</p>
+        <p class="familia__ej"><strong>Ejemplos:</strong> <code class="cod-sql">INSERT</code>, <code class="cod-sql">UPDATE</code>, <code class="cod-sql">DELETE</code></p>
+      </li>
+      <li class="familia">
+        <h3 class="familia__nom"><span class="familia__sigla">DQL</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><span class="familia__fun">consulta información</span></h3>
+        <p class="familia__txt">Se usa para consultar y recuperar datos de la base de datos.</p>
+        <p class="familia__ej"><strong>Ejemplos:</strong> <code class="cod-sql">SELECT</code></p>
+      </li>
+      <li class="familia">
+        <h3 class="familia__nom"><span class="familia__sigla">TCL</span><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-ciclo"/></svg><span class="familia__fun">controla transacciones</span></h3>
+        <p class="familia__txt">Se usa para gestionar transacciones y asegurar la integridad de los datos.</p>
+        <p class="familia__ej"><strong>Ejemplos:</strong> <code class="cod-sql">COMMIT</code>, <code class="cod-sql">ROLLBACK</code></p>
+      </li>
+    </ul>
+
+    <section class="panel" aria-labelledby="c22">
+      <div class="panel__cab"><h3 class="subtitulo" id="c22">Comparativa de las familias de comandos SQL</h3></div>
+      <table class="tabla-comp tabla-familias">
+        <caption class="sr-only">Comparativa de las familias de comandos SQL: qué hace cada una y ejemplos</caption>
+        <thead>
+          <tr><th scope="col">Familia</th><th scope="col">¿Qué hace?</th><th scope="col">Ejemplos</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">DDL</th><td>Define la estructura de la base de datos (tablas, vistas, etc.).</td><td><code class="cod-sql">CREATE</code>, <code class="cod-sql">ALTER</code>, <code class="cod-sql">DROP</code></td></tr>
+          <tr><th scope="row">DML</th><td>Manipula los datos de las tablas.</td><td><code class="cod-sql">INSERT</code>, <code class="cod-sql">UPDATE</code>, <code class="cod-sql">DELETE</code></td></tr>
+          <tr><th scope="row">DQL</th><td>Consulta y recupera información.</td><td><code class="cod-sql">SELECT</code></td></tr>
+          <tr><th scope="row">TCL</th><td>Controla transacciones y la integridad de los datos.</td><td><code class="cod-sql">COMMIT</code>, <code class="cod-sql">ROLLBACK</code></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="panel" aria-labelledby="r22">
+      <div class="panel__cab"><h3 class="subtitulo" id="r22">Ejemplo rápido</h3></div>
+      <ul class="ej-sql ej-sql--4">
+        <li>
+          <h4 class="ej-sql__tit">DDL – Crear una tabla</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla clientes">
+              <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">clientes</span> (</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">id_cliente</span> <span class="t-fun">INT</span>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">100</span>)</span></li>
+              <li><span class="pseudo__c">);</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">DML – Insertar un registro</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que inserta un registro en clientes">
+              <li><span class="pseudo__c"><b>INSERT INTO</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c">(<span class="t-atr">id_cliente</span>, <span class="t-atr">nombre</span>)</span></li>
+              <li><span class="pseudo__c"><b>VALUES</b> (<span class="t-num">1</span>, <span class="t-str">'Ana'</span>);</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">DQL – Consultar datos</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta la tabla clientes">
+              <li><span class="pseudo__c"><b>SELECT</b> *</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">TCL – Confirmar cambios</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que confirma los cambios">
+              <li><span class="pseudo__c"><b>COMMIT</b>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Si sabes qué familia usa cada comando, entiendes mejor el papel de cada instrucción dentro de SQL.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 22">22</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 19</p>
+      <h3 class="pf__titulo" id="pf1">Unión, diferencia e intersección</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Otras tres operaciones, para dos tablas con <strong>las mismas columnas</strong>:</p>
+          <ul class="pf__lista">
+            <li><strong>Unión (<svg class="sim" role="img" aria-label="unión"><use href="#s-union"/></svg>):</strong> las filas de las dos, sin repetir.</li>
+            <li><strong>Diferencia (−):</strong> las de la primera que no están en la otra.</li>
+            <li><strong>Intersección (<svg class="sim" role="img" aria-label="intersección"><use href="#s-interseccion"/></svg>):</strong> las que están en las dos.</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: alumnos de dos cursos</h4>
+          <p><strong>A</strong>, los de Matemática: Ana, Bruno y Carla. <strong>B</strong>, los de Historia: Bruno, Carla y Diego.</p>
+          <table class="tabla-comp tabla-conj">
+            <caption class="sr-only">Unión, diferencia e intersección de los alumnos de Matemática (A) y de Historia (B), y su palabra en SQL</caption>
+            <thead>
+              <tr><th scope="col">Operación</th><th scope="col">Resultado</th><th scope="col">En SQL</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">A <svg class="sim" role="img" aria-label="unión"><use href="#s-union"/></svg> B</th><td>Ana, Bruno, Carla, Diego</td><td><code class="cod-sql">UNION</code></td></tr>
+              <tr><th scope="row">A − B</th><td>Ana</td><td><code class="cod-sql">EXCEPT</code></td></tr>
+              <tr><th scope="row">A <svg class="sim" role="img" aria-label="intersección"><use href="#s-interseccion"/></svg> B</th><td>Bruno, Carla</td><td><code class="cod-sql">INTERSECT</code></td></tr>
+            </tbody>
+          </table>
+          <p>El orden importa: B − A da Diego.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf pf--ajustado" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 20</p>
+      <h3 class="pf__titulo" id="pf2">Las partes de una instrucción</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Las <strong>palabras clave</strong> van en mayúsculas por convención: el gestor también las entiende en minúsculas. Los <strong>textos</strong> van entre comillas simples; los números, sin comillas.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: el UPDATE de la lámina 20</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que cambia la ciudad del cliente 1">
+              <li><span class="pseudo__c"><b>UPDATE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>SET</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Córdoba'</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_cliente</span> = <span class="t-num">1</span>;</span></li>
+            </ol>
+          </div>
+          <table class="tabla-comp tabla-partes">
+            <caption class="sr-only">Las partes de la instrucción UPDATE del ejemplo</caption>
+            <thead>
+              <tr><th scope="col">Parte</th><th scope="col">En el ejemplo</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row">Palabras clave</th><td><code class="cod-sql">UPDATE</code> <code class="cod-sql">SET</code> <code class="cod-sql">WHERE</code></td></tr>
+              <tr><th scope="row">Nombres</th><td><code class="cod-sql">clientes</code> <code class="cod-sql">ciudad</code> <code class="cod-sql">id_cliente</code></td></tr>
+              <tr><th scope="row">Valores</th><td><code class="cod-sql">'Córdoba'</code> <code class="cod-sql">1</code></td></tr>
+              <tr><th scope="row">Operador</th><td><code class="cod-sql">=</code></td></tr>
+              <tr><th scope="row">Punto y coma</th><td><code class="cod-sql">;</code> cierra la instrucción</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 21</p>
+      <h3 class="pf__titulo" id="pf3">Qué hay dentro de XAMPP</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <ul class="pf__lista">
+            <li><strong>Apache:</strong> el servidor web; entrega las páginas.</li>
+            <li><strong>MariaDB:</strong> el gestor; guarda los datos y ejecuta el SQL.</li>
+            <li><strong>PHP:</strong> el lenguaje en el que está hecho phpMyAdmin.</li>
+            <li><strong>phpMyAdmin:</strong> una página para manejar MariaDB.</li>
+          </ul>
+        </div>
+        <div class="pf__caja">
+          <h4>Qué es localhost</h4>
+          <p><strong>localhost</strong> es el nombre con el que la computadora se llama a sí misma: el pedido a <code>localhost/phpmyadmin</code> no sale a internet.</p>
+          <div class="flujo-marco">
+            <p class="flujo-marco__rotulo">Tu computadora (localhost)</p>
+            <ol class="flujo" aria-label="El camino de un pedido: el navegador le pide la página a Apache, y phpMyAdmin le pasa el SQL a MariaDB">
+              <li><strong>Navegador</strong></li>
+              <li><strong>Apache + PHP</strong><span>phpMyAdmin · puerto 80</span></li>
+              <li><strong>MariaDB</strong><span>puerto 3306</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Lámina 22</p>
+      <h3 class="pf__titulo" id="pf4">La quinta familia: DCL</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p><strong>DCL</strong> (control de datos) maneja los <strong>permisos</strong> de los usuarios: <code class="cod-sql">GRANT</code> los da y <code class="cod-sql">REVOKE</code> los quita. Se ve en el TP13.</p>
+          <p>En muchos libros, <strong>DQL va dentro de DML</strong>: SELECT también trabaja con los datos.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ejemplo: los permisos de un preceptor</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que le da y le quita al usuario preceptor el permiso de consultar la base escuela">
+              <li><span class="pseudo__c"><b>GRANT SELECT ON</b> <span class="t-atr">escuela</span>.*</span></li>
+              <li><span class="pseudo__c"><b>TO</b> <span class="t-str">'preceptor'</span>@<span class="t-str">'localhost'</span>;</span></li>
+              <li><span class="pseudo__c"><b>REVOKE SELECT ON</b> <span class="t-atr">escuela</span>.*</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-str">'preceptor'</span>@<span class="t-str">'localhost'</span>;</span></li>
+            </ol>
+          </div>
+          <p>GRANT deja que el usuario preceptor consulte las tablas de escuela; REVOKE le quita ese permiso.</p>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 6</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°6 — Del álgebra relacional a SQL</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°6.</p>
+
+    <!-- Puntos 1 a 4: uno por lámina (2 y 4, del PDF; 1 y 3, nuevos). Punto 5, nuevo -->
+    <ol class="acts acts--2col">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> Álgebra relacional</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué diferencia hay entre la selección (σ) y la proyección (π)?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Cuántas filas devuelve ALUMNOS × CURSOS? Explicá por qué.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué hace la reunión (<svg class="sim" role="img" aria-label="reunión"><use href="#s-reunion"/></svg>)? ¿En qué se diferencia del producto cartesiano?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> ¿Qué es SQL?</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe con tus palabras qué es SQL.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Para cuál de estas acciones usarías SQL: buscar clientes, agregar productos o cambiar un precio?</div></li>
+          <li><b class="act__letra">c)</b><div>Marca un ejemplo de instrucción SQL del recuadro.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> Puesta en marcha de XAMPP</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué dos módulos hay que iniciar para usar phpMyAdmin? ¿Cómo te das cuenta de que arrancaron?</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué dirección escribís en el navegador para entrar a phpMyAdmin?</div></li>
+          <li><b class="act__letra">c)</b><div>MySQL no se pone en verde. ¿Cuál puede ser la causa? ¿Qué harías?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Familias de comandos SQL</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Relaciona cada comando con su familia.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué familia usarías para crear una tabla?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué familia usarías para consultar datos?</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Del álgebra a SQL</h3>
+        <p class="act__caso">Pasá a SQL las expresiones a), b) y c), y pasá a álgebra la consulta d). Usá las tablas de la lámina 19.</p>
+        <ol class="act__items act__items--2col">
+          <li><b class="act__letra">a)</b><div><span class="alg">σ creditos &lt; 4 (CURSOS)</span></div></li>
+          <li><b class="act__letra">b)</b><div><span class="alg">π nombre, email (ALUMNOS)</span></div></li>
+          <li><b class="act__letra">c)</b><div><span class="alg">π id_alumno (σ id_curso = 102 (INSCRIPCIONES))</span></div></li>
+          <li><b class="act__letra">d)</b><div><code class="cod-sql cod-larga">SELECT email FROM alumnos WHERE nombre = 'Luis';</code></div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 6</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°6</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°6 — Del álgebra relacional a SQL</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Trabajá en phpMyAdmin con la base escuela. Anotá en la carpeta las respuestas y las instrucciones que escribas.</p>
+
+    <ol class="acts" start="6">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Puesta en marcha</h3>
+        <div class="descarga">
+          <p>La base está en el archivo <code class="cod-archivo">escuela.sql</code>, con las tablas de la lámina 19. Descargalo desde la página del TP6.</p>
+          <a class="boton no-imprimir" href="../assets/datos/escuela.sql" download="escuela.sql"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar escuela.sql</span></a>
+        </div>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Iniciá XAMPP: Apache y MySQL tienen que quedar en verde.</div></li>
+          <li><b class="act__letra">b)</b><div>Entrá a phpMyAdmin e importá <code class="cod-archivo">escuela.sql</code>: pestaña <span class="ui">Importar</span>, elegí el archivo y hacé clic en <span class="ui">Importar</span>.</div></li>
+          <li><b class="act__letra">c)</b><div>Elegí la base escuela, a la izquierda. ¿Cuántas tablas tiene? ¿Cómo se llaman?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> Del álgebra a SQL, en la computadora</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>En la pestaña <span class="ui">SQL</span> de la base escuela, probá las consultas que escribiste en el punto 5 a), b) y c). Anotá qué devuelve cada una.</div></li>
+          <li><b class="act__letra">b)</b><div>Probá también la consulta del punto 5 d) y anotá qué devuelve.</div></li>
+          <li><b class="act__letra">c)</b><div>Si alguna dio error, anotá el mensaje y qué tuviste que corregir.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">8-</span> Una instrucción de cada familia</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Creá en la base escuela una tabla nueva, por ejemplo profesores, con dos campos.</div></li>
+          <li><b class="act__letra">b)</b><div>Agregá un registro a esa tabla.</div></li>
+          <li><b class="act__letra">c)</b><div>Consultá la tabla para ver el registro que agregaste.</div></li>
+          <li><b class="act__letra">d)</b><div>Copiá en la carpeta las tres instrucciones y anotá al lado la familia de cada una: DDL, DML o DQL.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 6</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>
