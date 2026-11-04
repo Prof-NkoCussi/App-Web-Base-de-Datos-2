@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°7 — Definir y cargar tablas · Base de Datos II</title>
+  <meta name="description" content="TP N°7 de Base de Datos II: CREATE DATABASE y CREATE TABLE, ALTER TABLE y DROP para cambiar o borrar lo que ya se creó, e INSERT INTO para cargar registros. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="7" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18" style="fill:var(--ac)"/>
+      <path d="M24 22v13" style="stroke-width:4"/>
+      <circle cx="24" cy="14.5" r="2.6" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-tabla" viewBox="0 0 48 48">
+      <path d="M7.3 11.3h33.4V17H7.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 17v21M30 17v21"/>
+    </symbol>
+    <symbol id="i-campos" viewBox="0 0 48 48">
+      <rect x="10" y="5" width="28" height="38" rx="4"/>
+      <path d="M17 16h14M17 24h14M17 32h14" style="stroke:var(--ac);stroke-width:3.6"/>
+    </symbol>
+    <symbol id="i-escudo" viewBox="0 0 48 48">
+      <path d="M24 4.5 39.5 10v11.5c0 10.2-6.6 18.2-15.5 21.8C15.1 39.7 8.5 31.7 8.5 21.5V10z" style="fill:var(--ac)"/>
+      <path d="M16.5 24l5.5 5.5 10-11" style="stroke-width:3.4"/>
+    </symbol>
+    <symbol id="i-doc-engranaje" viewBox="0 0 48 48">
+      <path d="M22 43H9V5h18l9 9v6"/>
+      <path d="M27 5v9h9"/>
+      <path d="M14 18h12M14 24h8M14 30h5"/>
+      <g transform="translate(20.5 20.5) scale(.56)" style="stroke-width:4.6">
+        <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z" style="fill:var(--ac)"/>
+        <circle cx="24" cy="24" r="6" style="fill:#fff"/>
+      </g>
+    </symbol>
+    <symbol id="i-alerta" viewBox="0 0 48 48">
+      <path d="M24 6 43.5 40.5h-39z" style="fill:var(--ac)"/>
+      <path d="M24 18v11" style="stroke-width:3.4"/>
+      <circle cx="24" cy="34.6" r="2.3" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-doc-mas" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M36 31.5v9M31.5 36h9" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-orden" viewBox="0 0 48 48">
+      <path d="M19 11h23M19 24h23M19 37h23" style="stroke:var(--ac);stroke-width:6"/>
+      <path d="M6.5 8.2 9.5 6.5v9" style="stroke-width:2.6"/>
+      <path d="M6 21a3 3 0 0 1 6 .3c0 2.6-6 3.6-6 7.2h6" style="stroke-width:2.6"/>
+      <path d="M6.2 33.2a2.9 2.5 0 1 1 2.9 3.3 2.9 2.7 0 1 1-2.9 3.6" style="stroke-width:2.6"/>
+    </symbol>
+    <symbol id="i-doc-check" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M32 36.3l2.8 2.8 5.2-5.6" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-prohibido" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="17"/>
+      <path d="M12.5 12.5l23 23" style="stroke:var(--ac);stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°7 — Definir y cargar tablas</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°7">
+    <a href="#pag-23">23 · CREATE</a>
+    <a href="#pag-24">24 · ALTER y DROP</a>
+    <a href="#pag-25">25 · INSERT INTO</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°7 — Definir y cargar tablas</h1>
+
+  <!-- =================== LÁMINA 23 (PDF pág. 25) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-23" aria-labelledby="t23">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°7</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t23"><span class="tit__num">23.</span> CREATE DATABASE y CREATE TABLE</h2>
+      <p class="tit__sub">Crear una base de datos y sus tablas <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Con <strong>CREATE DATABASE</strong> se crea una base de datos nueva. Con <strong>CREATE TABLE</strong> se crean las tablas donde se almacenarán los registros.</p>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--ej">
+      <section class="panel" aria-labelledby="p23-1">
+        <div class="panel__cab"><h3 class="subtitulo" id="p23-1">Paso 1: CREATE DATABASE</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la base tienda">
+            <li><span class="pseudo__c"><b>CREATE DATABASE</b> <span class="t-atr">tienda</span>;</span></li>
+          </ol>
+        </div>
+        <div class="intro">
+          <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-info"/></svg>
+          <p>Crea una base llamada <strong>tienda</strong>.</p>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="p23-2">
+        <div class="panel__cab"><h3 class="subtitulo" id="p23-2">Paso 2: CREATE TABLE</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla clientes">
+            <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">clientes</span> (</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">id_cliente</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">80</span>),</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">email</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">120</span>),</span></li>
+            <li class="i1"><span class="pseudo__c"><span class="t-atr">ciudad</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">60</span>)</span></li>
+            <li><span class="pseudo__c">);</span></li>
+          </ol>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="d23">
+      <div class="panel__cab"><h3 class="subtitulo" id="d23">¿Qué define una tabla?</h3></div>
+      <ul class="ambitos ambitos--4 define-tabla">
+        <li class="tarjeta"><h4 class="tarjeta__cab">Nombre de la tabla</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><p>Identifica la entidad que almacenará los registros.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Columnas</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-campos"/></svg><p>Son los campos donde se guardará la información.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Tipos de datos</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><p>Indican qué tipo de información puede tener cada columna (INT, VARCHAR, etc.).</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Restricciones</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-escudo"/></svg><p>Establecen reglas para los datos (PRIMARY KEY, NOT NULL, UNIQUE, etc.).</p></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="r23">
+      <div class="panel__cab"><h3 class="subtitulo" id="r23">Resultado</h3></div>
+      <div class="resultado">
+        <table class="tabla-ej">
+          <caption>Tabla: CLIENTES</caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">email</th><th scope="col">ciudad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td colspan="4" class="tabla-ej__vacia">(todavía sin registros)</td></tr>
+          </tbody>
+        </table>
+        <div class="intro">
+          <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+          <p>Después de ejecutar los comandos, la base de datos <strong>tienda</strong> tendrá una tabla llamada <strong>clientes</strong> con estas columnas.</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Primero se crea la base de datos; después se crean las tablas que van a organizar la información.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 23">23</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 24 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-24" aria-labelledby="t24" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°7</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t24"><span class="tit__num">24.</span> ALTER y DROP</h2>
+      <p class="tit__sub">Cambiar o borrar lo que ya se creó</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-doc-engranaje"/></svg>
+      <p>Con <strong>ALTER TABLE</strong> se cambian las columnas de una tabla que ya existe, sin perder sus registros. Con <strong>DROP</strong> se borra una tabla o una base entera.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="a24">
+      <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="a24">ALTER TABLE: cambiar una tabla</h3><p class="texto">Los ejemplos usan la tabla clientes de la lámina 23.</p></div>
+      <ul class="ej-sql ej-sql--alter">
+        <li>
+          <h4 class="ej-sql__tit"><code class="cod-sql">ADD</code> Agregar una columna</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que le agrega a clientes la columna telefono">
+              <li><span class="pseudo__c"><b>ALTER TABLE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>ADD</b> <span class="t-atr">telefono</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">20</span>);</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit"><code class="cod-sql">MODIFY</code> Cambiar el tipo o el largo</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que cambia el largo de la columna nombre a 100 caracteres">
+              <li><span class="pseudo__c"><b>ALTER TABLE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>MODIFY</b> <span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">100</span>);</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit"><code class="cod-sql">CHANGE</code> Cambiarle el nombre</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que le cambia el nombre a la columna ciudad por localidad">
+              <li><span class="pseudo__c"><b>ALTER TABLE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>CHANGE</b> <span class="t-atr">ciudad</span> <span class="t-atr">localidad</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">60</span>);</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit"><code class="cod-sql">DROP COLUMN</code> Borrar una columna</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que borra la columna telefono de clientes">
+              <li><span class="pseudo__c"><b>ALTER TABLE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>DROP COLUMN</b> <span class="t-atr">telefono</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit"><code class="cod-sql">ADD FOREIGN KEY</code> Agregar una clave foránea</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que le agrega a ventas una clave foránea hacia clientes">
+              <li><span class="pseudo__c"><b>ALTER TABLE</b> <span class="t-atr">ventas</span></span></li>
+              <li><span class="pseudo__c"><b>ADD FOREIGN KEY</b> (<span class="t-atr">id_cliente</span>) <b>REFERENCES</b> <span class="t-atr">clientes</span>(<span class="t-atr">id_cliente</span>);</span></li>
+            </ol>
+          </div>
+          <p>Desde ahora, cada venta tiene que ser de un cliente que exista en clientes.</p>
+        </li>
+      </ul>
+      <div class="intro">
+        <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-info"/></svg>
+        <p>CHANGE lleva el nombre viejo, el nuevo y el tipo. En MODIFY y CHANGE va la columna completa: lo que no se escribe, como un NOT NULL, se pierde.</p>
+      </div>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--drop">
+      <section class="panel" aria-labelledby="d24">
+        <div class="panel__cab"><h3 class="subtitulo" id="d24">DROP: borrar una tabla o una base</h3></div>
+        <ul class="drops">
+          <li>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL que borra la tabla clientes">
+                <li><span class="pseudo__c"><b>DROP TABLE</b> <span class="t-atr">clientes</span>;</span></li>
+              </ol>
+            </div>
+            <p>Borra la tabla y sus datos.</p>
+          </li>
+          <li>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL que borra la base tienda">
+                <li><span class="pseudo__c"><b>DROP DATABASE</b> <span class="t-atr">tienda</span>;</span></li>
+              </ol>
+            </div>
+            <p>Borra la base y sus tablas.</p>
+          </li>
+          <li>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL que borra la tabla clientes solo si existe">
+                <li><span class="pseudo__c"><b>DROP TABLE IF EXISTS</b> <span class="t-atr">clientes</span>;</span></li>
+              </ol>
+            </div>
+            <p>Si no existe, no da error.</p>
+          </li>
+        </ul>
+      </section>
+
+      <div class="nota nota--importante">
+        <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-alerta"/></svg>Antes de usar DROP</h3>
+        <p><strong>DROP</strong> borra la tabla con todos sus datos y <strong>no se puede deshacer</strong>.</p>
+        <p>Antes, conviene hacer un respaldo de la base (TP13).</p>
+      </div>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> ALTER TABLE cambia la estructura de una tabla que ya existe; DROP la borra entera, con todos sus datos.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 24">24</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 25 (PDF pág. 26) =================== -->
+  <article class="lamina lamina--densa lamina--compacta" id="pag-25" aria-labelledby="t25">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°7</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t25"><span class="tit__num">25.</span> INSERT INTO – cargar información</h2>
+      <p class="tit__sub">Agregar registros a una tabla <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg>
+      <p><strong>INSERT INTO</strong> se usa para incorporar nuevos registros a una tabla. Permite indicar en qué columnas vamos a guardar cada valor.</p>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--ej lado-a-lado--insert">
+      <section class="panel" aria-labelledby="s25">
+        <div class="panel__cab"><h3 class="subtitulo" id="s25">Sintaxis básica</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que inserta a Ana en la tabla clientes">
+            <li><span class="pseudo__c"><b>INSERT INTO</b> <span class="t-atr">clientes</span></span></li>
+            <li><span class="pseudo__c">(<span class="t-atr">id_cliente</span>, <span class="t-atr">nombre</span>, <span class="t-atr">email</span>, <span class="t-atr">ciudad</span>)</span></li>
+            <li><span class="pseudo__c"><b>VALUES</b> (<span class="t-num">1</span>, <span class="t-str">'Ana'</span>, <span class="t-str">'ana@mail.com'</span>, <span class="t-str">'Córdoba'</span>);</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="e25">
+        <div class="panel__cab"><h3 class="subtitulo" id="e25">Ejemplo en una tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>CLIENTES</caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">email</th><th scope="col">ciudad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>ana@mail.com</td><td>Córdoba</td></tr>
+            <tr><td>2</td><td>Carlos</td><td>carlos@mail.com</td><td>Madrid</td></tr>
+            <tr><td>3</td><td>Laura</td><td>laura@mail.com</td><td>Valencia</td></tr>
+            <tr><td>4</td><td>Pedro</td><td>pedro@mail.com</td><td>Barcelona</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="v25">
+      <div class="panel__cab"><h3 class="subtitulo" id="v25">Insertar varios registros</h3></div>
+      <div class="ventana-cod ventana-cod--sql">
+        <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+        <ol class="pseudo pseudo--sql" aria-label="Código SQL que inserta dos productos en una sola instrucción: Teclado y Mouse">
+          <li><span class="pseudo__c"><b>INSERT INTO</b> <span class="t-atr">productos</span> (<span class="t-atr">id_producto</span>, <span class="t-atr">nombre</span>, <span class="t-atr">precio</span>)</span></li>
+          <li><span class="pseudo__c"><b>VALUES</b> (<span class="t-num">101</span>, <span class="t-str">'Teclado'</span>, <span class="t-num">40000</span>),</span></li>
+          <li class="i-values"><span class="pseudo__c">(<span class="t-num">102</span>, <span class="t-str">'Mouse'</span>, <span class="t-num">25000</span>);</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="i25">
+      <div class="panel__cab"><h3 class="subtitulo" id="i25">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-orden"/></svg><h4 class="tarjeta__cab">Respetar el orden</h4><p>Los valores deben ir en el mismo orden que las columnas indicadas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><h4 class="tarjeta__cab">Usar tipos correctos</h4><p>Cada valor debe ser del tipo de dato que acepta la columna (texto, número, fecha, etc.).</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc-check"/></svg><h4 class="tarjeta__cab">Completar campos obligatorios</h4><p>Debes incluir valores para las columnas que no admiten valores NULL.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-prohibido"/></svg><h4 class="tarjeta__cab">Evitar duplicar la clave primaria</h4><p>No puedes insertar un registro con una clave primaria que ya exista en la tabla.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Cada vez que usamos <b>INSERT INTO</b>, agregamos datos nuevos a una tabla.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 25">25</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°7</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid pf-grid--escalonada">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 23</p>
+      <h3 class="pf__titulo" id="pf1">Los tipos de datos más usados</h3>
+      <table class="tabla-ej tabla-tipos">
+        <caption>Tipos de datos en MariaDB</caption>
+        <thead>
+          <tr><th scope="col">Tipo</th><th scope="col">Guarda</th><th scope="col">Ejemplo</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">INT</th><td>Enteros</td><td><code class="cod-sql">25</code></td></tr>
+          <tr><th scope="row">DECIMAL(10,2)</th><td>Con decimales</td><td><code class="cod-sql">45000.50</code></td></tr>
+          <tr><th scope="row">VARCHAR(80)</th><td>Texto corto</td><td><code class="cod-sql">'Ana'</code></td></tr>
+          <tr><th scope="row">TEXT</th><td>Texto largo</td><td>Una descripción</td></tr>
+          <tr><th scope="row">DATE</th><td>Fecha</td><td><code class="cod-sql">'2026-03-15'</code></td></tr>
+          <tr><th scope="row">DATETIME</th><td>Fecha y hora</td><td><code class="cod-sql">'2026-03-15 10:30'</code></td></tr>
+          <tr><th scope="row">BOOLEAN</th><td>Sí o no (1 o 0)</td><td><code class="cod-sql">TRUE</code></td></tr>
+        </tbody>
+      </table>
+      <p>Con <strong>IF NOT EXISTS</strong>, si la tabla ya existe, el gestor no la cambia y solo avisa, en vez de dar error:</p>
+      <div class="ventana-cod ventana-cod--sql">
+        <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla clientes solo si todavía no existe">
+          <li><span class="pseudo__c"><b>CREATE TABLE IF NOT EXISTS</b> <span class="t-atr">clientes</span> (…);</span></li>
+        </ol>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 24</p>
+      <h3 class="pf__titulo" id="pf2">DROP, TRUNCATE y DELETE</h3>
+      <table class="tabla-ej tabla-borrar">
+        <caption class="sr-only">Qué borra cada una: DROP TABLE, TRUNCATE TABLE y DELETE</caption>
+        <thead>
+          <tr><th scope="col">Instrucción</th><th scope="col">Qué borra</th><th scope="col">Cómo queda</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row"><code class="cod-sql">DROP TABLE</code></th><td>La tabla entera</td><td>No existe más</td></tr>
+          <tr><th scope="row"><code class="cod-sql">TRUNCATE TABLE</code></th><td>Todos los datos</td><td>Vacía</td></tr>
+          <tr><th scope="row"><code class="cod-sql">DELETE</code></th><td>Las filas que se elijan (TP10)</td><td>Con las demás</td></tr>
+        </tbody>
+      </table>
+      <p>Si otra tabla tiene una clave foránea hacia ella, el gestor no deja hacerle DROP ni TRUNCATE.</p>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 25</p>
+      <h3 class="pf__titulo" id="pf3">Al cargar los datos</h3>
+      <ul class="pf__lista">
+        <li><strong>AUTO_INCREMENT:</strong> el gestor completa solo el id (1, 2, 3…); en el INSERT, esa columna no se nombra.</li>
+        <li><strong>DEFAULT o NULL:</strong> la columna que no se nombra toma su DEFAULT; si no tiene, queda en NULL.</li>
+        <li><strong>Orden de carga:</strong> primero la tabla referenciada; después, la que tiene la clave foránea. La venta de un cliente que no existe se rechaza.</li>
+      </ul>
+      <div class="ventana-cod ventana-cod--sql">
+        <ol class="pseudo pseudo--sql" aria-label="Código SQL que crea la tabla productos con id_producto AUTO_INCREMENT y stock con DEFAULT 0, y carga un producto nombrando solo la columna nombre">
+          <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">productos</span> (</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_producto</span> <span class="t-fun">INT</span> <b>AUTO_INCREMENT</b>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">80</span>) <b>NOT NULL</b>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">precio</span> <span class="t-fun">DECIMAL</span>(<span class="t-num">10</span>,<span class="t-num">2</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">stock</span> <span class="t-fun">INT</span> <b>DEFAULT</b> <span class="t-num">0</span>,</span></li>
+          <li class="i1"><span class="pseudo__c"><b>PRIMARY KEY</b> (<span class="t-atr">id_producto</span>)</span></li>
+          <li><span class="pseudo__c">);</span></li>
+          <li><span class="pseudo__c"><b>INSERT INTO</b> <span class="t-atr">productos</span> (<span class="t-atr">nombre</span>)</span></li>
+          <li><span class="pseudo__c"><b>VALUES</b> (<span class="t-str">'Teclado'</span>);</span></li>
+        </ol>
+      </div>
+      <p>Queda: id_producto <strong>1</strong> (AUTO_INCREMENT), precio <strong>NULL</strong> y stock <strong>0</strong> (DEFAULT).</p>
+    </section>
+
+    <section class="pf pf--script" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">El script de la tienda</h3>
+      <p>La base del Integrador 1, con sus claves. <strong>USE</strong> elige la base donde se crean las tablas.</p>
+      <div class="ventana-cod ventana-cod--sql">
+        <ol class="pseudo pseudo--sql" aria-label="Script SQL que crea la base tienda y sus cuatro tablas, con sus claves primarias y foráneas: clientes, productos, ventas, con una clave foránea hacia clientes, y detalle_venta, con clave primaria de dos campos y claves foráneas hacia ventas y productos">
+          <li><span class="pseudo__c"><b>CREATE DATABASE</b> <span class="t-atr">tienda</span>;</span></li>
+          <li><span class="pseudo__c"><b>USE</b> <span class="t-atr">tienda</span>;</span></li>
+          <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">clientes</span> (</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_cliente</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">80</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">email</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">120</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">ciudad</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">60</span>)</span></li>
+          <li><span class="pseudo__c">);</span></li>
+          <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">productos</span> (</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_producto</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">nombre</span> <span class="t-fun">VARCHAR</span>(<span class="t-num">80</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">precio</span> <span class="t-fun">DECIMAL</span>(<span class="t-num">10</span>,<span class="t-num">2</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">stock</span> <span class="t-fun">INT</span></span></li>
+          <li><span class="pseudo__c">);</span></li>
+          <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">ventas</span> (</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_venta</span> <span class="t-fun">INT</span> <b>PRIMARY KEY</b>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_cliente</span> <span class="t-fun">INT</span>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">fecha</span> <span class="t-fun">DATE</span>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">total</span> <span class="t-fun">DECIMAL</span>(<span class="t-num">10</span>,<span class="t-num">2</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><b>FOREIGN KEY</b> (<span class="t-atr">id_cliente</span>)</span></li>
+          <li class="i2"><span class="pseudo__c"><b>REFERENCES</b> <span class="t-atr">clientes</span>(<span class="t-atr">id_cliente</span>)</span></li>
+          <li><span class="pseudo__c">);</span></li>
+          <li><span class="pseudo__c"><b>CREATE TABLE</b> <span class="t-atr">detalle_venta</span> (</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_venta</span> <span class="t-fun">INT</span>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">id_producto</span> <span class="t-fun">INT</span>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">cantidad</span> <span class="t-fun">INT</span>,</span></li>
+          <li class="i1"><span class="pseudo__c"><span class="t-atr">subtotal</span> <span class="t-fun">DECIMAL</span>(<span class="t-num">10</span>,<span class="t-num">2</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><b>PRIMARY KEY</b> (<span class="t-atr">id_venta</span>, <span class="t-atr">id_producto</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><b>FOREIGN KEY</b> (<span class="t-atr">id_venta</span>)</span></li>
+          <li class="i2"><span class="pseudo__c"><b>REFERENCES</b> <span class="t-atr">ventas</span>(<span class="t-atr">id_venta</span>),</span></li>
+          <li class="i1"><span class="pseudo__c"><b>FOREIGN KEY</b> (<span class="t-atr">id_producto</span>)</span></li>
+          <li class="i2"><span class="pseudo__c"><b>REFERENCES</b> <span class="t-atr">productos</span>(<span class="t-atr">id_producto</span>)</span></li>
+          <li><span class="pseudo__c">);</span></li>
+        </ol>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 7</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°7</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°7 — Definir y cargar tablas</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°7.</p>
+
+    <!-- Puntos 1 a 3: uno por lámina (1 y 3, del PDF; 2, nuevo). Punto 4, nuevo -->
+    <ol class="acts acts--2col acts--tp7">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> CREATE DATABASE y CREATE TABLE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe el nombre de una base de datos que crearías.</div></li>
+          <li><b class="act__letra">b)</b><div>Nombra dos columnas para una tabla ALUMNOS.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Para qué sirve PRIMARY KEY en CREATE TABLE?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> ALTER y DROP</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribí la instrucción que le agrega a clientes una columna fecha_alta, de tipo DATE.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué diferencia hay entre MODIFY y CHANGE?</div></li>
+          <li><b class="act__letra">c)</b><div>Para sumarle una columna a una tabla con datos, ¿por qué conviene ALTER TABLE y no borrarla con DROP y crearla de nuevo?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> INSERT INTO</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una instrucción INSERT INTO para un alumno.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué campo no debería repetirse si es la clave primaria?</div></li>
+          <li><b class="act__letra">c)</b><div>Completa un ejemplo con nombre y ciudad.</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">4-</span> ¿Qué instrucción usarías?</h3>
+        <p class="act__caso">En la tienda, ¿qué instrucción usarías en cada caso: CREATE, ALTER, DROP o INSERT? Escribila.</p>
+        <div class="act-tabla-desliza">
+          <table class="act-tabla act-tabla--filas act-tabla--instr">
+            <caption class="sr-only">Cuadro para completar: qué instrucción se usa en cada situación de la tienda y cómo se escribe</caption>
+            <thead><tr><th scope="col">Situación</th><th scope="col">Instrucción</th><th scope="col">Cómo la escribirías</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Hay que guardar el teléfono de cada cliente.</th><td></td><td></td></tr>
+              <tr><th scope="row">Llegó el producto 104: Auriculares, a 15000.</th><td></td><td></td></tr>
+              <tr><th scope="row">La tabla ofertas ya no se usa.</th><td></td><td></td></tr>
+              <tr><th scope="row">Hay que guardar proveedores: id y nombre.</th><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 7</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°7</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°7 — Definir y cargar tablas</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Trabajá en phpMyAdmin, en la pestaña <span class="ui">SQL</span>. Anotá en la carpeta las instrucciones que escribas y qué pasó con cada una.</p>
+
+    <ol class="acts" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> La base de la tienda</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Creá la base tienda y elegila a la izquierda: el resto del TP se hace en su pestaña <span class="ui">SQL</span>.</div></li>
+          <li><b class="act__letra">b)</b><div>Creá las cuatro tablas del Integrador 1 (lámina 18), con sus claves primarias y foráneas y dos restricciones, como las que elegiste en el punto 4 del Integrador 1.</div></li>
+          <li><b class="act__letra">c)</b><div>¿En qué orden creaste las tablas? ¿Por qué ese orden? Fijate a la izquierda que tienda tenga las cuatro.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Cargar los datos</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Cargá con INSERT INTO 3 clientes y 3 productos.</div></li>
+          <li><b class="act__letra">b)</b><div>Cargá 2 ventas de esos clientes y su detalle: qué productos lleva cada venta y cuántos.</div></li>
+          <li><b class="act__letra">c)</b><div>Probá cargar una venta de un cliente que no existe, por ejemplo el 99. ¿Qué error da? Anotá el mensaje y explicá por qué aparece.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> Cambiar y borrar</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Agregale a clientes la columna telefono. En la pestaña <span class="ui">Estructura</span> de clientes, fijate que aparezca.</div></li>
+          <li><b class="act__letra">b)</b><div>Cambiale el largo a la columna nombre, por ejemplo a 100 caracteres. ¿Conserva las restricciones que tenía?</div></li>
+          <li><b class="act__letra">c)</b><div>Borrá la columna telefono.</div></li>
+          <li><b class="act__letra">d)</b><div>Creá una tabla prueba, con una columna, y borrala con DROP TABLE. ¿Qué tablas quedan en tienda?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 7</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

@@ -122,6 +122,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 | 22 | Integrador 1 | El diagrama del Paso 3 dice `DETALLE_VENTA 1:N PRODUCTOS` (al revés) | `PRODUCTOS 1:N DETALLE_VENTA`: el "1" del lado de PRODUCTOS y la "N" del lado de DETALLE_VENTA. El texto de abajo ya está bien. |
 | 22 | Integrador 1 | En el Paso 2, `id_cliente` de VENTAS no tiene ninguna marca, aunque es clave foránea | Marcarlo con "FK". |
 | 22 | Integrador 1 | El diagrama del Paso 3 marca con una rayita el lado N de cada relación; en la pata de gallo del TP2, la raya es el lado 1 | Notación pata de gallo, como en el TP2: una raya del lado 1 y pata de gallo del lado N. |
+| 25 | TP7 | En "Resultado", la tabla CLIENTES aparece con tres registros (Ana, Carlos y Laura), pero CREATE TABLE crea la tabla vacía | La tabla va solo con sus columnas y una fila "(todavía sin registros)". El texto de al lado queda igual. |
 | 31 | TP9 | El ejemplo de OR dice `'Resario'` | `'Rosario'` |
 | 32 | TP9 | `LIKE 'Lap%'` devuelve "Lápiz". En MariaDB (XAMPP, cotejamiento `utf8mb4_general_ci`) es correcto porque ignora tildes; en SQLite (consola web) no lo trae | La lámina queda igual. En "Para profundizar" va una nota: el resultado de `LIKE` con tildes y mayúsculas depende del gestor y del cotejamiento. |
 | 33 | TP10 | El resultado de `ORDER BY precio DESC LIMIT 3` aparece como Auriculares 15000, Notebook 45000, Monitor 12000 | Notebook 45000 · Auriculares 15000 · Monitor 12000 (ids 4, 5, 3) |
