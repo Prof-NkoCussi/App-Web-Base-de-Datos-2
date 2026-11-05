@@ -16,7 +16,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 
 ## Cómo se usa
 
-- Abrí el link y elegí un TP en el índice.
+- Abrí el link, tocá **Entrar al cuadernillo** y elegí un TP en el índice.
 - Con la barra de arriba saltás a cada lámina, a "Para profundizar" o a las actividades.
 - El botón **PDF** guarda el TP en hojas A4 (usa la opción de imprimir del navegador: elegí "Guardar como PDF").
 - El índice marca con **✓ Visto** los TPs que ya abriste. Eso se guarda solo en tu dispositivo.
@@ -49,16 +49,17 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 ## Estructura del repositorio
 
 ```
-index.html               portada e índice de TPs
+index.html               portada, con el botón "Entrar al cuadernillo"
+indice.html              índice de TPs
 unidades/tpNN.html       una página por TP (integradores: int1.html e int2.html)
 assets/css/estilos.css   estilos y paleta de colores
 assets/js/actividades.js botón PDF, barra de navegación y marca de "Visto"
 assets/fonts/            tipografías
-assets/img/              imágenes
+assets/img/              imágenes (miniatura.png: vista previa del enlace)
 assets/datos/            archivos para descargar desde las actividades en la computadora
 ```
 
-Es un sitio estático: HTML, CSS y JavaScript, sin instalación ni servidor. Para verlo en tu computadora, descargá el repositorio y abrí `index.html` en el navegador.
+Es un sitio estático: HTML, CSS y JavaScript, sin instalación ni servidor. Para verlo en tu computadora, descargá el repositorio y abrí `index.html` (la portada) en el navegador.
 
 ## Créditos
 

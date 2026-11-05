@@ -24,12 +24,13 @@ Es la continuación de Base de Datos I (`Prof-NkoCussi/App-Web-Base-de-Datos-1`)
 ## Estructura del repo
 
 ```
-index.html               portada + índice de TPs por módulo
+index.html               portada (estilos propios dentro del archivo) con el botón "Entrar al cuadernillo"
+indice.html              índice de TPs por módulo
 unidades/tpNN.html       una página por TP (integradores: int1.html, int2.html)
 assets/css/estilos.css   paleta en :root, mobile first, modo hoja A4
 assets/js/actividades.js botón PDF, resaltado de la barra, "✓ Visto" (localStorage, clave "bd2:tp-visto-")
 assets/fonts/            Barlow, Barlow Semi Condensed, Barlow Condensed (locales)
-assets/img/
+assets/img/              miniatura.png (1200×630): imagen de la vista previa del enlace
 assets/datos/            archivos para descargar desde las actividades en la computadora
 CONTENIDOS.md            contenidos del diseño curricular, plan de TPs y cobertura
 README.md                presentación del sitio + tabla de TPs con su estado
@@ -40,7 +41,7 @@ HTML, CSS y JavaScript vanilla. Sin frameworks, sin build, sin backend, sin depe
 
 ## Formato de cada TP — igual que en Base de Datos I
 
-1. **Barra superior** (`header.barra`): botón "Índice" (`.boton.barra__volver`, con `#i-atras`) · "TP N°X — nombre del TP" · botón PDF (`data-imprimir`). Debajo, `nav.partes` con accesos a cada lámina, "Para profundizar" y "Actividades". Los dos botones del mismo alto y color; sin scroll horizontal a 360 px.
+1. **Barra superior** (`header.barra`): botón "Índice" (`.boton.barra__volver`, con `#i-atras`, a `../indice.html`) · "TP N°X — nombre del TP" · botón PDF (`data-imprimir`). Debajo, `nav.partes` con accesos a cada lámina, "Para profundizar" y "Actividades". Los dos botones del mismo alto y color; sin scroll horizontal a 360 px.
 2. **Láminas** (`article.lamina#pag-N`): `.cab` → `.tit` (número en el color del módulo + título + subtítulo) → bloques → `.idea` (Idea clave) → `.pie`.
 3. **Para profundizar** (`article.lamina.lamina--pf#profundizar`): `.pf-grid` de 2×2, un bloque `.pf` por lámina (texto + recuadro `.pf__caja`). Si el TP tiene 3 láminas, el cuarto bloque integra o suma un ejemplo.
 4. **Actividades** (`article.lamina.lamina--act`, ids `actividades` y `actividades-2`): banda `.act-banda`, `.consigna`, puntos `.act` con incisos a), b), c).
@@ -50,12 +51,22 @@ HTML, CSS y JavaScript vanilla. Sin frameworks, sin build, sin backend, sin depe
    - Las consignas se basan en estos indicadores: descompone los datos en tablas relacionadas; crea claves primarias y secundarias; selecciona y aplica la técnica de modelado; confecciona el diagrama; formula consultas con los componentes del lenguaje; aplica álgebra relacional; instala un motor; crea usuarios y otorga permisos; publica las bases con los permisos adecuados; planifica respaldo y capacidad de almacenamiento.
 
 Reglas fijas:
-- Pie de cada hoja: `Base de Datos II — Prof. Nicolás A. Cussi` + número de lámina (o `TP N` en profundizar y actividades). En `index.html`, el mismo texto sin número. Guion largo (—) con un espacio a cada lado.
+- Pie de cada hoja: `Base de Datos II — Prof. Nicolás A. Cussi` + número de lámina (o `TP N` en profundizar y actividades). En `indice.html`, el mismo texto sin número. Guion largo (—) con un espacio a cada lado.
 - Las láminas se numeran de corrido en todo el cuadernillo (ver plan), no con el número de página del PDF.
-- Cabecera de cada hoja: "BASES DE DATOS Y SQL · DESDE CERO" y `<div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°X</span></div>`, mismo tamaño, negrita, color y mayúsculas, con la barra vertical `.cab__raya` en el color del módulo. En el celular, igual que en 5.º. La portada no lleva ese texto. En los integradores: "INTEGRADOR 1" e "INTEGRADOR FINAL".
+- Cabecera de cada hoja: "BASES DE DATOS Y SQL · DESDE CERO" y `<div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°X</span></div>`, mismo tamaño, negrita, color y mayúsculas, con la barra vertical `.cab__raya` en el color del módulo. En el celular, igual que en 5.º. El índice no lleva ese texto. En los integradores: "INTEGRADOR 1" e "INTEGRADOR FINAL".
 - **Nunca** incluir "DATOS · IDEAS · OPORTUNIDADES" ni "APRENDER DATOS / CONSTRUYE FUTUROS".
 - `<body data-tp="N" class="modulo-M">` en cada TP. Integradores: `data-tp="int1"` / `data-tp="int2"`.
-- Al terminar un TP: activarlo en `index.html` (de `div.tp.tp--pronto` a `a.tp` con `href`, sacar "· Próximamente", sumar `<span class="tp__visto" data-visto="N" hidden>· ✓ Visto</span>`) y pasar su estado en el `README.md` a "✅ Disponible".
+- Al terminar un TP: activarlo en `indice.html` (de `div.tp.tp--pronto` a `a.tp` con `href`, sacar "· Próximamente", sumar `<span class="tp__visto" data-visto="N" hidden>· ✓ Visto</span>`) y pasar su estado en el `README.md` a "✅ Disponible".
+- Cada TP nuevo lleva en el `<head>` el bloque de vista previa del enlace (ver "Portada y vista previa del enlace").
+
+## Portada y vista previa del enlace (5/11)
+
+- `index.html` es la **portada principal**, como en Redes I: los íconos de los cuatro módulos, BASE DE DATOS II, "6° Año • Cuadernillo Digital", el colegio, el docente y el botón "Entrar al cuadernillo" (a `indice.html`). Sus estilos van dentro del mismo archivo. **No se toca** salvo que Nicolás lo pida.
+- `indice.html` es el **índice de TPs** (antes era `index.html`). Lo que este archivo dice sobre "el índice" o "la portada con los TPs" se aplica a `indice.html`.
+- **Vista previa del enlace** (WhatsApp, Classroom): la portada, `indice.html` y cada TP llevan, después de `theme-color`, el mismo bloque de etiquetas: `og:type` (`website`), `og:locale` (`es_AR`), `og:site_name` (`Base de Datos II · Cuadernillo Digital`), `og:title`, `og:description`, `og:url`, `og:image` (`assets/img/miniatura.png` con la URL completa) con `og:image:width` 1200, `og:image:height` 630 y `og:image:alt`, y `twitter:card` (`summary_large_image`). Se copia de un TP y se cambian solo `og:title` y `og:url`.
+  - `og:title`: en los TPs, igual al `<title>`: "TP N°X — nombre · Base de Datos II" (integradores: "Integrador 1 — La tienda, de nuevo · Base de Datos II"). En el índice, "Índice de TPs · Base de Datos II".
+  - `og:url`: la URL completa de la página en https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/ (ej.: `…/unidades/tp09.html`).
+  - `og:description`: siempre "6.º año · Prof. Nicolás A. Cussi".
 
 ## Diseño
 
@@ -88,7 +99,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
   - `--compu` / `--compu-oscuro` / `--compu-claro` cambian con `modulo-N`: M1 cian `#0B6B7A` / `#064650` / `--acento-claro`; M2 violeta `#6D28D9` / `#4C1D95` / `#DDD6FE`; M3 azul `#1D4ED8` / `#1E3A8A` / `#BFDBFE`; M4 magenta `#BE185D` / `#831843` / `#FBCFE8`.
   - Parte 2 en la computadora en los TPs 6 a 14 y en el Integrador final. TPs 1 a 5 e Integrador 1: las dos partes en la carpeta.
   - Archivos para descargar desde las actividades (CSV, scripts `.sql`): en `assets/datos/`, UTF-8, con el bloque `.descarga`.
-- **Portada:** cada tarjeta `.tp` con la franja de su módulo. Integrador 1: franja cian + violeta. Integrador final: los cuatro colores. Etiquetas en `.tp__meta`: `etq--sql` (TPs 6–12, 14 e Integrador final), `etq--xampp` (TPs 6, 7, 12, 13, 14 e Integrador final).
+- **Índice (`indice.html`):** cada tarjeta `.tp` con la franja de su módulo. Integrador 1: franja cian + violeta. Integrador final: los cuatro colores. Etiquetas en `.tp__meta`: `etq--sql` (TPs 6–12, 14 e Integrador final), `etq--xampp` (TPs 6, 7, 12, 13, 14 e Integrador final).
 
 ## Controles antes de entregar un TP
 

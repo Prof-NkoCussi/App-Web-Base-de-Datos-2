@@ -2020,7 +2020,7 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
 }
 
 /* ==========================================================
-   Portada e índice (index.html)
+   Índice de TPs (indice.html)
    ========================================================== */
 .portada {
   max-width: 210mm; margin: 0 auto; background: var(--blanco);
