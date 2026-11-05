@@ -37,7 +37,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | 6 | Del álgebra relacional a SQL | ✅ Disponible |
 | 7 | Definir y cargar tablas | ✅ Disponible |
 | 8 | Consultar | ✅ Disponible |
-| 9 | Filtrar | Próximamente |
+| 9 | Filtrar | ✅ Disponible |
 | 10 | Ordenar, modificar y QBE | Próximamente |
 | 11 | Resumir y combinar | Próximamente |
 | 12 | Consultas avanzadas y programación | Próximamente |

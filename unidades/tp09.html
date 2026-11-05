@@ -1,0 +1,904 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°9 — Filtrar · Base de Datos II</title>
+  <meta name="description" content="TP N°9 de Base de Datos II: operadores de comparación, AND, OR y NOT para combinar condiciones, y LIKE, IN y BETWEEN para búsquedas más flexibles. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="9" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <!-- Operadores de comparación: el signo con borde oscuro y relleno del acento -->
+    <symbol id="i-op-igual" viewBox="0 0 48 48">
+      <rect x="9" y="12" width="30" height="9" rx="4.5" style="fill:var(--ac)"/>
+      <rect x="9" y="27" width="30" height="9" rx="4.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-op-distinto" viewBox="0 0 48 48">
+      <path d="M19 11 7 24l12 13M29 11l12 13-12 13" style="stroke-width:9"/>
+      <path d="M19 11 7 24l12 13M29 11l12 13-12 13" style="stroke:var(--ac);stroke-width:4.4"/>
+    </symbol>
+    <symbol id="i-op-mayor" viewBox="0 0 48 48">
+      <path d="M15 9l18 15-18 15" style="stroke-width:10"/>
+      <path d="M15 9l18 15-18 15" style="stroke:var(--ac);stroke-width:5"/>
+    </symbol>
+    <symbol id="i-op-menor" viewBox="0 0 48 48">
+      <path d="M33 9 15 24l18 15" style="stroke-width:10"/>
+      <path d="M33 9 15 24l18 15" style="stroke:var(--ac);stroke-width:5"/>
+    </symbol>
+    <symbol id="i-op-mayor-igual" viewBox="0 0 48 48">
+      <path d="M7 13l12 11-12 11" style="stroke-width:8.5"/>
+      <path d="M7 13l12 11-12 11" style="stroke:var(--ac);stroke-width:4"/>
+      <rect x="24.5" y="15.5" width="19" height="7" rx="3.5" style="fill:var(--ac)"/>
+      <rect x="24.5" y="25.5" width="19" height="7" rx="3.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-op-menor-igual" viewBox="0 0 48 48">
+      <path d="M19 13 7 24l12 11" style="stroke-width:8.5"/>
+      <path d="M19 13 7 24l12 11" style="stroke:var(--ac);stroke-width:4"/>
+      <rect x="24.5" y="15.5" width="19" height="7" rx="3.5" style="fill:var(--ac)"/>
+      <rect x="24.5" y="25.5" width="19" height="7" rx="3.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-embudo" viewBox="0 0 48 48">
+      <path d="M6 8h36L28 25v13l-8 5V25z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-barras" viewBox="0 0 48 48">
+      <rect x="8" y="27" width="8" height="15" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="20" y="18" width="8" height="24" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="32" y="8" width="8" height="34" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-campos" viewBox="0 0 48 48">
+      <rect x="10" y="5" width="28" height="38" rx="4"/>
+      <path d="M17 16h14M17 24h14M17 32h14" style="stroke:var(--ac);stroke-width:3.6"/>
+    </symbol>
+    <symbol id="i-diana" viewBox="0 0 48 48">
+      <circle cx="22" cy="26" r="17"/>
+      <circle cx="22" cy="26" r="10.5" style="fill:var(--ac)"/>
+      <circle cx="22" cy="26" r="4" style="fill:#fff"/>
+      <path d="M22 26 40 8" style="stroke-width:3"/>
+      <path d="M34 6.5l6 1.5 1.5 6" style="stroke-width:3"/>
+    </symbol>
+    <symbol id="i-alerta" viewBox="0 0 48 48">
+      <path d="M24 6 43.5 40.5h-39z" style="fill:var(--ac)"/>
+      <path d="M24 18v11" style="stroke-width:3.4"/>
+      <circle cx="24" cy="34.6" r="2.3" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-parentesis" viewBox="0 0 48 48">
+      <path d="M17 6c-6 5-9 11.5-9 18s3 13 9 18M31 6c6 5 9 11.5 9 18s-3 13-9 18" style="stroke-width:4"/>
+      <rect x="19" y="20" width="10" height="8" rx="2.5" style="fill:var(--ac);stroke:none"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°9 — Filtrar</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°9">
+    <a href="#pag-29">29 · Comparación</a>
+    <a href="#pag-30">30 · AND, OR y NOT</a>
+    <a href="#pag-31">31 · LIKE, IN y BETWEEN</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°9 — Filtrar</h1>
+
+  <!-- =================== LÁMINA 29 (PDF pág. 30) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-29" aria-labelledby="t29">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°9</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t29"><span class="tit__num">29.</span> Operadores de comparación</h2>
+      <p class="tit__sub">Comparar valores para construir condiciones</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Los <strong>operadores de comparación</strong> se usan principalmente en la cláusula <strong>WHERE</strong> para comparar valores y construir condiciones que nos permiten filtrar la información de una base de datos.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="o29">
+      <div class="panel__cab"><h3 class="subtitulo" id="o29">Operadores más usados</h3></div>
+      <ul class="comparadores">
+        <li class="comparador">
+          <h4 class="comparador__cab"><span class="comparador__sim">=</span>Igual que</h4>
+          <div class="comparador__def"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-op-igual"/></svg><p>Compara si dos valores son iguales.</p></div>
+          <p class="comparador__ej">Ejemplo:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Ejemplo en SQL: la ciudad es igual a Ushuaia">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="comparador">
+          <h4 class="comparador__cab"><span class="comparador__sim">&lt;&gt;</span>Distinto que</h4>
+          <div class="comparador__def"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-op-distinto"/></svg><p>Compara si dos valores son diferentes.</p></div>
+          <p class="comparador__ej">Ejemplo:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Ejemplo en SQL: la ciudad es distinta de Tolhuin">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> &lt;&gt; <span class="t-str">'Tolhuin'</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="comparador">
+          <h4 class="comparador__cab"><span class="comparador__sim">&gt;</span>Mayor que</h4>
+          <div class="comparador__def"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-op-mayor"/></svg><p>Compara si un valor es mayor que otro.</p></div>
+          <p class="comparador__ej">Ejemplo:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Ejemplo en SQL: el precio es mayor que 10000">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &gt; <span class="t-num">10000</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="comparador">
+          <h4 class="comparador__cab"><span class="comparador__sim">&lt;</span>Menor que</h4>
+          <div class="comparador__def"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-op-menor"/></svg><p>Compara si un valor es menor que otro.</p></div>
+          <p class="comparador__ej">Ejemplo:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Ejemplo en SQL: la edad es menor que 18">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">edad</span> &lt; <span class="t-num">18</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="comparador">
+          <h4 class="comparador__cab"><span class="comparador__sim">&gt;=</span>Mayor o igual que</h4>
+          <div class="comparador__def"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-op-mayor-igual"/></svg><p>Compara si un valor es mayor o igual que otro.</p></div>
+          <p class="comparador__ej">Ejemplo:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Ejemplo en SQL: la nota es mayor o igual que 7">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">nota</span> &gt;= <span class="t-num">7</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li class="comparador">
+          <h4 class="comparador__cab"><span class="comparador__sim">&lt;=</span>Menor o igual que</h4>
+          <div class="comparador__def"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-op-menor-igual"/></svg><p>Compara si un valor es menor o igual que otro.</p></div>
+          <p class="comparador__ej">Ejemplo:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Ejemplo en SQL: el precio es menor o igual que 5000">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &lt;= <span class="t-num">5000</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="e29">
+      <div class="panel__cab"><h3 class="subtitulo" id="e29">Ejemplos en SQL</h3></div>
+      <ul class="ej-sql">
+        <li>
+          <h4 class="ej-sql__tit">Productos con precio mayor a 10000</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los productos con precio mayor a 10000">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &gt; <span class="t-num">10000</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Alumnos con nota mayor o igual a 7</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los alumnos con nota mayor o igual a 7">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">alumnos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">nota</span> &gt;= <span class="t-num">7</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Clientes que no son de Tolhuin</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los clientes que no son de Tolhuin">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> &lt;&gt; <span class="t-str">'Tolhuin'</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--prod">
+      <section class="panel" aria-labelledby="t29e">
+        <div class="panel__cab"><h3 class="subtitulo" id="t29e">Tabla de ejemplo: PRODUCTOS</h3></div>
+        <table class="tabla-ej">
+          <caption class="sr-only">PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th><th scope="col">stock</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Teclado</td><td>8000</td><td>10</td></tr>
+            <tr><td>2</td><td>Mouse</td><td>2500</td><td>25</td></tr>
+            <tr><td>3</td><td>Monitor</td><td>12000</td><td>5</td></tr>
+            <tr><td>4</td><td>Notebook</td><td>45000</td><td>3</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" aria-labelledby="r29">
+        <div class="panel__cab"><h3 class="subtitulo" id="r29">Resultado (precio &gt; 10000)</h3></div>
+        <div class="resultado">
+          <table class="tabla-ej">
+            <caption class="sr-only">Resultado de la consulta con precio mayor a 10000</caption>
+            <thead>
+              <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th><th scope="col">stock</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>3</td><td>Monitor</td><td>12000</td><td>5</td></tr>
+              <tr><td>4</td><td>Notebook</td><td>45000</td><td>3</td></tr>
+            </tbody>
+          </table>
+          <div class="intro">
+            <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+            <p>La consulta muestra solo los productos cuyo precio es mayor a 10000.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="d29">
+      <div class="panel__cab"><h3 class="subtitulo" id="d29">¿Dónde se usan?</h3></div>
+      <ul class="ambitos ambitos--4 usos-sql usos-sql--fila">
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-embudo"/></svg><h4 class="tarjeta__tit">Filtros</h4><p>Para seleccionar solo algunos registros.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__tit">Búsquedas</h4><p>Para encontrar información especifica.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__tit">Reportes</h4><p>Para generar listados con ciertas condiciones.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-campos"/></svg><h4 class="tarjeta__tit">Análisis</h4><p>Para comparar datos y obtener conclusiones.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Los operadores de comparación nos permiten filtrar información. Se usan principalmente en la cláusula <b>WHERE</b> para construir condiciones.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 29">29</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 30 (PDF pág. 31) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-30" aria-labelledby="t30">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°9</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t30"><span class="tit__num">30.</span> AND, OR y NOT</h2>
+      <p class="tit__sub">Combinar y negar condiciones</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Los operadores lógicos <strong>AND, OR</strong> y <strong>NOT</strong> se usan para combinar o negar condiciones en SQL. Generalmente se utilizan en la cláusula <strong>WHERE</strong> para filtrar registros de una tabla.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="q30">
+      <div class="panel__cab"><h3 class="subtitulo" id="q30">¿Qué hace cada uno?</h3></div>
+      <ul class="ambitos logicos">
+        <li class="tarjeta">
+          <h4 class="tarjeta__cab">AND</h4>
+          <svg class="venn" viewBox="0 0 120 64" role="img" aria-label="Diagrama de AND: dos círculos que se cruzan, uno por cada condición. Solo está pintada la parte común, la de los registros que cumplen las dos.">
+            <defs><clipPath id="venn-and"><circle cx="46" cy="32" r="24"/></clipPath></defs>
+            <circle class="venn__lleno" cx="74" cy="32" r="24" clip-path="url(#venn-and)"/>
+            <circle class="venn__borde" cx="46" cy="32" r="24"/>
+            <circle class="venn__borde" cx="74" cy="32" r="24"/>
+          </svg>
+          <p>Se cumplen ambas condiciones.</p>
+        </li>
+        <li class="tarjeta">
+          <h4 class="tarjeta__cab">OR</h4>
+          <svg class="venn" viewBox="0 0 120 64" role="img" aria-label="Diagrama de OR: dos círculos que se cruzan, uno por cada condición. Los dos están pintados enteros: entran los registros que cumplen al menos una.">
+            <circle class="venn__lleno" cx="46" cy="32" r="24"/>
+            <circle class="venn__lleno" cx="74" cy="32" r="24"/>
+            <circle class="venn__borde" cx="46" cy="32" r="24"/>
+            <circle class="venn__borde" cx="74" cy="32" r="24"/>
+          </svg>
+          <p>Se cumple al menos una condición.</p>
+        </li>
+        <li class="tarjeta">
+          <h4 class="tarjeta__cab">NOT</h4>
+          <svg class="venn" viewBox="0 0 120 64" role="img" aria-label="Diagrama de NOT: un círculo cruzado por una franja, como una señal de prohibido: la condición queda negada.">
+            <defs><clipPath id="venn-not"><circle cx="60" cy="32" r="24"/></clipPath></defs>
+            <g clip-path="url(#venn-not)">
+              <path class="venn__franja-borde" d="M38 10l44 44"/>
+              <path class="venn__franja" d="M38 10l44 44"/>
+            </g>
+            <circle class="venn__borde" cx="60" cy="32" r="24"/>
+          </svg>
+          <p>Niega una condición (es decir, selecciona los registros que no la cumplen).</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="e30">
+      <div class="panel__cab"><h3 class="subtitulo" id="e30">Ejemplos en SQL</h3></div>
+      <ul class="ej-sql ej-sql--logicos">
+        <li>
+          <h4 class="ej-sql__tit">Con AND <span class="ej-sql__nota">(ambas condiciones)</span></h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los productos con precio mayor a 10000 y de la categoría Tecnología">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &gt; <span class="t-num">10000</span></span></li>
+              <li><span class="pseudo__c"><b>AND</b> <span class="t-atr">categoria</span> = <span class="t-str">'Tecnología'</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Con OR <span class="ej-sql__nota">(al menos una condición)</span></h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los clientes de Ushuaia o de Tolhuin">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span></span></li>
+              <li><span class="pseudo__c"><b>OR</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Tolhuin'</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Con NOT <span class="ej-sql__nota">(niega una condición)</span></h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los alumnos que no están en el curso 3A">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">alumnos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <b>NOT</b> <span class="t-atr">curso</span> = <span class="t-str">'3A'</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--prod">
+      <section class="panel" aria-labelledby="t30e">
+        <div class="panel__cab"><h3 class="subtitulo" id="t30e">Tabla de ejemplo: PRODUCTOS</h3></div>
+        <table class="tabla-ej">
+          <caption class="sr-only">PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th><th scope="col">categoria</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Notebook</td><td>25000</td><td>Tecnología</td></tr>
+            <tr><td>2</td><td>Teclado</td><td>8000</td><td>Accesorios</td></tr>
+            <tr><td>3</td><td>Mouse</td><td>4500</td><td>Accesorios</td></tr>
+            <tr><td>4</td><td>Monitor</td><td>18000</td><td>Tecnología</td></tr>
+            <tr><td>5</td><td>Silla</td><td>12000</td><td>Muebles</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="panel" aria-labelledby="l30">
+        <div class="panel__cab"><h3 class="subtitulo" id="l30">Cómo leerlo</h3></div>
+        <table class="tabla-leer">
+          <caption class="sr-only">Cómo se lee cada consulta de los ejemplos en SQL</caption>
+          <tbody>
+            <tr><th scope="row">Consulta con AND</th><td>Selecciona todos los productos que tienen un precio mayor a 10000 y que pertenecen a la categoría 'Tecnología'.</td></tr>
+            <tr><th scope="row">Consulta con OR</th><td>Selecciona todos los clientes que viven en Ushuaia o en Tolhuin.</td></tr>
+            <tr><th scope="row">Consulta con NOT</th><td>Selecciona todos los alumnos que no están en el curso '3A'.</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="c30">
+      <div class="panel__cab"><h3 class="subtitulo" id="c30">Claves para usarlos</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-embudo"/></svg><h4 class="tarjeta__cab">Combinan filtros</h4><p>Permiten aplicar varias condiciones en una misma consulta.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-diana"/></svg><h4 class="tarjeta__cab">Hacen búsquedas más precisas</h4><p>Te ayudan a encontrar exactamente la información que necesitas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-alerta"/></svg><h4 class="tarjeta__cab">Cuidado con la lógica</h4><p>Revisá bien las condiciones para asegurarte de obtener los resultados correctos.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-parentesis"/></svg><h4 class="tarjeta__cab">Usar paréntesis cuando sea necesario</h4><p>Ayuda a indicar el orden de evaluación de las condiciones.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Con <b>AND</b>, <b>OR</b> y <b>NOT</b> podemos combinar condiciones, ampliar búsquedas o excluir información para obtener los datos que necesitamos.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 30">30</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 31 (PDF pág. 32) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-31" aria-labelledby="t31">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°9</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t31"><span class="tit__num">31.</span> LIKE, IN y BETWEEN</h2>
+      <p class="tit__sub">Búsquedas más flexibles en tus consultas</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Los operadores <strong>LIKE, IN</strong> y <strong>BETWEEN</strong> se utilizan en la cláusula <strong>WHERE</strong> para realizar búsquedas más flexibles: por coincidencias de texto, por listas de valores o por rangos de datos.</p>
+    </div>
+
+    <section class="panel filtro" aria-labelledby="f1">
+      <div class="filtro__def">
+        <h3 class="filtro__nom" id="f1"><span class="filtro__num">1</span>LIKE</h3>
+        <p>Se usa para buscar valores de texto que coinciden con un patrón. Se utilizan los comodines:</p>
+        <ul class="comodines">
+          <li><b class="comodin">%</b><span>representa cero o más caracteres.</span></li>
+          <li><b class="comodin">_</b><span>representa un solo carácter.</span></li>
+        </ul>
+      </div>
+      <div class="filtro__cod">
+        <h4 class="filtro__rotulo">Sintaxis</h4>
+        <div class="ventana-cod ventana-cod--sql">
+          <ol class="pseudo pseudo--sql" aria-label="Sintaxis de LIKE: SELECT columnas FROM tabla WHERE columna LIKE un patrón">
+            <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">columnas</span></span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">tabla</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">columna</span> <b>LIKE</b> <span class="t-str">'patrón'</span>;</span></li>
+          </ol>
+        </div>
+        <h4 class="filtro__rotulo">Ejemplo</h4>
+        <div class="ventana-cod ventana-cod--sql">
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los productos cuyo nombre comienza con Lap">
+            <li><span class="pseudo__c"><b>SELECT</b> *</span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">nombre</span> <b>LIKE</b> <span class="t-str">'Lap%'</span>;</span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="filtro__res">
+        <h4 class="filtro__rotulo">Resultado <span>(ejemplo)</span></h4>
+        <table class="tabla-ej">
+          <caption class="sr-only">Resultado del ejemplo con LIKE</caption>
+          <thead>
+            <tr><th scope="col">id</th><th scope="col">nombre</th><th scope="col">precio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Laptop</td><td>850.00</td></tr>
+            <tr><td>2</td><td>Lapicera</td><td>1.50</td></tr>
+            <tr><td>3</td><td>Lápiz</td><td>1.20</td></tr>
+          </tbody>
+        </table>
+        <p>Devuelve los productos cuyo nombre comienza con “Lap”.</p>
+      </div>
+    </section>
+
+    <section class="panel filtro" aria-labelledby="f2">
+      <div class="filtro__def">
+        <h3 class="filtro__nom" id="f2"><span class="filtro__num">2</span>IN</h3>
+        <p>Se usa para filtrar registros que coinciden con alguno de los valores de una lista.</p>
+      </div>
+      <div class="filtro__cod">
+        <h4 class="filtro__rotulo">Sintaxis</h4>
+        <div class="ventana-cod ventana-cod--sql">
+          <ol class="pseudo pseudo--sql" aria-label="Sintaxis de IN: SELECT columnas FROM tabla WHERE columna IN y una lista de valores entre paréntesis">
+            <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">columnas</span></span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">tabla</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">columna</span> <b>IN</b> (<span class="t-atr">valor1</span>, <span class="t-atr">valor2</span>, ...);</span></li>
+          </ol>
+        </div>
+        <h4 class="filtro__rotulo">Ejemplo</h4>
+        <div class="ventana-cod ventana-cod--sql">
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los productos de las categorías 1, 2 o 3">
+            <li><span class="pseudo__c"><b>SELECT</b> *</span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">categoria_id</span> <b>IN</b> (<span class="t-num">1</span>, <span class="t-num">2</span>, <span class="t-num">3</span>);</span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="filtro__res">
+        <h4 class="filtro__rotulo">Resultado <span>(ejemplo)</span></h4>
+        <table class="tabla-ej">
+          <caption class="sr-only">Resultado del ejemplo con IN</caption>
+          <thead>
+            <tr><th scope="col">id</th><th scope="col">nombre</th><th scope="col">categoria_id</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Teclado</td><td>1</td></tr>
+            <tr><td>3</td><td>Mouse</td><td>2</td></tr>
+            <tr><td>5</td><td>Monitor</td><td>3</td></tr>
+          </tbody>
+        </table>
+        <p>Devuelve los productos que pertenecen a las categorías 1, 2 o 3.</p>
+      </div>
+    </section>
+
+    <section class="panel filtro" aria-labelledby="f3">
+      <div class="filtro__def">
+        <h3 class="filtro__nom" id="f3"><span class="filtro__num">3</span>BETWEEN</h3>
+        <p>Se usa para filtrar registros que se encuentran dentro de un rango de valores (incluye los extremos).</p>
+      </div>
+      <div class="filtro__cod">
+        <h4 class="filtro__rotulo">Sintaxis</h4>
+        <div class="ventana-cod ventana-cod--sql">
+          <ol class="pseudo pseudo--sql" aria-label="Sintaxis de BETWEEN: SELECT columnas FROM tabla WHERE columna BETWEEN valor inicial AND valor final">
+            <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">columnas</span></span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">tabla</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">columna</span> <b>BETWEEN</b> <span class="t-atr">valor_inicial</span></span></li>
+            <li class="i-between"><span class="pseudo__c"><b>AND</b> <span class="t-atr">valor_final</span>;</span></li>
+          </ol>
+        </div>
+        <h4 class="filtro__rotulo">Ejemplo</h4>
+        <div class="ventana-cod ventana-cod--sql">
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los productos con precio entre 100 y 500">
+            <li><span class="pseudo__c"><b>SELECT</b> *</span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> <b>BETWEEN</b> <span class="t-num">100</span> <b>AND</b> <span class="t-num">500</span>;</span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="filtro__res">
+        <h4 class="filtro__rotulo">Resultado <span>(ejemplo)</span></h4>
+        <table class="tabla-ej">
+          <caption class="sr-only">Resultado del ejemplo con BETWEEN</caption>
+          <thead>
+            <tr><th scope="col">id</th><th scope="col">nombre</th><th scope="col">precio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>2</td><td>Silla</td><td>120.00</td></tr>
+            <tr><td>4</td><td>Escritorio</td><td>350.00</td></tr>
+            <tr><td>6</td><td>Impresora</td><td>499.00</td></tr>
+          </tbody>
+        </table>
+        <p>Devuelve los productos con un precio entre 100 y 500 (inclusive).</p>
+      </div>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> <b>LIKE</b> es útil para buscar textos, <b>IN</b> para listas de valores y <b>BETWEEN</b> para rangos. Todos se usan en la cláusula <b>WHERE</b>.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 31">31</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°9</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid pf-grid--sql pf-grid--chica">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 29</p>
+      <h3 class="pf__titulo" id="pf1">Comparar textos y fechas</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Los operadores también comparan <strong>textos</strong>, en orden alfabético. En la tienda, esta consulta trae Ana, Carlos, Laura y Julián: los nombres que van antes de la M.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que muestra los nombres de los clientes que van antes de la M">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">nombre</span> &lt; <span class="t-str">'M'</span>;</span></li>
+            </ol>
+          </div>
+          <p>Las <strong>fechas</strong> van entre comillas, con el formato <code class="cod-sql">'AAAA-MM-DD'</code> (año, mes y día); una es menor si es anterior: <code class="cod-sql cod-larga">fecha &lt; '2026-03-10'</code> trae las ventas de antes del 10 de marzo.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Dos formas de decir “distinto”</h4>
+          <p>En MariaDB, <code class="cod-sql">&lt;&gt;</code> y <code class="cod-sql">!=</code> hacen lo mismo. El <code class="cod-sql">&lt;&gt;</code> es el del estándar SQL: funciona en todos los gestores.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 30</p>
+      <h3 class="pf__titulo" id="pf2">El orden de AND y OR</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Primero se resuelve el <strong>AND</strong> y después el <strong>OR</strong>. Sin paréntesis, esta condición trae Ana, Pedro, Martín y Sofía: los de Ushuaia, más los de Río Grande mayores de 30.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Condición sin paréntesis: ciudad Ushuaia, o ciudad Río Grande y edad mayor a 30">
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span></span></li>
+              <li class="i1"><span class="pseudo__c"><b>OR</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Río Grande'</span></span></li>
+              <li class="i1"><span class="pseudo__c"><b>AND</b> <span class="t-atr">edad</span> &gt; <span class="t-num">30</span>;</span></li>
+            </ol>
+          </div>
+          <p>Con paréntesis, <code class="cod-sql cod-larga">(ciudad = 'Ushuaia' OR ciudad = 'Río Grande') AND edad &gt; 30</code> trae solo Pedro y Sofía: los mayores de 30 de las dos ciudades.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Para no equivocarse</h4>
+          <p>Como en matemática, donde se multiplica antes de sumar, el orden es <strong>NOT</strong>, <strong>AND</strong> y <strong>OR</strong>. Si se mezclan AND y OR, conviene usar paréntesis.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 31</p>
+      <h3 class="pf__titulo" id="pf3">LIKE, tildes y mayúsculas</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>El resultado de <strong>LIKE</strong> con tildes y mayúsculas depende del gestor y del <strong>cotejamiento</strong>, la regla con la que compara los textos.</p>
+          <p>En MariaDB (XAMPP), con <code class="cod-sql">utf8mb4_general_ci</code>, <code class="cod-sql">'Lap%'</code> trae “Lápiz”: no distingue tildes ni mayúsculas. En otros gestores, no.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Al revés: con NOT</h4>
+          <p>Con <strong>NOT</strong> delante, LIKE, IN y BETWEEN traen las filas que no cumplen. En la tienda:</p>
+          <ul class="pf__lista">
+            <li><code class="cod-sql cod-larga">ciudad NOT LIKE 'Río%'</code>: Ana, Carlos, Pedro, Martín y Valentina.</li>
+            <li><code class="cod-sql cod-larga">ciudad NOT IN ('Ushuaia', 'Tolhuin')</code>: Laura, Sofía, Valentina y Julián.</li>
+            <li><code class="cod-sql cod-larga">edad NOT BETWEEN 20 AND 40</code>: Martín (19) y Valentina (45).</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">Una consulta con todo</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: los productos cuyo nombre empieza con Mouse o que son el 104 o el 108, con precio entre 5000 y 30000 y stock de 20 o más">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> (<span class="t-atr">nombre</span> <b>LIKE</b> <span class="t-str">'Mouse%'</span></span></li>
+              <li class="i-paren"><span class="pseudo__c"><b>OR</b> <span class="t-atr">id_producto</span> <b>IN</b> (<span class="t-num">104</span>, <span class="t-num">108</span>))</span></li>
+              <li class="i1"><span class="pseudo__c"><b>AND</b> <span class="t-atr">precio</span> <b>BETWEEN</b> <span class="t-num">5000</span> <b>AND</b> <span class="t-num">30000</span></span></li>
+              <li class="i1"><span class="pseudo__c"><b>AND</b> <span class="t-atr">stock</span> &gt;= <span class="t-num">20</span>;</span></li>
+            </ol>
+          </div>
+          <ol class="instrucciones">
+            <li><span>Paréntesis: quedan Mouse, Mouse pad, Auriculares y Cable HDMI.</span></li>
+            <li><span><code class="cod-sql">BETWEEN</code>: sale el Mouse pad (4500).</span></li>
+            <li><span><code class="cod-sql">stock &gt;= 20</code>: salen los Auriculares (12). Quedan Mouse y Cable HDMI.</span></li>
+          </ol>
+        </div>
+        <div class="pf__caja">
+          <h4>El AND de BETWEEN</h4>
+          <p>Es parte del rango, no une dos condiciones. Es lo mismo que <code class="cod-sql cod-larga">precio &gt;= 5000 AND precio &lt;= 30000</code>.</p>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 9</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°9</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°9 — Filtrar</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°9.</p>
+
+    <!-- Puntos 1 a 3: uno por lámina, del PDF. Punto 4, nuevo -->
+    <ol class="acts acts--2col acts--tp9">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> Operadores de comparación</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Une cada operador con su significado <span class="sin-corte">( = , &lt;&gt; , &gt; , &lt; , &gt;= , &lt;= ).</span></div></li>
+          <li><b class="act__letra">b)</b><div>Escribe una condición SQL para mostrar los productos con precios menores a 5000.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué operador usarías para buscar edades distintas de 18? Justifica tu respuesta.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> AND, OR y NOT</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta SQL con AND que busque productos de la categoría 'Tecnología' con precio mayor a 15000.</div></li>
+          <li><b class="act__letra">b)</b><div>Inventa una consulta con OR para buscar clientes de dos ciudades diferentes.</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus palabras qué hace el operador NOT y da un ejemplo de uso.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> LIKE, IN y BETWEEN</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribí una consulta para buscar los productos cuyo nombre contenga la palabra “teclado”.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribí una consulta para mostrar los alumnos de las ciudades 'Ushuaia', 'Tolhuin' o 'Río Grande'.</div></li>
+          <li><b class="act__letra">c)</b><div>Escribí una consulta para mostrar los productos con precio entre 1000 y 5000.</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Encontrá el error</h3>
+        <p class="act__caso">Cada consulta tiene un error. Indicá cuál es y escribí la consulta corregida.</p>
+        <ol class="act__items act__items--2col">
+          <li><b class="act__letra">a)</b><div class="ej-error">
+            <p>Los clientes sin email.</p>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Consulta con un error: los clientes cuyo email es igual a NULL">
+                <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+                <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">email</span> = <b>NULL</b>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+          <li><b class="act__letra">b)</b><div class="ej-error">
+            <p>Los clientes de Ushuaia o de Tolhuin mayores de 30.</p>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Consulta con un error: ciudad Ushuaia o ciudad Tolhuin y edad mayor a 30, sin paréntesis">
+                <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+                <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span></span></li>
+                <li class="i1"><span class="pseudo__c"><b>OR</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Tolhuin'</span></span></li>
+                <li class="i1"><span class="pseudo__c"><b>AND</b> <span class="t-atr">edad</span> &gt; <span class="t-num">30</span>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+          <li><b class="act__letra">c)</b><div class="ej-error">
+            <p>Los productos con precio entre 100 y 500.</p>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Consulta con un error: precio BETWEEN 500 AND 100">
+                <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span></span></li>
+                <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> <b>BETWEEN</b> <span class="t-num">500</span> <b>AND</b> <span class="t-num">100</span>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+          <li><b class="act__letra">d)</b><div class="ej-error">
+            <p>Los clientes de Tolhuin.</p>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Consulta con un error: ciudad igual a Tolhuin, sin comillas">
+                <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+                <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-atr">Tolhuin</span>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 9</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°9</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°9 — Filtrar</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <div class="consigna">
+      <p><strong>Consigna:</strong> Trabajá en phpMyAdmin con la base tienda del TP8, en su pestaña <span class="ui">SQL</span>. Anotá en la carpeta cada consulta que escribas y cuántas filas devuelve.</p>
+      <div class="descarga">
+        <p>¿No tenés la base tienda o le cambiaste datos? Importá otra vez <code class="cod-archivo">tienda.sql</code> (pestaña <span class="ui">Importar</span>) y vuelve a quedar como al principio. Descargalo desde la página del TP9.</p>
+        <a class="boton no-imprimir" href="../assets/datos/tienda.sql" download="tienda.sql"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar tienda.sql</span></a>
+      </div>
+    </div>
+
+    <ol class="acts" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Comparación</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá los productos con stock menor a 10.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá las ventas desde el 5 de marzo de 2026.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> AND, OR y NOT</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá los clientes de Ushuaia mayores de 25.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá los clientes de Ushuaia o de Río Grande.</div></li>
+          <li><b class="act__letra">c)</b><div>Mostrá los productos que no son el Mouse, con NOT.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> LIKE, IN y BETWEEN</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá los productos que empiezan con “M”.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá los clientes de Tolhuin, Río Grande y Buenos Aires, con IN.</div></li>
+          <li><b class="act__letra">c)</b><div>Mostrá los productos con precio entre 5000 y 30000.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">8-</span> Tildes y mayúsculas</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>En la tabla clientes, probá <code class="cod-sql">WHERE ciudad LIKE 'rio%'</code> y anotá qué devuelve.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Por qué aparece “Río Grande” si lleva tilde?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 9</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

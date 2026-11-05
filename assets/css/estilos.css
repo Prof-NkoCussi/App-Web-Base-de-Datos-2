@@ -1179,6 +1179,66 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
 .act-tabla--pedidos tbody th { font-weight: 400; color: var(--texto); }
 
 /* ==========================================================
+   De 6.º (TP9): filtrar
+   ========================================================== */
+/* Lámina 29: cada operador con su signo, lo que hace y un ejemplo */
+.comparadores { display: grid; gap: 8px; }
+.comparador { display: grid; gap: 6px; align-content: start; min-width: 0; background: var(--blanco); border-radius: 8px; padding: 6px 6px 8px; }
+.comparador__cab {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--acento-claro); border-radius: 6px; padding: 4px 10px;
+  font-weight: 700; font-size: 17px; line-height: 1.2; color: var(--tinta);
+}
+.comparador__sim { min-width: 2.2ch; font-family: var(--fuente-mono); font-size: 1.05em; }
+.comparador__def { display: flex; align-items: center; gap: 10px; padding: 0 4px; }
+.comparador__def .ico { width: 40px; height: 40px; }
+.comparador__def p { font-size: 15px; line-height: 1.3; }
+.comparador__ej { padding: 0 4px; font-size: 14px; font-weight: 700; color: var(--acento-texto); }
+.comparador .ventana-cod { box-shadow: none; }
+/* Tabla de ejemplo y resultado: cada columna, del ancho de su dato */
+.lado-a-lado--prod .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Lámina 30: AND, OR y NOT con su diagrama; cómo leer cada consulta */
+.logicos { grid-template-columns: 1fr; }
+.logicos .tarjeta { border: 0; gap: 6px; }
+.venn { width: 120px; height: auto; }
+.venn__borde { fill: none; stroke: var(--tinta); stroke-width: 3; }
+.venn__lleno { fill: var(--acento); }
+.venn__franja-borde { fill: none; stroke: var(--tinta); stroke-width: 11; }
+.venn__franja { fill: none; stroke: var(--acento); stroke-width: 6; }
+.ej-sql__nota { font-weight: 400; }
+.tabla-leer { width: 100%; border-collapse: separate; border-spacing: 0 6px; margin: -6px 0; }
+.tabla-leer th, .tabla-leer td { padding: 6px 10px; font-size: 15px; line-height: 1.3; text-align: left; vertical-align: middle; }
+.tabla-leer th { width: 32%; background: var(--acento-claro); border-radius: 6px 0 0 6px; font-weight: 700; color: var(--tinta); }
+.tabla-leer td { background: var(--blanco); border-radius: 0 6px 6px 0; }
+/* Lámina 31: LIKE, IN y BETWEEN, cada uno con su número; la sintaxis, el ejemplo y el resultado */
+.filtro { display: grid; gap: 10px; }
+.filtro__def, .filtro__cod, .filtro__res { display: grid; gap: 6px; align-content: start; min-width: 0; }
+.filtro__nom { display: flex; align-items: center; gap: 12px; font-family: var(--fuente-titular); font-weight: 800; font-size: 32px; line-height: 1; color: var(--tinta); }
+.filtro__num {
+  flex: none; display: inline-flex; align-items: center; justify-content: center;
+  width: 44px; height: 44px; border-radius: 50%; background: var(--acento); font-size: 28px;
+}
+.filtro__def > p, .filtro__res > p { font-size: 15.5px; line-height: 1.35; }
+.comodines { display: grid; gap: 4px; background: var(--blanco); border-radius: 8px; padding: 6px 10px; }
+.comodines li { display: grid; grid-template-columns: 1.5em 1fr; align-items: baseline; gap: 6px; font-size: 15px; line-height: 1.3; }
+.comodin { font-family: var(--fuente-mono); font-size: 1.25em; color: var(--acento-texto); }
+.filtro__rotulo { font-family: var(--fuente-titulo); font-weight: 700; font-size: 18px; line-height: 1.15; color: var(--tinta); }
+.filtro__rotulo span { font-family: var(--fuente); font-weight: 400; }
+.filtro__rotulo:not(:first-child) { margin-top: 4px; }
+.filtro .ventana-cod { box-shadow: none; }
+.filtro .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Código SQL: el AND de BETWEEN, debajo de la columna; el OR, dentro del paréntesis */
+.pseudo--sql .i-between .pseudo__c { padding-left: 8ch; }
+.pseudo--sql .i-paren .pseudo__c { padding-left: 9ch; }
+/* "Para profundizar": en el celular, cada bloque del ancho de la pantalla (el código largo corta renglón) */
+.pf-grid--chica .pf, .pf-grid--chica .pf__cols > * { min-width: 0; }
+/* Actividades: la lista de operadores sin cortar; cada consulta con su pedido; la descarga, dentro de la consigna */
+.sin-corte { white-space: nowrap; }
+.ej-error { display: grid; gap: 6px; min-width: 0; }
+.ej-error .ventana-cod { box-shadow: none; }
+.consigna .descarga { margin-top: 8px; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -1262,6 +1322,14 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .puntos-insert { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* de a dos: el título entra en un renglón */
   /* TP8: los operadores, a lo ancho; la nota de ORDER BY, debajo (en la hoja A4, al costado) */
   .lado-a-lado--cond { grid-template-columns: 1fr; }
+  /* TP9: los operadores de a dos; la tabla de ejemplo, del ancho de sus datos; AND, OR y NOT en una fila;
+     en LIKE, IN y BETWEEN, la sintaxis y el resultado lado a lado */
+  .comparadores { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lado-a-lado--prod { grid-template-columns: auto minmax(0, 1fr); }
+  .lado-a-lado--prod .resultado { grid-template-columns: 1fr; }
+  .logicos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .filtro { grid-template-columns: max-content minmax(0, 1fr); column-gap: 14px; }
+  .filtro__def { grid-column: 1 / -1; }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
@@ -1279,6 +1347,10 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
     text-align: left; row-gap: 2px; padding: 12px 14px;
   }
   .secuencia--linea .paso .ico { width: 56px; height: 56px; }
+  /* TP9: los ejemplos en SQL de las láminas 29 y 30, de a dos (de a tres, el código se corta) */
+  .lamina--llena .ej-sql { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  /* "Para profundizar" con código: el recuadro, debajo del texto */
+  .pf-grid--chica .pf__cols { grid-template-columns: 1fr; }
 }
 
 /* ==========================================================
@@ -1838,6 +1910,87 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   /* Actividades: los puntos 1 a 3 en una fila; el cuadro, a lo ancho y con lugar para escribir */
   .acts--tp8 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .act-tabla--pedidos td { height: 60px; }
+
+  /* De 6.º (TP9) */
+  /* Lámina 29: los seis operadores de a tres, con el ícono más chico */
+  .comparadores { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
+  .comparador { gap: 4px; padding: 5px 5px 6px; }
+  .comparador__cab { font-size: 15.5px; padding: 2px 8px; }
+  .comparador__def .ico { width: 32px; height: 32px; }
+  .comparador__def p { font-size: 13.5px; line-height: 1.25; }
+  .comparador__ej { font-size: 12.5px; }
+  .lamina--apretada .comparador .pseudo--sql { font-size: 11.5px; padding: 3px 0; }
+  .lamina--apretada .lado-a-lado--prod .tabla-ej { font-size: 12.5px; }
+  .lado-a-lado--prod { gap: 8px; }
+  .lado-a-lado--prod .resultado { grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+  /* ¿Dónde se usan?: el ícono al lado del título, los dos centrados; el texto debajo */
+  .usos-sql--fila .tarjeta { display: grid; grid-template-columns: 1fr auto auto 1fr; align-items: center; column-gap: 8px; }
+  .usos-sql--fila .tarjeta .ico { grid-column: 2; }
+  .usos-sql--fila .tarjeta__tit { grid-column: 3; }
+  .usos-sql--fila .tarjeta p { grid-column: 1 / -1; }
+  .lado-a-lado--prod .resultado .intro { padding: 6px 8px; gap: 8px; }
+  .lado-a-lado--prod .resultado .intro .ico--l { width: 30px; height: 30px; }
+  .lado-a-lado--prod .resultado .intro p { font-size: 13px; line-height: 1.3; padding-left: 8px; }
+  .lamina--apretada .ej-sql__tit { font-size: 14px; padding: 2px 8px; }
+  /* Lámina 30: tarjetas más bajas; cada ejemplo, del ancho de su código; "Cómo leerlo" con menos aire */
+  .logicos { gap: 8px; }
+  .logicos .tarjeta { gap: 3px; padding: 5px 5px 7px; }
+  .lamina--apretada .logicos .tarjeta__cab { font-size: 16px; padding: 2px; }
+  .logicos .tarjeta p { font-size: 14px; line-height: 1.25; }
+  .venn { width: 84px; }
+  .ej-sql--logicos { grid-template-columns: repeat(3, minmax(min-content, 1fr)); }
+  .ej-sql--logicos .pseudo__c { white-space: nowrap; min-width: auto; }
+  .ej-sql--logicos .ventana-cod { min-width: min-content; }
+  .lamina--apretada .ej-sql .pseudo--sql { font-size: 11.5px; }
+  .tabla-leer { border-spacing: 0 4px; margin: -4px 0; }
+  .tabla-leer th, .tabla-leer td { font-size: 13.5px; padding: 4px 8px; }
+  .tabla-leer th { width: 27%; }
+  /* Lámina 31: número y texto, código y resultado, en tres columnas del mismo ancho en los tres bloques */
+  .filtro { grid-template-columns: minmax(0, 24fr) minmax(0, 46fr) minmax(0, 30fr); column-gap: 12px; }
+  .filtro__def { grid-column: auto; }
+  .filtro__nom { font-size: 30px; gap: 10px; }
+  .filtro__num { width: 40px; height: 40px; font-size: 26px; }
+  .filtro__def > p, .filtro__res > p { font-size: 14px; line-height: 1.32; }
+  .comodines li { font-size: 13.5px; }
+  .filtro__rotulo { font-size: 16px; }
+  .lamina--apretada .filtro .pseudo--sql { font-size: 11.5px; padding: 4px 0; }
+  .lamina--apretada .filtro .tabla-ej { font-size: 12.5px; }
+  /* Láminas 29 y 30: siete bloques del PDF cada una; menos aire y letra un poco más chica en las tarjetas */
+  .lamina--llena { gap: 1.2mm; }
+  .lamina--llena .intro--larga p { font-size: 15.5px; line-height: 1.33; }
+  .lamina--llena .panel { padding: 7px 12px 9px; }
+  .lamina--llena .panel__cab { margin-bottom: 5px; }
+  .lamina--llena .idea p { padding: 5px 18px; }
+  .lamina--llena .intro { padding: 6px 14px; }
+  .lamina--llena .subtitulo { font-size: 19px; }
+  .lamina--llena .subtitulo::after { margin-top: 3px; }
+  .lamina--llena .lado-a-lado--prod .tabla-ej th, .lamina--llena .lado-a-lado--prod .tabla-ej td { padding: 1px 5px; }
+  .lamina--llena .comparador { gap: 3px; padding: 4px 5px 5px; }
+  .lamina--llena .comparador__cab { font-size: 14.5px; padding: 1px 8px; }
+  .lamina--llena .comparador__def p { font-size: 13px; line-height: 1.22; }
+  .lamina--llena .comparador__ej { font-size: 11.5px; }
+  .lamina--llena .comparador .pseudo--sql { padding: 2px 0; }
+  .lamina--llena .ej-sql__tit { font-size: 13.5px; line-height: 1.15; }
+  .lamina--llena .usos-sql .tarjeta { gap: 2px; padding: 5px 6px 6px; }
+  .lamina--llena .usos-sql .tarjeta .ico--l { width: 28px; height: 28px; }
+  .lamina--llena .usos-sql .tarjeta__tit { font-size: 14.5px; }
+  .lamina--llena .usos-sql .tarjeta p { font-size: 13px; line-height: 1.22; }
+  .lamina--llena .venn { width: 76px; }
+  .lamina--llena .logicos .tarjeta p { font-size: 13.5px; line-height: 1.22; }
+  .lamina--llena .tabla-leer th, .lamina--llena .tabla-leer td { font-size: 13px; padding: 3px 8px; }
+  .lamina--llena .puntos--4 .tarjeta { padding: 5px 7px 6px; }
+  .lamina--llena .puntos--4 .tarjeta .ico { width: 26px; height: 26px; }
+  .lamina--llena .puntos--4 .tarjeta .tarjeta__cab { font-size: 13.5px; }
+  .lamina--llena .puntos--4 .tarjeta p { font-size: 12.5px; line-height: 1.22; }
+  /* "Para profundizar": cuatro bloques con código; la letra, un poco más chica */
+  .pf-grid--chica .pf p, .pf-grid--chica .pf__lista li, .pf-grid--chica .instrucciones > li { font-size: 13.5px; line-height: 1.33; }
+  .pf-grid--chica .pf__texto { gap: 6px; }
+  .pf-grid--chica .pseudo--sql { font-size: 11.5px; }
+  /* Actividades: los puntos 1 a 3 en una fila, con la letra un poco más chica; el 4, a lo ancho */
+  .acts--tp9 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .acts--tp9 .act__items > li { font-size: 15px; line-height: 1.32; }
+  .ej-error { gap: 4px; }
+  .ej-error .pseudo--sql { font-size: 11.5px; padding: 4px 0; }
 }
 
 /* ==========================================================
