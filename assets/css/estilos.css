@@ -1154,6 +1154,31 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
 .act-tabla--instr tbody th { font-weight: 400; color: var(--texto); }
 
 /* ==========================================================
+   De 6.º (TP8): consultar
+   ========================================================== */
+/* Consulta → resultado: uno debajo del otro en el celular (la flecha apunta hacia abajo); en la hoja A4, en una fila */
+.consulta-res { display: grid; gap: 10px; }
+.consulta-res > .flecha { justify-self: center; }
+.consulta-res .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Lámina 27: la sintaxis y "¿Qué es un alias?", uno debajo del otro; recuadro con ícono, texto y código */
+.pila { display: grid; gap: 12px; align-content: start; }
+.panel > .panel__cab + .alias-def { margin-top: 0; }
+.alias-def { row-gap: 8px; }
+.alias-def > .ventana-cod { grid-column: 1 / -1; box-shadow: none; }
+.lado-a-lado--alias .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Lámina 28: cada operador con el símbolo arriba y su ejemplo abajo; la nota de ORDER BY, al costado */
+.operadores .tarjeta { gap: 6px; }
+.operadores .tarjeta__cab { font-family: var(--fuente-mono); font-size: 20px; line-height: 1.1; }
+.operadores code { font-size: 13px; white-space: normal; -webkit-box-decoration-break: clone; box-decoration-break: clone; }
+/* "Para profundizar": tablas con código */
+.tabla-null td, .tabla-alg-sql td { text-align: left; }
+.tabla-null code, .tabla-alg-sql code { font-size: .85em; white-space: normal; }
+/* Actividades: del pedido a la consulta, con lugar para escribir */
+.act-tabla--pedidos thead th:first-child { width: 30%; }
+.act-tabla--pedidos thead th:nth-child(2) { width: 40%; }
+.act-tabla--pedidos tbody th { font-weight: 400; color: var(--texto); }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -1235,6 +1260,8 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .ej-sql--alter { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .ej-sql--alter > li:last-child { grid-column: 1 / -1; }
   .puntos-insert { grid-template-columns: repeat(2, minmax(0, 1fr)); }   /* de a dos: el título entra en un renglón */
+  /* TP8: los operadores, a lo ancho; la nota de ORDER BY, debajo (en la hoja A4, al costado) */
+  .lado-a-lado--cond { grid-template-columns: 1fr; }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
@@ -1736,6 +1763,81 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .acts--tp7 > .act:nth-child(2) { grid-row: span 2; }
   .act-tabla--instr td { height: 35px; }
   .act-tabla--instr thead th:first-child { width: 44%; }
+
+  /* De 6.º (TP8) */
+  /* Láminas 26 a 28: seis bloques del PDF cada una; menos aire entre bloques y dentro de cada uno */
+  .lamina--apretada { gap: 1.6mm; }
+  .lamina--apretada .subtitulo { font-size: 20px; }
+  .lamina--apretada .subtitulo::after { margin-top: 4px; height: 4px; }
+  .lamina--apretada .panel { padding: 8px 12px 10px; }
+  .lamina--apretada .panel__cab { margin-bottom: 6px; }
+  .lamina--apretada .intro { padding: 8px 14px; }
+  .lamina--apretada .intro > .ico--xl { width: 52px; height: 52px; }
+  .lamina--apretada .idea p { font-size: 16.5px; padding: 6px 18px; }
+  .lamina--apretada .idea strong { font-size: 22px; }
+  .lamina--apretada .ventana-cod__barra { padding: 4px 12px; }
+  .lamina--apretada .pseudo--sql { font-size: 12px; line-height: 1.38; padding: 6px 0; }
+  .lamina--apretada .tabla-ej { font-size: 12.5px; }
+  .lamina--apretada .tabla-ej th, .lamina--apretada .tabla-ej td,
+  .lamina--apretada .lado-a-lado--ej .tabla-ej th, .lamina--apretada .lado-a-lado--ej .tabla-ej td { padding: 2px 5px; }
+  .lamina--apretada .tabla-ej caption { font-size: 14px; padding: 1px; }
+  .lamina--apretada .intro--larga p { font-size: 16px; }   /* el texto de la lámina 27 entra en dos renglones */
+  /* ¿Para qué sirve?: el ícono arriba, más chico */
+  .lamina--apretada .usos-sql { gap: 7px; }
+  .lamina--apretada .usos-sql .tarjeta { gap: 3px; padding: 6px 6px 8px; }
+  .lamina--apretada .usos-sql .tarjeta .ico--l { width: 36px; height: 36px; }
+  .lamina--apretada .usos-sql .tarjeta__tit { font-size: 15.5px; }
+  .lamina--apretada .usos-sql .tarjeta p { font-size: 13.5px; line-height: 1.25; }
+  /* Láminas 26 y 28: la sintaxis, angosta, y el ejemplo; la consulta y su resultado en una fila */
+  .lado-a-lado--select { grid-template-columns: 1fr 1.3fr; }
+  .consulta-res { grid-template-columns: minmax(0, 1fr) auto minmax(0, 1.3fr); align-items: center; gap: 12px; }
+  .consulta-res--sin-flecha { grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr); }
+  /* Puntos importantes: los cuatro en una fila, con el ícono al costado del título */
+  .puntos--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 7px; }
+  .lamina--apretada .puntos--4 .tarjeta { gap: 3px 7px; padding: 6px 8px 7px; }
+  .lamina--apretada .puntos--4 .tarjeta .ico { width: 30px; height: 30px; }
+  .lamina--apretada .puntos--4 .tarjeta .tarjeta__cab { font-size: 14px; line-height: 1.15; }
+  .lamina--apretada .puntos--4 .tarjeta p { font-size: 13px; line-height: 1.25; }
+  /* Lámina 27: ¿Qué cambia?, con los títulos de dos renglones alineados; la sintaxis y el alias
+     a la izquierda; el ejemplo y su consulta a la derecha */
+  .lamina--apretada .define-tabla { gap: 7px; }
+  .lamina--apretada .define-tabla .tarjeta { padding: 5px 5px 7px; }
+  .lamina--apretada .define-tabla .tarjeta__cab { display: grid; place-items: center; min-height: 37px; font-size: 14.5px; line-height: 1.1; padding: 2px; }
+  .lamina--apretada .define-tabla .tarjeta .ico--l { width: 28px; height: 28px; }
+  .lamina--apretada .define-tabla .tarjeta p { font-size: 13.5px; line-height: 1.22; }
+  .lado-a-lado--alias { grid-template-columns: 1.3fr 1fr; align-items: stretch; }
+  .lado-a-lado--alias .pseudo--sql { font-size: 11.5px; }
+  .lamina--apretada .pila { gap: 1.6mm; }
+  .lamina--apretada .alias-def { padding: 6px 10px; gap: 6px 10px; }
+  .lamina--apretada .alias-def .ico--l { width: 36px; height: 36px; }
+  .lamina--apretada .alias-def p { font-size: 14px; line-height: 1.32; padding-left: 10px; }
+  .lamina--apretada .tabla-ej + .alias-def { margin-top: 8px; }
+  /* Lámina 28: los cuatro operadores en una fila; la nota de ORDER BY al costado, con el ícono arriba */
+  .lado-a-lado--cond { grid-template-columns: minmax(0, 1fr) 20%; gap: 8px; align-items: stretch; }
+  .lamina--apretada .lado-a-lado--cond > .panel { padding-left: 10px; padding-right: 10px; }
+  .operadores { gap: 6px; }
+  .operadores .tarjeta { gap: 4px; padding: 0 0 7px; }
+  .lamina--densa .operadores .tarjeta__cab { font-size: 18px; padding: 2px; }
+  .operadores .tarjeta p { font-size: 13.5px; line-height: 1.25; padding: 0 4px; }
+  .operadores code { font-size: 10.5px; letter-spacing: -.02em; padding: 1px 3px; white-space: pre; }
+  .intro--orden { grid-template-columns: 1fr; justify-items: center; align-content: center; text-align: center; padding: 8px 10px; gap: 6px; }
+  .lamina--apretada .intro--orden p { font-size: 14.5px; line-height: 1.4; padding-left: 0; border-left: 0; }
+  .intro--orden .ico--l { width: 40px; height: 40px; }
+  /* "Para profundizar": pasos, código y tablas chicas */
+  .pf-grid--sql .instrucciones { gap: 4px; }
+  .pf-grid--sql .instrucciones > li { grid-template-columns: 20px 1fr; gap: 8px; font-size: 14px; line-height: 1.36; padding: 4px 8px 4px 5px; }
+  .pf-grid--sql .instrucciones > li::before { font-size: 14px; }
+  .pf-grid--sql .pseudo--sql { font-size: 12px; padding: 5px 0; }
+  .pf-grid--sql .tabla-comp { border-spacing: 3px; width: calc(100% + 6px); margin: -3px; }
+  .pf-grid--sql .tabla-comp th, .pf-grid--sql .tabla-comp td { font-size: 13px; padding: 3px 5px; }
+  .pf-grid--sql .tabla-comp code { font-size: 10.5px; white-space: pre; }
+  .pf-grid--sql .tabla-comp .alg { font-size: 12.5px; white-space: nowrap; }
+  .pf-grid--sql .alg--grande { font-size: 16px; padding: 3px 10px; }
+  .tabla-null thead th:first-child, .tabla-null tbody th { width: 44%; }
+  .tabla-alg-sql thead th:first-child, .tabla-alg-sql tbody th { width: auto; }
+  /* Actividades: los puntos 1 a 3 en una fila; el cuadro, a lo ancho y con lugar para escribir */
+  .acts--tp8 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .act-tabla--pedidos td { height: 60px; }
 }
 
 /* ==========================================================

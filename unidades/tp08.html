@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°8 — Consultar · Base de Datos II</title>
+  <meta name="description" content="TP N°8 de Base de Datos II: SELECT para consultar una tabla, columnas específicas y alias con AS, y WHERE para filtrar registros. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="8" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18" style="fill:var(--ac)"/>
+      <path d="M24 22v13" style="stroke-width:4"/>
+      <circle cx="24" cy="14.5" r="2.6" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-campos" viewBox="0 0 48 48">
+      <rect x="10" y="5" width="28" height="38" rx="4"/>
+      <path d="M17 16h14M17 24h14M17 32h14" style="stroke:var(--ac);stroke-width:3.6"/>
+    </symbol>
+    <symbol id="i-ordenar" viewBox="0 0 48 48">
+      <path d="M16 6 26 17h-6v24h-8V17H6z" style="fill:var(--ac)"/>
+      <path d="M33 8v32M25 32l8 8 8-8"/>
+    </symbol>
+    <symbol id="i-barras" viewBox="0 0 48 48">
+      <rect x="8" y="27" width="8" height="15" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="20" y="18" width="8" height="24" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="32" y="8" width="8" height="34" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-cadena" viewBox="0 0 48 48">
+      <rect x="4" y="22.5" width="25" height="13" rx="6.5" transform="rotate(-45 16.5 29)" style="fill:var(--ac)"/>
+      <rect x="19" y="12.5" width="25" height="13" rx="6.5" transform="rotate(-45 31.5 19)"/>
+      <path d="M21 27l6-6"/>
+    </symbol>
+    <symbol id="i-doc-menos" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M31.5 36h9" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-doc-mas" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M36 31.5v9M31.5 36h9" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-doc-check" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M32 36.3l2.8 2.8 5.2-5.6" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-etiqueta" viewBox="0 0 48 48">
+      <path d="M25 6h17v17L22.5 42.5a2.5 2.5 0 0 1-3.5 0L5.5 29a2.5 2.5 0 0 1 0-3.5z" style="fill:var(--ac)"/>
+      <circle cx="33.5" cy="14.5" r="3.5" style="fill:#fff"/>
+    </symbol>
+    <symbol id="i-libro" viewBox="0 0 48 48">
+      <path d="M24 13c-4.5-3.5-10.5-4.5-18-4v28c7.5-.5 13.5.5 18 4 4.5-3.5 10.5-4.5 18-4V9c-7.5-.5-13.5.5-18 4z" style="fill:var(--ac)"/>
+      <path d="M24 13v28"/>
+    </symbol>
+    <symbol id="i-check-aro" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18"/>
+      <path d="M15.5 24.5l6 6 11-12" style="stroke:var(--ac);stroke-width:4.4"/>
+    </symbol>
+    <symbol id="i-filas" viewBox="0 0 48 48">
+      <rect x="7" y="7" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+      <rect x="7" y="19.5" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+      <rect x="7" y="32" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../index.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°8 — Consultar</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°8">
+    <a href="#pag-26">26 · SELECT</a>
+    <a href="#pag-27">27 · Columnas y alias</a>
+    <a href="#pag-28">28 · WHERE</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°8 — Consultar</h1>
+
+  <!-- =================== LÁMINA 26 (PDF pág. 27) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-26" aria-labelledby="t26">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°8</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t26"><span class="tit__num">26.</span> SELECT – consultar información</h2>
+      <p class="tit__sub">Obtener datos desde una tabla <span class="etq etq--repaso">Repaso de 5.º</span></p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p><strong>SELECT</strong> se usa para consultar y recuperar la información almacenada en una tabla. Permite ver los registros que cumplen con lo que necesitamos.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="u26">
+      <div class="panel__cab"><h3 class="subtitulo" id="u26">¿Para qué sirve?</h3></div>
+      <ul class="ambitos ambitos--4 usos-sql">
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__tit">Ver registros</h4><p>Permite consultar y mostrar los registros de una tabla.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-campos"/></svg><h4 class="tarjeta__tit">Elegir columnas</h4><p>Permite seleccionar solo las columnas que necesitamos.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-ordenar"/></svg><h4 class="tarjeta__tit">Ordenar resultados</h4><p>Permite mostrar los datos en un orden específico.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__tit">Analizar información</h4><p>Facilita revisar, comparar y analizar los datos.</p></li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--ej lado-a-lado--select">
+      <section class="panel" aria-labelledby="s26">
+        <div class="panel__cab"><h3 class="subtitulo" id="s26">Sintaxis básica</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta todas las columnas de la tabla clientes">
+            <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="e26">
+        <div class="panel__cab"><h3 class="subtitulo" id="e26">Ejemplo en una tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>CLIENTES</caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">email</th><th scope="col">ciudad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>ana@mail.com</td><td>Ushuaia</td></tr>
+            <tr><td>2</td><td>Carlos</td><td>carlos@mail.com</td><td>Tolhuin</td></tr>
+            <tr><td>3</td><td>Laura</td><td>laura@mail.com</td><td>Río Grande</td></tr>
+            <tr><td>4</td><td>Pedro</td><td>pedro@mail.com</td><td>Buenos Aires</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="c26">
+      <div class="panel__cab"><h3 class="subtitulo" id="c26">Consulta y resultado</h3></div>
+      <div class="consulta-res">
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">Consulta SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Consulta SQL: SELECT asterisco FROM clientes">
+            <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+          </ol>
+        </div>
+        <span class="flecha" aria-hidden="true"></span>
+        <table class="tabla-ej">
+          <caption>Resultado</caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">email</th><th scope="col">ciudad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>ana@mail.com</td><td>Ushuaia</td></tr>
+            <tr><td>2</td><td>Carlos</td><td>carlos@mail.com</td><td>Tolhuin</td></tr>
+            <tr><td>3</td><td>Laura</td><td>laura@mail.com</td><td>Río Grande</td></tr>
+            <tr><td>4</td><td>Pedro</td><td>pedro@mail.com</td><td>Buenos Aires</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="i26">
+      <div class="panel__cab"><h3 class="subtitulo" id="i26">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><h4 class="tarjeta__cab">No modifica datos</h4><p>SELECT solo lee información, no cambia los datos de la tabla.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-campos"/></svg><h4 class="tarjeta__cab">Devuelve resultados</h4><p>Muestra un conjunto de registros que coinciden con la consulta.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-cadena"/></svg><h4 class="tarjeta__cab">Se usa con otras cláusulas</h4><p>Puede combinarse con WHERE, ORDER BY, etc. para filtrar u ordenar.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><h4 class="tarjeta__cab">Puede consultar una o varias tablas</h4><p>Se puede usar en una tabla o en varias tablas relacionadas.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> SELECT nos permite obtener los datos que necesitamos desde una o varias tablas sin modificar la información.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 26">26</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 27 (PDF pág. 28) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-27" aria-labelledby="t27">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°8</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t27"><span class="tit__num">27.</span> SELECT de columnas específicas + alias</h2>
+      <p class="tit__sub">Elegir solo la información necesaria</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>El comando <strong>SELECT</strong> permite obtener solo algunas columnas de una tabla. Los <strong>alias</strong> se usan para renombrar las columnas en el resultado y mostrar nombres más amigables.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="q27">
+      <div class="panel__cab"><h3 class="subtitulo" id="q27">¿Qué cambia?</h3></div>
+      <ul class="ambitos ambitos--4 define-tabla">
+        <li class="tarjeta"><h4 class="tarjeta__cab">Menos información</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-menos"/></svg><p>Se muestran solo las columnas que necesitas.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Más claridad</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><p>Los resultados son más fáciles de leer y entender.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Resultados personalizados</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><p>Puedes elegir las columnas que te interesan.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">Nombres más amigables</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-etiqueta"/></svg><p>Los alias permiten mostrar nombres más claros en el resultado.</p></li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--alias">
+      <div class="pila">
+        <section class="panel" aria-labelledby="s27">
+          <div class="panel__cab"><h3 class="subtitulo" id="s27">Sintaxis</h3></div>
+          <div class="ventana-cod ventana-cod--sql">
+            <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: una consulta con las columnas nombre y email de clientes, y otra que muestra nombre con el alias cliente y ciudad con el alias localidad">
+              <li><span class="pseudo__c"><span class="t-com">-- Seleccionar columnas específicas</span></span></li>
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>, <span class="t-atr">email</span> <b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+              <li><span class="pseudo__c"><span class="t-com">-- Usar alias para renombrar columnas</span></span></li>
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>AS</b> <span class="t-atr">cliente</span>, <span class="t-atr">ciudad</span> <b>AS</b> <span class="t-atr">localidad</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+            </ol>
+          </div>
+        </section>
+
+        <section class="panel" aria-labelledby="a27">
+          <div class="panel__cab"><h3 class="subtitulo" id="a27">¿Qué es un alias?</h3></div>
+          <div class="intro alias-def">
+            <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg>
+            <p>Un <strong>alias</strong> es un nombre temporal que se asigna a una columna en el resultado de una consulta. Se usa la palabra clave <strong>AS</strong>.</p>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL que muestra la columna nombre con el alias cliente">
+                <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>AS</b> <span class="t-atr">cliente</span> <b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+              </ol>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section class="panel" aria-labelledby="e27">
+        <div class="panel__cab"><h3 class="subtitulo" id="e27">Ejemplo en una tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>CLIENTES</caption>
+          <thead>
+            <tr><th scope="col">cliente</th><th scope="col">localidad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Ana</td><td>Ushuaia</td></tr>
+            <tr><td>Carlos</td><td>Tolhuin</td></tr>
+            <tr><td>Laura</td><td>Río Grande</td></tr>
+            <tr><td>Pedro</td><td>Buenos Aires</td></tr>
+          </tbody>
+        </table>
+        <div class="intro alias-def">
+          <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+          <p>Este resultado se obtiene con:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que muestra nombre con el alias cliente y ciudad con el alias localidad">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>AS</b> <span class="t-atr">cliente</span>,</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">ciudad</span> <b>AS</b> <span class="t-atr">localidad</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">clientes</span>;</span></li>
+            </ol>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="i27">
+      <div class="panel__cab"><h3 class="subtitulo" id="i27">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><h4 class="tarjeta__cab">No cambia el nombre real de la columna.</h4><p>El alias solo se usa en el resultado.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-libro"/></svg><h4 class="tarjeta__cab">Mejora la lectura de los resultados.</h4><p>Permite mostrar nombres más claros.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__cab">Sirve en reportes.</h4><p>Es útil para generar listados e informes más entendibles.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-check-aro"/></svg><h4 class="tarjeta__cab">Puede usarse en resultados.</h4><p>El alias se muestra solo en el resultado de la consulta.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Con <b>SELECT</b> eliges solo las columnas que necesitas, y con <b>AS</b> puedes darles un nombre más amigable en el resultado.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 27">27</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 28 (PDF pág. 29) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-28" aria-labelledby="t28">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°8</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t28"><span class="tit__num">28.</span> WHERE – filtrar registros</h2>
+      <p class="tit__sub">Mostrar solo los datos que cumplen una condición</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>La cláusula <strong>WHERE</strong> se usa para filtrar los registros de una tabla. Permite mostrar solo las filas que cumplen una condición específica.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="u28">
+      <div class="panel__cab"><h3 class="subtitulo" id="u28">¿Para qué sirve?</h3></div>
+      <ul class="ambitos ambitos--4 usos-sql">
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__tit">Buscar un dato</h4><p>Permite encontrar registros específicos.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-filas"/></svg><h4 class="tarjeta__tit">Limitar resultados</h4><p>Muestra solo la información necesaria.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-check"/></svg><h4 class="tarjeta__tit">Encontrar coincidencias</h4><p>Filtra filas que cumplen una condición.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__tit">Preparar reportes</h4><p>Ayuda a obtener datos más relevantes para un análisis.</p></li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--ej lado-a-lado--select">
+      <section class="panel" aria-labelledby="s28">
+        <div class="panel__cab"><h3 class="subtitulo" id="s28">Sintaxis básica</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="Código SQL que consulta los clientes de Ushuaia">
+            <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span>;</span></li>
+          </ol>
+        </div>
+      </section>
+
+      <section class="panel" aria-labelledby="e28">
+        <div class="panel__cab"><h3 class="subtitulo" id="e28">Ejemplo en una tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>CLIENTES</caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">ciudad</th><th scope="col">edad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>Ushuaia</td><td>28</td></tr>
+            <tr><td>2</td><td>Carlos</td><td>Tolhuin</td><td>35</td></tr>
+            <tr><td>3</td><td>Laura</td><td>Río Grande</td><td>22</td></tr>
+            <tr><td>4</td><td>Pedro</td><td>Ushuaia</td><td>40</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="c28">
+      <div class="panel__cab"><h3 class="subtitulo" id="c28">Consulta y resultado</h3></div>
+      <div class="consulta-res consulta-res--sin-flecha">
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">Consulta</div>
+          <ol class="pseudo pseudo--sql" aria-label="Consulta SQL: los clientes de Ushuaia">
+            <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span>;</span></li>
+          </ol>
+        </div>
+        <table class="tabla-ej">
+          <caption>Resultado <span class="caption__nota">(solo filas que cumplen la condición)</span></caption>
+          <thead>
+            <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">ciudad</th><th scope="col">edad</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Ana</td><td>Ushuaia</td><td>28</td></tr>
+            <tr><td>4</td><td>Pedro</td><td>Ushuaia</td><td>40</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--cond">
+      <section class="panel" aria-labelledby="o28">
+        <div class="panel__cab"><h3 class="subtitulo" id="o28">Condiciones comunes</h3></div>
+        <ul class="ambitos ambitos--4 operadores">
+          <li class="tarjeta"><h4 class="tarjeta__cab">=</h4><p>Igual a un valor.</p><code class="cod-sql">ciudad = 'Ushuaia'</code></li>
+          <li class="tarjeta"><h4 class="tarjeta__cab">&gt;</h4><p>Mayor que un valor.</p><code class="cod-sql">edad &gt; 30</code></li>
+          <li class="tarjeta"><h4 class="tarjeta__cab">&lt;</h4><p>Menor que un valor.</p><code class="cod-sql">precio &lt; 10000</code></li>
+          <li class="tarjeta"><h4 class="tarjeta__cab">&lt;&gt;</h4><p>Distinto de un valor.</p><code class="cod-sql">ciudad &lt;&gt; 'Tolhuin'</code></li>
+        </ul>
+      </section>
+
+      <div class="intro intro--orden">
+        <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-info"/></svg>
+        <p>La cláusula <code class="cod-sql">WHERE</code> se usa antes de <code class="cod-sql">ORDER BY</code> en una consulta SQL.</p>
+      </div>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> <b>WHERE</b> permite filtrar los registros de una tabla y mostrar solo los datos que cumplen una condición.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 28">28</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°8</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid pf-grid--escalonada pf-grid--sql">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 26</p>
+      <h3 class="pf__titulo" id="pf1">En qué orden se lee una consulta</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Se escribe SELECT, FROM, WHERE, pero el gestor la resuelve en otro orden:</p>
+          <ol class="instrucciones">
+            <li><span><code class="cod-sql">FROM clientes</code>: busca la tabla.</span></li>
+            <li><span><code class="cod-sql">WHERE edad &gt; 30</code>: elige las filas.</span></li>
+            <li><span><code class="cod-sql">SELECT nombre</code>: elige las columnas.</span></li>
+          </ol>
+          <p>Por eso, el WHERE no reconoce un alias del SELECT (lámina 27): cuando filtra, el alias todavía no existe.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>¿Asterisco o columnas?</h4>
+          <p>Para mirar una tabla, <code class="cod-sql">SELECT *</code> alcanza. En un programa que consulta la base (TP12) conviene nombrar las columnas: trae solo lo que usa y, si a la tabla se le suma una columna (TP7), devuelve lo mismo.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 27</p>
+      <h3 class="pf__titulo" id="pf2">Cuentas, alias y DISTINCT</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Una columna del resultado puede ser una <strong>cuenta</strong>, que el gestor hace en cada fila; la tabla no cambia.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que muestra el nombre de cada producto y su precio con IVA, con el alias precio_con_iva">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-atr">precio</span> * <span class="t-num">1.21</span> <b>AS</b> <span class="t-atr">precio_con_iva</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+          <p>El Teclado (40000) da <strong>48400.0000</strong>: dos decimales del precio y dos de 1.21.</p>
+          <p>Si el alias tiene espacios, va entre comillas dobles: <code class="cod-sql">AS "Precio con IVA"</code>.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Sin repetir: DISTINCT</h4>
+          <p><code class="cod-sql cod-larga">SELECT DISTINCT ciudad FROM clientes;</code> muestra cada ciudad una vez: con la tabla de la lámina 28, Ushuaia, Tolhuin y Río Grande.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 28</p>
+      <h3 class="pf__titulo" id="pf3">Comillas y valores vacíos</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Los <strong>textos</strong> van entre comillas simples; los <strong>números</strong>, sin comillas: <code class="cod-sql">ciudad = 'Ushuaia'</code>, <code class="cod-sql">edad &gt; 30</code>. Sin las comillas, el gestor toma Ushuaia como el nombre de una columna y da error.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Valores vacíos: NULL</h4>
+          <p>Una celda sin dato queda en <strong>NULL</strong>, que no es un valor sino la falta de uno: no se busca con =, sino con <strong>IS NULL</strong>.</p>
+          <table class="tabla-comp tabla-null">
+            <caption class="sr-only">Qué devuelve cada condición para buscar los clientes con o sin email</caption>
+            <thead>
+              <tr><th scope="col">Condición</th><th scope="col">Devuelve</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row"><code class="cod-sql">email IS NULL</code></th><td>Los clientes sin email</td></tr>
+              <tr><th scope="row"><code class="cod-sql">email IS NOT NULL</code></th><td>Los que tienen email</td></tr>
+              <tr><th scope="row"><code class="cod-sql">email = NULL</code></th><td>Ninguna fila, y no da error</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">Del álgebra a SQL</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Las columnas del <strong>SELECT</strong> son la proyección (π) del TP6, y el <strong>WHERE</strong>, la selección (σ).</p>
+          <p class="alg alg--grande">π nombre, edad (σ ciudad = 'Ushuaia' (CLIENTES))</p>
+          <table class="tabla-comp tabla-alg-sql">
+            <caption class="sr-only">Cada parte de la consulta SQL y su parte en la expresión de álgebra</caption>
+            <thead>
+              <tr><th scope="col">En SQL</th><th scope="col">En álgebra</th></tr>
+            </thead>
+            <tbody>
+              <tr><th scope="row"><code class="cod-sql">SELECT nombre, edad</code></th><td><span class="alg">π nombre, edad</span></td></tr>
+              <tr><th scope="row"><code class="cod-sql">FROM clientes</code></th><td><span class="alg">CLIENTES</span></td></tr>
+              <tr><th scope="row"><code class="cod-sql">WHERE ciudad = 'Ushuaia'</code></th><td><span class="alg">σ ciudad = 'Ushuaia'</span></td></tr>
+            </tbody>
+          </table>
+          <p>Con la tabla de la lámina 28 da Ana, 28 y Pedro, 40. Se lee de adentro hacia afuera.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Ojo con los nombres</h4>
+          <p>La <strong>selección</strong> (σ) es el WHERE, no el SELECT. Con <code class="cod-sql">SELECT *</code> no hay π: van todas las columnas.</p>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 8</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°8</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°8 — Consultar</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°8.</p>
+
+    <!-- Puntos 1 a 3: uno por lámina, del PDF. Punto 4, nuevo -->
+    <ol class="acts acts--2col acts--tp8">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> SELECT</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta SELECT para ver todos los productos.</div></li>
+          <li><b class="act__letra">b)</b><div>Explica con tus palabras qué devuelve SELECT *.</div></li>
+          <li><b class="act__letra">c)</b><div>Marca para qué sirve SELECT.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> Columnas específicas y alias</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta para ver el nombre y precio de los productos.</div></li>
+          <li><b class="act__letra">b)</b><div>Usa un alias para renombrar la columna nombre como cliente.</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus palabras para qué sirve AS en una consulta SQL.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> WHERE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta SQL para ver los productos con precio mayor a 10000.</div></li>
+          <li><b class="act__letra">b)</b><div>Según la tabla de ejemplo, ¿qué filas mostraría la consulta WHERE ciudad = 'Tolhuin'?</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus palabras qué hace la cláusula WHERE.</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Del pedido a la consulta</h3>
+        <p class="act__caso">Para cada pedido, escribí la consulta SQL y su expresión de álgebra relacional. Usá la tabla CLIENTES de la lámina 28.</p>
+        <div class="act-tabla-desliza">
+          <table class="act-tabla act-tabla--filas act-tabla--pedidos">
+            <caption class="sr-only">Cuadro para completar: la consulta SQL y la expresión de álgebra de cada pedido</caption>
+            <thead><tr><th scope="col">Pedido</th><th scope="col">Consulta SQL</th><th scope="col">Expresión de álgebra</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">El nombre de todos los clientes.</th><td></td><td></td></tr>
+              <tr><th scope="row">Todos los datos de los clientes de Río Grande.</th><td></td><td></td></tr>
+              <tr><th scope="row">El nombre y la edad de los clientes mayores de 30.</th><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 8</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°8</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°8 — Consultar</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Trabajá en phpMyAdmin con la base tienda, en su pestaña <span class="ui">SQL</span>. Anotá en la carpeta cada consulta que escribas y cuántas filas devuelve.</p>
+
+    <ol class="acts" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> La base de la tienda</h3>
+        <div class="descarga">
+          <p>La base está en el archivo <code class="cod-archivo">tienda.sql</code>: las cuatro tablas del Integrador 1, con datos. Si ya tenés la base tienda del TP7, sus tablas se reemplazan. Descargalo desde la página del TP8.</p>
+          <a class="boton no-imprimir" href="../assets/datos/tienda.sql" download="tienda.sql"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar tienda.sql</span></a>
+        </div>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Importá <code class="cod-archivo">tienda.sql</code>: pestaña <span class="ui">Importar</span>, elegí el archivo y hacé clic en <span class="ui">Importar</span>.</div></li>
+          <li><b class="act__letra">b)</b><div>Elegí la base tienda, a la izquierda, y consultá cada tabla con SELECT *: clientes, productos, ventas y detalle_venta.</div></li>
+          <li><b class="act__letra">c)</b><div>Anotá cuántas filas tiene cada tabla. ¿Qué columna tiene clientes que no estaba en la lámina 23?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Columnas y alias</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá el nombre y el precio de los productos, con los alias Producto y Precio.</div></li>
+          <li><b class="act__letra">b)</b><div>Sumá una columna con el precio con IVA (<code class="cod-sql">precio * 1.21</code>), con el alias "Precio con IVA".</div></li>
+          <li><b class="act__letra">c)</b><div>Consultá otra vez productos con SELECT *. ¿Cambiaron los nombres de las columnas o los precios? ¿Por qué?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> Filtrar con WHERE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá los clientes de Ushuaia.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá los clientes mayores de 30.</div></li>
+          <li><b class="act__letra">c)</b><div>Mostrá los productos que no sean el Mouse.</div></li>
+          <li><b class="act__letra">d)</b><div>Mostrá los clientes sin email. Probá también con <code class="cod-sql">email = NULL</code>: ¿qué devuelve?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 8</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>
