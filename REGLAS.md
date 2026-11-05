@@ -61,7 +61,7 @@ Reglas fijas:
 
 ## Portada y vista previa del enlace (5/11)
 
-- `index.html` es la **portada principal**, como en Redes I: los íconos de los cuatro módulos, BASE DE DATOS II, "6° Año • Cuadernillo Digital", el colegio, el docente y el botón "Entrar al cuadernillo" (a `indice.html`). Sus estilos van dentro del mismo archivo. **No se toca** salvo que Nicolás lo pida.
+- `index.html` es la **portada principal**, como en Redes I: los íconos de los cuatro módulos, BASE DE DATOS II, "6° Año • Cuadernillo Digital", el docente y el botón "Entrar al cuadernillo" (a `indice.html`). Sin el nombre del colegio. Sus estilos van dentro del mismo archivo. **No se toca** salvo que Nicolás lo pida.
 - `indice.html` es el **índice de TPs** (antes era `index.html`). Lo que este archivo dice sobre "el índice" o "la portada con los TPs" se aplica a `indice.html`.
 - **Vista previa del enlace** (WhatsApp, Classroom): la portada, `indice.html` y cada TP llevan, después de `theme-color`, el mismo bloque de etiquetas: `og:type` (`website`), `og:locale` (`es_AR`), `og:site_name` (`Base de Datos II · Cuadernillo Digital`), `og:title`, `og:description`, `og:url`, `og:image` (`assets/img/miniatura.png` con la URL completa) con `og:image:width` 1200, `og:image:height` 630 y `og:image:alt`, y `twitter:card` (`summary_large_image`). Se copia de un TP y se cambian solo `og:title` y `og:url`.
   - `og:title`: en los TPs, igual al `<title>`: "TP N°X — nombre · Base de Datos II" (integradores: "Integrador 1 — La tienda, de nuevo · Base de Datos II"). En el índice, "Índice de TPs · Base de Datos II".
