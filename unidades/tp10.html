@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°10 — Ordenar, modificar y QBE · Base de Datos II</title>
+  <meta name="description" content="TP N°10 de Base de Datos II: ORDER BY y LIMIT para ordenar y limitar resultados, UPDATE y DELETE para modificar y eliminar registros, y QBE en phpMyAdmin para armar consultas sin escribir SQL. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <!-- Vista previa del enlace (WhatsApp, Classroom, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Base de Datos II · Cuadernillo Digital">
+  <meta property="og:title" content="TP N°10 — Ordenar, modificar y QBE · Base de Datos II">
+  <meta property="og:description" content="6.º año · Prof. Nicolás A. Cussi">
+  <meta property="og:url" content="https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/unidades/tp10.html">
+  <meta property="og:image" content="https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/assets/img/miniatura.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Base de Datos II, cuadernillo digital de 6.º año">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="10" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <!-- Ordenar de menor a mayor / de mayor a menor -->
+    <symbol id="i-barras" viewBox="0 0 48 48">
+      <rect x="8" y="27" width="8" height="15" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="20" y="18" width="8" height="24" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="32" y="8" width="8" height="34" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-barras-baja" viewBox="0 0 48 48">
+      <rect x="8" y="8" width="8" height="34" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="20" y="18" width="8" height="24" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="32" y="27" width="8" height="15" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- Mostrar solo las primeras filas (LIMIT): las dos primeras en el acento, la tercera punteada -->
+    <symbol id="i-primeros" viewBox="0 0 48 48">
+      <rect x="8" y="6" width="32" height="36" rx="5"/>
+      <path d="M16 16h16M16 24h16" style="stroke:var(--ac);stroke-width:4.4"/>
+      <path d="M16 32h16" style="stroke-dasharray:2.5 4"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-flecha-arriba" viewBox="0 0 48 48">
+      <path d="M24 5 39.5 21.5H30V43H18V21.5H8.5z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-flecha-abajo" viewBox="0 0 48 48">
+      <path d="M24 43 39.5 26.5H30V5H18v21.5H8.5z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-embudo" viewBox="0 0 48 48">
+      <path d="M6 8h36L28 25v13l-8 5V25z" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- UPDATE: un documento que se corrige con un lápiz -->
+    <symbol id="i-doc-lapiz" viewBox="0 0 48 48">
+      <path d="M27 43H9V5h18l9 9v6"/>
+      <path d="M27 5v9h9"/>
+      <path d="M14 17h12M14 23h14M14 29h8M14 35h5"/>
+      <path d="M38.5 23.5l5 5L28 44l-6.5 1.5L23 39z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-tacho" viewBox="0 0 48 48">
+      <path d="M9 12h30M19 12V7h10v5"/>
+      <path d="M12.5 12l2.5 30h18l2.5-30z" style="fill:var(--ac)"/>
+      <path d="M20 18v18M28 18v18"/>
+    </symbol>
+    <symbol id="i-doc-check" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M32 36.3l2.8 2.8 5.2-5.6" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <!-- QBE: una grilla con una casilla marcada -->
+    <symbol id="i-grilla" viewBox="0 0 48 48">
+      <path d="M6.3 9.3h35.4V16H6.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="5" y="8" width="38" height="32" rx="2"/>
+      <path d="M5 16h38M5 24h38M5 32h38M18 16v24M31 16v24"/>
+      <path d="M21.5 28.2l2.6 2.4 4.6-5" style="stroke:var(--ac);stroke-width:3"/>
+    </symbol>
+    <!-- Casilla marcada (fila Mostrar de la grilla QBE) -->
+    <symbol id="i-casilla" viewBox="0 0 24 24">
+      <rect x="3" y="3" width="18" height="18" rx="3.5" style="fill:var(--ac)"/>
+      <path d="M7.5 12.3l3 3 6-6.6"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../indice.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°10 — Ordenar, modificar y QBE</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°10">
+    <a href="#pag-32">32 · ORDER BY y LIMIT</a>
+    <a href="#pag-33">33 · UPDATE y DELETE</a>
+    <a href="#pag-34">34 · QBE</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°10 — Ordenar, modificar y QBE</h1>
+
+  <!-- =================== LÁMINA 32 (PDF pág. 33) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-32" aria-labelledby="t32">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°10</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t32"><span class="tit__num">32.</span> ORDER BY y LIMIT</h2>
+      <p class="tit__sub">Ordenar resultados y mostrar solo una parte</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>La cláusula <strong>ORDER BY</strong> se usa para ordenar los resultados de una consulta. La cláusula <strong>LIMIT</strong> se usa para restringir el número de filas que se devuelven en el resultado.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="u32">
+      <div class="panel__cab"><h3 class="subtitulo" id="u32">¿Para qué sirven?</h3></div>
+      <ul class="ambitos ambitos--4 usos-sql">
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__tit">Ordenar de menor a mayor</h4><p>Permite mostrar los registros en orden ascendente.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras-baja"/></svg><h4 class="tarjeta__tit">Ordenar de mayor a menor</h4><p>Permite mostrar los registros en orden descendente.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-primeros"/></svg><h4 class="tarjeta__tit">Mostrar primeros registros</h4><p>Permite mostrar solo algunas filas del resultado.</p></li>
+        <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><h4 class="tarjeta__tit">Preparar listados y reportes</h4><p>Ayuda a obtener información más útil y organizada para un análisis.</p></li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--ej lado-a-lado--orden">
+      <section class="panel" aria-labelledby="s32">
+        <div class="panel__cab"><h3 class="subtitulo" id="s32">Sintaxis básica</h3></div>
+        <ul class="ej-sql ej-sql--pila">
+          <li>
+            <h4 class="ej-sql__tit">Ordenar de menor a mayor (ASC)</h4>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL que ordena los productos por precio, de menor a mayor">
+                <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span></span></li>
+                <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">precio</span> <b>ASC</b>;</span></li>
+              </ol>
+            </div>
+          </li>
+          <li>
+            <h4 class="ej-sql__tit">Ordenar de mayor a menor y limitar resultados</h4>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL que ordena los productos por precio, de mayor a menor, y muestra solo 3">
+                <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span></span></li>
+                <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">precio</span> <b>DESC</b> <b>LIMIT</b> <span class="t-num">3</span>;</span></li>
+              </ol>
+            </div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="e32">
+        <div class="panel__cab"><h3 class="subtitulo" id="e32">Ejemplo en una tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Teclado</td><td>8000</td></tr>
+            <tr><td>2</td><td>Mouse</td><td>2500</td></tr>
+            <tr><td>3</td><td>Monitor</td><td>12000</td></tr>
+            <tr><td>4</td><td>Notebook</td><td>45000</td></tr>
+            <tr><td>5</td><td>Auriculares</td><td>15000</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="c32">
+      <div class="panel__cab"><h3 class="subtitulo" id="c32">Consulta y resultado</h3></div>
+      <div class="consulta-res consulta-res--nota">
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">Consulta</div>
+          <ol class="pseudo pseudo--sql" aria-label="Consulta SQL: los productos ordenados por precio de mayor a menor, solo 3">
+            <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span></span></li>
+            <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">precio</span> <b>DESC</b> <b>LIMIT</b> <span class="t-num">3</span>;</span></li>
+          </ol>
+        </div>
+        <table class="tabla-ej">
+          <caption>Resultado <span class="caption__nota">(top 3 por precio)</span></caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>4</td><td>Notebook</td><td>45000</td></tr>
+            <tr><td>5</td><td>Auriculares</td><td>15000</td></tr>
+            <tr><td>3</td><td>Monitor</td><td>12000</td></tr>
+          </tbody>
+        </table>
+        <div class="intro">
+          <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+          <p>El resultado muestra solo los 3 productos con mayor precio, ordenados de forma descendente.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="i32">
+      <div class="panel__cab"><h3 class="subtitulo" id="i32">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-flecha-arriba"/></svg><h4 class="tarjeta__cab">ASC</h4><p>Ordena los resultados de menor a mayor. Es el orden por defecto.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-flecha-abajo"/></svg><h4 class="tarjeta__cab">DESC</h4><p>Ordena los resultados de mayor a menor.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-primeros"/></svg><h4 class="tarjeta__cab">LIMIT</h4><p>Permite mostrar solo un número específico de filas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-embudo"/></svg><h4 class="tarjeta__cab">Combinación con WHERE</h4><p>Puedes usar ORDER BY y LIMIT junto con WHERE para filtrar, ordenar y limitar resultados.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> La cláusula <b>ORDER BY</b> organiza el resultado de una consulta y la cláusula <b>LIMIT</b> controla cuántas filas se muestran.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 32">32</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 33 (PDF pág. 34) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-33" aria-labelledby="t33">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°10</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t33"><span class="tit__num">33.</span> UPDATE y DELETE</h2>
+      <p class="tit__sub">Modificar y eliminar registros</p>
+    </div>
+
+    <div class="intro">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>El comando <strong>UPDATE</strong> permite modificar registros existentes en una tabla. El comando <strong>DELETE</strong> se usa para eliminar registros de una tabla.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="q33">
+      <div class="panel__cab"><h3 class="subtitulo" id="q33">¿Qué hace cada uno?</h3></div>
+      <ul class="acciones">
+        <li>
+          <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-doc-lapiz"/></svg>
+          <div><h4 class="acciones__nom">UPDATE</h4><p>Modifica el valor de una o más columnas en los registros que cumplen una condición.</p></div>
+        </li>
+        <li>
+          <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-tacho"/></svg>
+          <div><h4 class="acciones__nom">DELETE</h4><p>Elimina registros completos de una tabla que cumplen una condición.</p></div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="s33">
+      <div class="panel__cab"><h3 class="subtitulo" id="s33">Sintaxis</h3></div>
+      <ul class="ej-sql ej-sql--2">
+        <li>
+          <h4 class="ej-sql__tit">UPDATE</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que cambia a Ushuaia la ciudad del cliente con id_cliente 2">
+              <li><span class="pseudo__c"><b>UPDATE</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>SET</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_cliente</span> = <span class="t-num">2</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">DELETE</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que elimina los productos con stock igual a 0">
+              <li><span class="pseudo__c"><b>DELETE FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">stock</span> = <span class="t-num">0</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="e33">
+      <div class="panel__cab"><h3 class="subtitulo" id="e33">Ejemplo en una tabla</h3></div>
+      <div class="cambios">
+        <section class="cambio grupo" aria-labelledby="e33u">
+          <h4 class="cambio__tit" id="e33u"><b>UPDATE</b> – cambiar la ciudad de un cliente</h4>
+          <div class="antes-despues">
+            <table class="tabla-ej">
+              <caption>CLIENTES <span class="caption__nota">(antes)</span></caption>
+              <thead>
+                <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">ciudad</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Ana</td><td>Ushuaia</td></tr>
+                <tr><td>2</td><td>Carlos</td><td>Tolhuin</td></tr>
+                <tr><td>3</td><td>Laura</td><td>Río Grande</td></tr>
+                <tr><td>4</td><td>Pedro</td><td>Buenos Aires</td></tr>
+              </tbody>
+            </table>
+            <span class="flecha" aria-hidden="true"></span>
+            <table class="tabla-ej">
+              <caption>CLIENTES <span class="caption__nota">(después)</span></caption>
+              <thead>
+                <tr><th scope="col">id_cliente</th><th scope="col">nombre</th><th scope="col">ciudad</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Ana</td><td>Ushuaia</td></tr>
+                <tr><td>2</td><td>Carlos</td><td class="marca-celda">Ushuaia<span class="sr-only"> (dato que cambió)</span></td></tr>
+                <tr><td>3</td><td>Laura</td><td>Río Grande</td></tr>
+                <tr><td>4</td><td>Pedro</td><td>Buenos Aires</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cambio__nota">Se actualiza la ciudad del cliente con <code class="cod-sql">id_cliente = 2</code>.</p>
+        </section>
+
+        <section class="cambio" aria-labelledby="e33d">
+          <h4 class="cambio__tit" id="e33d"><b>DELETE</b> – eliminar productos sin stock</h4>
+          <div class="antes-despues">
+            <table class="tabla-ej">
+              <caption>PRODUCTOS <span class="caption__nota">(antes)</span></caption>
+              <thead>
+                <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">stock</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Teclado</td><td>10</td></tr>
+                <tr class="marca-fila"><td>2</td><td>Mouse</td><td>0<span class="sr-only"> (fila que se elimina)</span></td></tr>
+                <tr><td>3</td><td>Monitor</td><td>5</td></tr>
+                <tr><td>4</td><td>Notebook</td><td>3</td></tr>
+              </tbody>
+            </table>
+            <span class="flecha" aria-hidden="true"></span>
+            <table class="tabla-ej">
+              <caption>PRODUCTOS <span class="caption__nota">(después)</span></caption>
+              <thead>
+                <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">stock</th></tr>
+              </thead>
+              <tbody>
+                <tr><td>1</td><td>Teclado</td><td>10</td></tr>
+                <tr><td>3</td><td>Monitor</td><td>5</td></tr>
+                <tr><td>4</td><td>Notebook</td><td>3</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="cambio__nota">Se elimina el producto con <code class="cod-sql">stock = 0</code>.</p>
+        </section>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="k33">
+      <div class="panel__cab"><h3 class="subtitulo" id="k33">Cuidados importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc-check"/></svg><h4 class="tarjeta__cab">Usar WHERE</h4><p>Siempre usa una condición para evitar cambios no deseados.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__cab">Revisar antes de ejecutar</h4><p>Verifica que la condición sea correcta.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg><h4 class="tarjeta__cab">UPDATE modifica</h4><p>Solo cambia los valores de los registros existentes. No elimina registros.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tacho"/></svg><h4 class="tarjeta__cab">DELETE elimina</h4><p>Borra completamente los registros que cumplen la condición.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea idea--larga" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Los comandos <b>UPDATE</b> y <b>DELETE</b> permiten modificar los datos almacenados en una tabla. La cláusula <b>WHERE</b> ayuda a evitar cambios no deseados.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 33">33</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 34 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-34" aria-labelledby="t34" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°10</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t34"><span class="tit__num">34.</span> QBE: consultas por ejemplo</h2>
+      <p class="tit__sub">Armar una consulta sin escribir SQL</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-grilla"/></svg>
+      <p><strong>QBE</strong> (<i lang="en">Query By Example</i>, consulta por ejemplo) es una forma de armar consultas sin escribir SQL: se completa una grilla con la tabla, los campos, el orden y las condiciones, y el programa arma la consulta. Lo creó Moshé Zloof en IBM, en los años 70.</p>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--qbe">
+      <section class="panel" aria-labelledby="b34">
+        <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="b34">Pestaña Buscar</h3><p class="texto">De una tabla, con un formulario.</p></div>
+        <ol class="instrucciones">
+          <li><span>Elegí la tabla a la izquierda y entrá a la pestaña <span class="ui">Buscar</span>.</span></li>
+          <li><span>En cada columna, elegí el <span class="ui">Operador</span> y escribí el <span class="ui">Valor</span>: en precio, <code class="cod-sql">&gt;</code> y 10000.</span></li>
+          <li><span>Para ordenar, abrí <span class="ui">Opciones extra</span> y elegí la columna en <span class="ui">Ordenar por</span>, con <span class="ui">Ascendente</span> o <span class="ui">Descendente</span>.</span></li>
+          <li><span>Hacé clic en <span class="ui">Continuar</span>: arriba del resultado aparece el SQL que armó.</span></li>
+        </ol>
+      </section>
+
+      <section class="panel" aria-labelledby="q34">
+        <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="q34">Pestaña Generar una consulta</h3><p class="texto">De la base: una o varias tablas, con orden y criterios.</p></div>
+        <ol class="instrucciones">
+          <li><span>Elegí la base a la izquierda, entrá a <span class="ui">Generar una consulta</span> y después a <span class="ui">Consulta por ejemplo</span>.</span></li>
+          <li><span>En cada <span class="ui">Columna</span> de la grilla, elegí un campo y marcá <span class="ui">Mostrar</span> si va en el resultado.</span></li>
+          <li><span>Completá <span class="ui">Ordenar</span> y <span class="ui">Criterio</span>, y hacé clic en <span class="ui">Actualizar la consulta</span>: abajo aparece el SQL.</span></li>
+          <li><span>Con <span class="ui">Ejecutar la consulta</span>, se ve el resultado.</span></li>
+        </ol>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="x34">
+      <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="x34">Ejemplo: grilla QBE y SQL</h3><p class="texto">Los productos con precio mayor a 10000, de mayor a menor.</p></div>
+      <div class="consulta-res consulta-res--qbe">
+        <table class="tabla-ej qbe">
+          <caption>Grilla QBE</caption>
+          <tbody>
+            <tr><th scope="row">Columna</th><td><code>`productos`.<wbr>`nombre`</code></td><td><code>`productos`.<wbr>`precio`</code></td></tr>
+            <tr><th scope="row">Mostrar</th><td><svg class="qbe__casilla" role="img" aria-label="Marcado"><use href="#i-casilla"/></svg></td><td><svg class="qbe__casilla" role="img" aria-label="Marcado"><use href="#i-casilla"/></svg></td></tr>
+            <tr><th scope="row">Ordenar</th><td><span class="sr-only">(vacío)</span></td><td>Descendente</td></tr>
+            <tr><th scope="row">Criterio</th><td><span class="sr-only">(vacío)</span></td><td><code>&gt; 10000</code></td></tr>
+          </tbody>
+        </table>
+        <span class="flecha" aria-hidden="true"></span>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="La misma consulta en SQL. SELECT nombre, precio: sale de Columna y Mostrar. FROM productos: de la tabla de cada Columna. WHERE precio mayor a 10000: de Criterio. ORDER BY precio DESC: de Ordenar">
+            <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>, <span class="t-atr">precio</span></span><span class="pseudo__paso">Columna y Mostrar</span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span><span class="pseudo__paso">Columna</span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &gt; <span class="t-num">10000</span></span><span class="pseudo__paso">Criterio</span></li>
+            <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">precio</span> <b>DESC</b>;</span><span class="pseudo__paso">Ordenar</span></li>
+          </ol>
+        </div>
+      </div>
+      <div class="intro">
+        <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+        <p>Cada fila de la grilla es una parte de la consulta, y phpMyAdmin siempre muestra el SQL que genera. <strong>QBE y SQL hacen lo mismo:</strong> la grilla es otra forma de escribir la consulta.</p>
+      </div>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Con <b>QBE</b> se arma una consulta completando una grilla, sin escribir SQL. El programa la traduce a SQL: las dos formas hacen lo mismo.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 34">34</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°10</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid pf-grid--sql pf-grid--chica">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 32</p>
+      <h3 class="pf__titulo" id="pf1">Desempates y páginas</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Con dos columnas, <strong>ORDER BY</strong> ordena por la primera y, si dos filas empatan, por la segunda. En la tienda, ordena por ciudad y, dentro de cada una, por nombre: en Ushuaia, Ana, Martín y Pedro.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que muestra la ciudad y el nombre de los clientes, ordenados por ciudad y después por nombre">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">ciudad</span>, <span class="t-atr">nombre</span> <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">ciudad</span>, <span class="t-atr">nombre</span>;</span></li>
+            </ol>
+          </div>
+          <p><strong>OFFSET</strong> dice desde dónde empezar: <code class="cod-sql">LIMIT 3 OFFSET 3</code> saltea 3 filas y muestra las 3 siguientes (por precio: Auriculares, Mouse y Teclado).</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Resultados por páginas</h4>
+          <p>Un listado largo, de a 3 por página:</p>
+          <ul class="pf__lista">
+            <li>Página 1: <code class="cod-sql">LIMIT 3</code></li>
+            <li>Página 2: <code class="cod-sql">LIMIT 3 OFFSET 3</code></li>
+            <li>Página 3: <code class="cod-sql">LIMIT 3 OFFSET 6</code></li>
+          </ul>
+          <p>Sin ORDER BY, el orden no está asegurado: para mostrar por páginas, hay que ordenar.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 33</p>
+      <h3 class="pf__titulo" id="pf2">Antes de cambiar, mirar</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Sin <strong>WHERE</strong>, UPDATE cambia todas las filas y DELETE las borra todas: <code class="cod-sql cod-larga">UPDATE productos SET stock = 0;</code> deja sin stock a los 8 productos de la tienda.</p>
+          <p>La costumbre segura: probar antes el mismo WHERE con un <strong>SELECT</strong> y, si trae las filas que se quería cambiar, ejecutar el UPDATE o el DELETE.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: primero un SELECT con el WHERE stock menor a 5 para mirar; después, el DELETE con el mismo WHERE">
+              <li><span class="pseudo__c"><b>SELECT</b> * <b>FROM</b> <span class="t-atr">productos</span> <b>WHERE</b> <span class="t-atr">stock</span> &lt; <span class="t-num">5</span>;</span></li>
+              <li><span class="pseudo__c"><b>DELETE FROM</b> <span class="t-atr">productos</span> <b>WHERE</b> <span class="t-atr">stock</span> &lt; <span class="t-num">5</span>;</span></li>
+            </ol>
+          </div>
+        </div>
+        <div class="pf__caja">
+          <h4>Cuando DELETE no puede borrar</h4>
+          <p>Si otra tabla tiene una clave foránea que apunta a esa fila, el gestor no deja borrarla y da un error: es la integridad referencial (TP4, lámina 12). En la tienda, no se puede borrar a Ana (<code class="cod-sql">id_cliente = 1</code>) porque tiene ventas.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 34</p>
+      <h3 class="pf__titulo" id="pf3">QBE en otros programas</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>La idea de Zloof sigue en muchos programas. En <strong>Access</strong> y en <strong>LibreOffice Base</strong>, la vista <strong>Diseño</strong> de una consulta es una grilla QBE: una columna por campo y filas para la tabla, el orden, si se muestra y el criterio. Los dos permiten ver también la consulta en SQL.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>¿QBE o SQL?</h4>
+          <ul class="pf__lista">
+            <li><strong>QBE</strong> conviene para consultas cortas, para explorar una tabla o para ver cómo se escribe algo en SQL.</li>
+            <li><strong>SQL</strong> conviene para consultas largas, para guardarlas y volver a usarlas, y para lo que la grilla no tiene: en phpMyAdmin, la grilla arma solo consultas SELECT.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">Los 3 más jóvenes de Ushuaia</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: el nombre y la edad de los clientes de Ushuaia, ordenados por edad, solo 3">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>, <span class="t-atr">edad</span> <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">ciudad</span> = <span class="t-str">'Ushuaia'</span></span></li>
+              <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">edad</span> <b>LIMIT</b> <span class="t-num">3</span>;</span></li>
+            </ol>
+          </div>
+          <ol class="instrucciones">
+            <li><span><code class="cod-sql">WHERE</code>: quedan Ana (28), Pedro (40) y Martín (19).</span></li>
+            <li><span><code class="cod-sql">ORDER BY edad</code>: Martín, Ana y Pedro.</span></li>
+            <li><span><code class="cod-sql">LIMIT 3</code>: salen los 3. LIMIT es un tope: si hay menos filas, muestra las que hay.</span></li>
+          </ol>
+        </div>
+        <div class="pf__caja">
+          <h4>El orden de las cláusulas</h4>
+          <p>Siempre SELECT, FROM, WHERE, ORDER BY y LIMIT. Si LIMIT va antes de ORDER BY, da error.</p>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 10</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°10</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°10 — Ordenar, modificar y QBE</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°10.</p>
+
+    <!-- Puntos 1 y 2: del PDF. Puntos 3 y 4, nuevos -->
+    <ol class="acts acts--2col acts--tp9">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> ORDER BY y LIMIT</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta SQL para ordenar los productos por nombre de forma ascendente.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribe una consulta SQL para mostrar los 5 productos más baratos.</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus palabras la diferencia entre <strong>ORDER BY</strong> y <strong>LIMIT</strong>.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> UPDATE y DELETE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta <strong>UPDATE</strong> para cambiar el precio de un producto a 3500.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribe una consulta <strong>DELETE</strong> para eliminar el cliente con id_cliente = 5.</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus palabras por qué es importante usar la cláusula <strong>WHERE</strong>.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> QBE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Explicá con tus palabras qué es QBE.</div></li>
+          <li><b class="act__letra">b)</b><div>¿A qué parte de una consulta SQL corresponde cada fila de la grilla: Columna, Mostrar, Ordenar y Criterio?</div></li>
+          <li><b class="act__letra">c)</b><div>Dibujá la grilla QBE para ver el nombre y la edad de los clientes menores de 30, ordenados por edad.</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Antes de ejecutar</h3>
+        <p class="act__caso">Para cada instrucción, escribí el SELECT que usarías para revisar qué filas cambian o se borran.</p>
+        <ol class="act__items act__items--cod">
+          <li><b class="act__letra">a)</b><div class="ej-error">
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="UPDATE productos SET stock igual a 50 WHERE stock menor a 10">
+                <li><span class="pseudo__c"><b>UPDATE</b> <span class="t-atr">productos</span> <b>SET</b> <span class="t-atr">stock</span> = <span class="t-num">50</span> <b>WHERE</b> <span class="t-atr">stock</span> &lt; <span class="t-num">10</span>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+          <li><b class="act__letra">b)</b><div class="ej-error">
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="DELETE FROM clientes WHERE edad mayor a 40">
+                <li><span class="pseudo__c"><b>DELETE FROM</b> <span class="t-atr">clientes</span> <b>WHERE</b> <span class="t-atr">edad</span> &gt; <span class="t-num">40</span>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+          <li><b class="act__letra">c)</b><div class="ej-error">
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="UPDATE productos SET precio igual a 5000 WHERE nombre LIKE M porcentaje">
+                <li><span class="pseudo__c"><b>UPDATE</b> <span class="t-atr">productos</span> <b>SET</b> <span class="t-atr">precio</span> = <span class="t-num">5000</span> <b>WHERE</b> <span class="t-atr">nombre</span> <b>LIKE</b> <span class="t-str">'M%'</span>;</span></li>
+              </ol>
+            </div>
+          </div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 10</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°10</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°10 — Ordenar, modificar y QBE</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <div class="consigna">
+      <p><strong>Consigna:</strong> Trabajá en phpMyAdmin con la base tienda, en su pestaña <span class="ui">SQL</span> (el punto 8, sin escribir SQL). Anotá en la carpeta cada instrucción que escribas y qué devuelve o qué cambia.</p>
+      <div class="descarga">
+        <p>¿No tenés la base tienda o le cambiaste datos? Importá otra vez <code class="cod-archivo">tienda.sql</code> (pestaña <span class="ui">Importar</span>) y vuelve a quedar como al principio. Descargalo desde la página del TP10.</p>
+        <a class="boton no-imprimir" href="../assets/datos/tienda.sql" download="tienda.sql"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar tienda.sql</span></a>
+      </div>
+    </div>
+
+    <ol class="acts acts--2col" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> ORDER BY y LIMIT</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá los clientes ordenados por edad, de mayor a menor.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá los 3 productos más baratos.</div></li>
+          <li><b class="act__letra">c)</b><div>Mostrá los productos ordenados por stock y, si empatan, por nombre.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> UPDATE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Subí un 10 % el precio del Teclado. En SET podés hacer una cuenta con el precio que ya tiene.</div></li>
+          <li><b class="act__letra">b)</b><div>Cambiá la ciudad de un cliente.</div></li>
+          <li><b class="act__letra">c)</b><div>Comprobá cada cambio con un SELECT.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> DELETE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Borrá un cliente sin compras (fijate antes en la tabla ventas).</div></li>
+          <li><b class="act__letra">b)</b><div>Intentá borrar a Sofía (<code class="cod-sql">id_cliente = 5</code>). Anotá qué error da y por qué.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">8-</span> QBE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Armá en phpMyAdmin, sin escribir SQL, la consulta de los productos con precio mayor a 10000, ordenados de mayor a menor.</div></li>
+          <li><b class="act__letra">b)</b><div>Copiá el SQL que generó y comparalo con el que escribirías vos.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <p class="consigna"><strong>Al terminar:</strong> volvé a importar <code class="cod-archivo">tienda.sql</code> (pestaña <span class="ui">Importar</span>) para dejar los datos como al principio.</p>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 10</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

@@ -38,7 +38,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | 7 | Definir y cargar tablas | ✅ Disponible |
 | 8 | Consultar | ✅ Disponible |
 | 9 | Filtrar | ✅ Disponible |
-| 10 | Ordenar, modificar y QBE | Próximamente |
+| 10 | Ordenar, modificar y QBE | ✅ Disponible |
 | 11 | Resumir y combinar | Próximamente |
 | 12 | Consultas avanzadas y programación | Próximamente |
 | **Módulo 4 · Servidores y bases de datos distribuidas** | | |

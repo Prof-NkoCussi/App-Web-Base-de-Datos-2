@@ -143,6 +143,7 @@ Cada color significa algo. Va en marcos, etiquetas, íconos y esquemas; **no** e
 | 32 | TP9 | La actividad 2 usa ciudades que no son de acá (`'Córdoba'`, `'Rosario'`, `'Mendoza'`) | `'Ushuaia'`, `'Tolhuin'` o `'Río Grande'`. |
 | 32 | TP9 | `LIKE 'Lap%'` devuelve "Lápiz". En MariaDB (XAMPP, cotejamiento `utf8mb4_general_ci`) es correcto porque ignora tildes; en SQLite (consola web) no lo trae | La lámina queda igual. En "Para profundizar" va una nota: el resultado de `LIKE` con tildes y mayúsculas depende del gestor y del cotejamiento. |
 | 33 | TP10 | El resultado de `ORDER BY precio DESC LIMIT 3` aparece como Auriculares 15000, Notebook 45000, Monitor 12000 | Notebook 45000 · Auriculares 15000 · Monitor 12000 (ids 4, 5, 3) |
+| 34 | TP10 | Las ciudades del ejemplo de UPDATE no son de acá (CLIENTES: Madrid, Rosario, Valencia, Sevilla; `SET ciudad = 'Córdoba'`) | Ciudades de acá, iguales al TP7: CLIENTES (antes) = Ana, Ushuaia · Carlos, Tolhuin · Laura, Río Grande · Pedro, Buenos Aires. `UPDATE clientes SET ciudad = 'Ushuaia' WHERE id_cliente = 2;` y, en CLIENTES (después), Carlos pasa a Ushuaia. |
 | 35 | TP11 | Los ejemplos de COUNT y SUM consultan `ventas` (`COUNT(*) FROM ventas`, `SUM(total) FROM ventas`), pero el resultado sale de la tabla PRODUCTOS (`COUNT(*)` = 4, `SUM(precio)` = 67500) | `SELECT COUNT(*) FROM productos;` y `SELECT SUM(precio) FROM productos;`. La actividad 2 ("total de las ventas") queda igual. |
 
 ## Plan del cuadernillo

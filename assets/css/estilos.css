@@ -1239,6 +1239,38 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
 .consigna .descarga { margin-top: 8px; }
 
 /* ==========================================================
+   De 6.º (TP10): ordenar, modificar y QBE
+   ========================================================== */
+/* Lámina 32: la sintaxis, un ejemplo debajo del otro; la consulta, el resultado y su nota */
+.lamina .ej-sql.ej-sql--pila { grid-template-columns: 1fr; }   /* también entre 600 y 859 px, donde .lamina--llena pone los ejemplos de a dos */
+.consulta-res--nota .intro { background: var(--blanco); }
+.consulta-res--nota .intro p { font-size: 15.5px; line-height: 1.35; }
+/* Lámina 33: qué hace cada uno, con el ícono al costado; el antes y el después de cada ejemplo
+   (la celda que cambia en el acento; la fila que se borra en naranja, con .marca-fila) */
+.acciones { display: grid; gap: 10px; }
+.acciones li { display: grid; grid-template-columns: auto 1fr; align-items: center; gap: 14px; background: var(--blanco); border-radius: 8px; padding: 10px 14px; }
+.acciones__nom { font-family: var(--fuente-titulo); font-weight: 700; font-size: 22px; line-height: 1.1; color: var(--tinta); margin-bottom: 3px; }
+.acciones p { font-size: 16px; line-height: 1.35; }
+.ej-sql--2 .ej-sql__tit { text-align: center; }
+.cambios { display: grid; gap: 10px; }
+.cambio { display: grid; gap: 8px; align-content: start; min-width: 0; background: var(--blanco); border-radius: 8px; padding: 6px 8px 8px; }
+.cambio__tit { background: var(--acento-claro); border-radius: 6px; padding: 3px 10px; font-weight: 600; font-size: 15.5px; line-height: 1.25; color: var(--tinta); }
+.cambio__tit b { font-family: var(--fuente-titulo); font-size: 1.15em; }
+.cambio__nota { font-size: 14.5px; line-height: 1.35; padding: 0 2px; }
+.cambio .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Lámina 34: la grilla QBE y su SQL, con la fila de la grilla de donde sale cada renglón */
+.qbe { table-layout: auto; font-size: 14px; }
+.qbe tbody th { text-align: left; padding: 5px 8px; border-top: 1px solid var(--blanco); white-space: nowrap; }
+.qbe td { padding: 5px 8px; border-left: 1px solid var(--linea); }
+.qbe code { font-size: .88em; white-space: normal; }
+.qbe__casilla {
+  display: inline-block; width: 20px; height: 20px; vertical-align: middle;
+  --ac: var(--acento); fill: none; stroke: var(--tinta); stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round;
+}
+/* Actividades: cada instrucción en una ventana del ancho de su código */
+.act__items--cod .ventana-cod { justify-self: start; max-width: 100%; }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -1330,6 +1362,11 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .logicos { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .filtro { grid-template-columns: max-content minmax(0, 1fr); column-gap: 14px; }
   .filtro__def { grid-column: 1 / -1; }
+  /* TP10: la sintaxis de ORDER BY, más ancha que su ejemplo; qué hace cada uno, la sintaxis de UPDATE
+     y DELETE y los pasos en phpMyAdmin, de a dos */
+  .lado-a-lado--orden { grid-template-columns: 1.3fr 1fr; }
+  .acciones, .ej-sql--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .lado-a-lado--qbe { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
@@ -1991,6 +2028,48 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .acts--tp9 .act__items > li { font-size: 15px; line-height: 1.32; }
   .ej-error { gap: 4px; }
   .ej-error .pseudo--sql { font-size: 11.5px; padding: 4px 0; }
+
+  /* De 6.º (TP10) */
+  /* Lámina 32: la sintaxis al lado del ejemplo; la consulta, el resultado y su nota en una fila */
+  .lado-a-lado--orden { grid-template-columns: 1.15fr 1fr; }
+  .ej-sql--pila { gap: 5px; }
+  .ej-sql--pila > li, .ej-sql--2 > li { gap: 4px; padding: 4px 5px 5px; }
+  .lamina--apretada .ej-sql--pila .pseudo--sql, .lamina--apretada .ej-sql--2 .pseudo--sql { padding: 4px 0; }
+  .consulta-res--nota { grid-template-columns: minmax(0, 1.1fr) auto minmax(0, 1fr); }
+  .consulta-res--nota .intro { padding: 6px 10px; gap: 10px; }
+  .consulta-res--nota .intro .ico--l { width: 36px; height: 36px; }
+  .consulta-res--nota .intro p { font-size: 14px; line-height: 1.32; padding-left: 10px; }
+  /* Lámina 33: tarjetas más bajas; UPDATE y DELETE uno debajo del otro: el título y la nota a la izquierda,
+     el antes y el después a la derecha */
+  .acciones { gap: 8px; }
+  .acciones li { padding: 6px 12px; gap: 12px; }
+  .acciones .ico--xl { width: 46px; height: 46px; }
+  .acciones__nom { font-size: 20px; margin-bottom: 1px; }
+  .acciones p { font-size: 14.5px; line-height: 1.3; }
+  .cambios { gap: 5px; }
+  .cambio {
+    grid-template-columns: minmax(0, 1fr) auto; grid-template-areas: "tit tablas" "nota tablas";
+    gap: 6px 14px; padding: 4px 10px 4px 6px;
+  }
+  .lamina--apretada .cambio .tabla-ej caption { padding: 0; }
+  .cambio__tit { grid-area: tit; align-self: end; font-size: 15px; padding: 4px 10px; }
+  .cambio__nota { grid-area: nota; align-self: start; font-size: 14px; padding: 0 4px; }
+  .cambio .antes-despues { grid-area: tablas; gap: 10px; }
+  .cambio .flecha { width: 18px; height: 17px; }
+  .lamina--apretada .cambio .tabla-ej th, .lamina--apretada .cambio .tabla-ej td { padding-top: 1px; padding-bottom: 1px; }
+  /* Idea clave del PDF que no entra en dos renglones: la letra un poco más chica */
+  .lamina .idea--larga p { font-size: 15.5px; line-height: 1.32; }
+  .lamina .idea--larga strong { font-size: 21px; }
+  /* Lámina 34: los pasos con menos aire; la grilla, la flecha y el SQL en una fila */
+  .lado-a-lado--qbe { gap: 10px; }
+  .lado-a-lado--qbe .instrucciones > li { font-size: 15px; line-height: 1.38; padding: 5px 9px 5px 6px; }
+  .consulta-res--qbe { grid-template-columns: minmax(0, 1fr) auto auto; }
+  .lamina--compacta .qbe { font-size: 14px; }
+  .lamina--compacta .qbe th, .lamina--compacta .qbe td { padding: 4px 8px; white-space: normal; }
+  .lamina--compacta .qbe tbody th { white-space: nowrap; }
+  .consulta-res--qbe .pseudo__paso { font-size: 11px; padding: 0 7px; }
+  /* Actividades: el código de cada instrucción en un renglón */
+  .act__items--cod .pseudo--sql { font-size: 12.5px; }
 }
 
 /* ==========================================================
