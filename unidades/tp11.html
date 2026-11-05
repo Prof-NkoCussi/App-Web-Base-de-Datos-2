@@ -1,0 +1,860 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°11 — Resumir y combinar · Base de Datos II</title>
+  <meta name="description" content="TP N°11 de Base de Datos II: las funciones de agregación COUNT, SUM, AVG, MIN y MAX, GROUP BY y HAVING para agrupar registros y filtrar grupos, e INNER JOIN y LEFT JOIN para combinar tablas. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <!-- Vista previa del enlace (WhatsApp, Classroom, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Base de Datos II · Cuadernillo Digital">
+  <meta property="og:title" content="TP N°11 — Resumir y combinar · Base de Datos II">
+  <meta property="og:description" content="6.º año · Prof. Nicolás A. Cussi">
+  <meta property="og:url" content="https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/unidades/tp11.html">
+  <meta property="og:image" content="https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/assets/img/miniatura.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Base de Datos II, cuadernillo digital de 6.º año">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="11" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <!-- COUNT: registros apilados -->
+    <symbol id="i-filas" viewBox="0 0 48 48">
+      <rect x="7" y="7" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+      <rect x="7" y="19.5" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+      <rect x="7" y="32" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- SUM: la letra sigma -->
+    <symbol id="i-sigma" viewBox="0 0 48 48">
+      <path d="M11 7h26v8H23.5l8.5 9-8.5 9H37v8H11v-6l10-11-10-11z" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- AVG y promedios -->
+    <symbol id="i-barras" viewBox="0 0 48 48">
+      <rect x="8" y="27" width="8" height="15" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="20" y="18" width="8" height="24" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="32" y="8" width="8" height="34" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-flecha-abajo" viewBox="0 0 48 48">
+      <path d="M24 43 39.5 26.5H30V5H18v21.5H8.5z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-flecha-arriba" viewBox="0 0 48 48">
+      <path d="M24 5 39.5 21.5H30V43H18V21.5H8.5z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-personas" viewBox="0 0 48 48">
+      <circle cx="10.5" cy="19" r="4"/>
+      <path d="M3 37c0-5 3.3-8.5 7.5-8.5 1.9 0 3.4.6 4.6 1.6"/>
+      <circle cx="37.5" cy="19" r="4"/>
+      <path d="M45 37c0-5-3.3-8.5-7.5-8.5-1.9 0-3.4.6-4.6 1.6"/>
+      <circle cx="24" cy="14" r="5.5" style="fill:var(--ac)"/>
+      <path d="M13.5 38c0-7 4.7-12 10.5-12s10.5 5 10.5 12z" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- Totales: una pila de monedas -->
+    <symbol id="i-monedas" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="4.5" style="fill:var(--ac)"/>
+      <path d="M9 11v6.5c0 2.5 6.7 4.5 15 4.5s15-2 15-4.5V11"/>
+      <path d="M9 17.5V24c0 2.5 6.7 4.5 15 4.5s15-2 15-4.5v-6.5"/>
+      <path d="M9 24v6.5c0 2.5 6.7 4.5 15 4.5s15-2 15-4.5V24"/>
+      <path d="M9 30.5V37c0 2.5 6.7 4.5 15 4.5s15-2 15-4.5v-6.5"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-embudo" viewBox="0 0 48 48">
+      <path d="M6 8h36L28 25v13l-8 5V25z" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- WHERE y HAVING: una lista -->
+    <symbol id="i-lista" viewBox="0 0 48 48">
+      <rect x="7" y="6" width="34" height="36" rx="5" style="fill:var(--ac)"/>
+      <path d="M15 16h.01M15 24h.01M15 32h.01" style="stroke-width:4.6"/>
+      <path d="M21 16h12M21 24h12M21 32h12"/>
+    </symbol>
+    <symbol id="i-cadena" viewBox="0 0 48 48">
+      <rect x="4" y="22.5" width="25" height="13" rx="6.5" transform="rotate(-45 16.5 29)" style="fill:var(--ac)"/>
+      <rect x="19" y="12.5" width="25" height="13" rx="6.5" transform="rotate(-45 31.5 19)"/>
+      <path d="M21 27l6-6"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-tabla" viewBox="0 0 48 48">
+      <path d="M7.3 11.3h33.4V17H7.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="6" y="10" width="36" height="28" rx="2"/>
+      <path d="M6 17h36M6 24h36M6 31h36M18 17v21M30 17v21"/>
+    </symbol>
+    <!-- Símbolo del álgebra que la tipografía no trae: reunión -->
+    <symbol id="s-reunion" viewBox="0 0 24 24">
+      <path d="M4 6v12L20 6v12z"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../indice.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°11 — Resumir y combinar</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°11">
+    <a href="#pag-35">35 · Funciones de agregación</a>
+    <a href="#pag-36">36 · GROUP BY y HAVING</a>
+    <a href="#pag-37">37 · JOIN</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°11 — Resumir y combinar</h1>
+
+  <!-- =================== LÁMINA 35 (PDF pág. 35) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-35" aria-labelledby="t35">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°11</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t35"><span class="tit__num">35.</span> COUNT, SUM, AVG, MIN y MAX</h2>
+      <p class="tit__sub">Funciones para resumir y analizar datos</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Las <strong>funciones de agregación</strong> en SQL permiten contar registros, obtener totales, calcular promedios y encontrar los valores mínimo y máximo de una columna.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="q35">
+      <div class="panel__cab"><h3 class="subtitulo" id="q35">¿Qué hace cada una?</h3></div>
+      <ul class="ambitos ambitos--5 agregados">
+        <li class="tarjeta"><h4 class="tarjeta__cab">COUNT</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-filas"/></svg><p>Cuenta el número de registros que cumplen una condición.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">SUM</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-sigma"/></svg><p>Calcula la suma de los valores de una columna numérica.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">AVG</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><p>Calcula el promedio de los valores de una columna numérica.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">MIN</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-flecha-abajo"/></svg><p>Encuentra el valor mínimo de una columna numérica.</p></li>
+        <li class="tarjeta"><h4 class="tarjeta__cab">MAX</h4><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-flecha-arriba"/></svg><p>Encuentra el valor máximo de una columna numérica.</p></li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="s35">
+      <div class="panel__cab"><h3 class="subtitulo" id="s35">Ejemplos en SQL</h3></div>
+      <ul class="ej-sql ej-sql--2 ej-sql--5">
+        <li>
+          <h4 class="ej-sql__tit">COUNT</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que cuenta los registros de la tabla productos">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-fun">COUNT</span>(*)</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">SUM</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que suma los precios de la tabla productos">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-fun">SUM</span>(<span class="t-atr">precio</span>)</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">AVG</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que calcula el promedio de los precios de la tabla productos">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-fun">AVG</span>(<span class="t-atr">precio</span>)</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">MIN</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que encuentra el precio mínimo de la tabla productos">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-fun">MIN</span>(<span class="t-atr">precio</span>)</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">MAX</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que encuentra el precio máximo de la tabla productos">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-fun">MAX</span>(<span class="t-atr">precio</span>)</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--flecha">
+      <section class="panel" aria-labelledby="e35">
+        <div class="panel__cab"><h3 class="subtitulo" id="e35">Tabla de ejemplo: PRODUCTOS</h3></div>
+        <table class="tabla-ej">
+          <caption class="sr-only">PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th><th scope="col">stock</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Teclado</td><td>8000</td><td>10</td></tr>
+            <tr><td>2</td><td>Mouse</td><td>2500</td><td>25</td></tr>
+            <tr><td>3</td><td>Monitor</td><td>12000</td><td>5</td></tr>
+            <tr><td>4</td><td>Notebook</td><td>45000</td><td>3</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <span class="flecha" aria-hidden="true"></span>
+
+      <section class="panel" aria-labelledby="r35">
+        <div class="panel__cab"><h3 class="subtitulo" id="r35">Resultado de cada función</h3></div>
+        <div class="resultado">
+          <table class="tabla-ej">
+            <caption class="sr-only">Resultado de cada función con la tabla PRODUCTOS</caption>
+            <thead>
+              <tr><th scope="col">Función</th><th scope="col">Resultado (ejemplo)</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>COUNT(*)</td><td>4</td></tr>
+              <tr><td>SUM(precio)</td><td>67500</td></tr>
+              <tr><td>AVG(precio)</td><td>16875</td></tr>
+              <tr><td>MIN(precio)</td><td>2500</td></tr>
+              <tr><td>MAX(precio)</td><td>45000</td></tr>
+            </tbody>
+          </table>
+          <div class="intro">
+            <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+            <p>Los resultados dependen de los datos de la tabla. Aquí se muestran ejemplos con la tabla de productos.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="u35">
+      <div class="panel__cab"><h3 class="subtitulo" id="u35">¿Para qué sirven?</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-personas"/></svg><h4 class="tarjeta__cab">Conteo de registros</h4><p>Útil para saber cuántos elementos tiene una tabla.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-monedas"/></svg><h4 class="tarjeta__cab">Totales</h4><p>Permite obtener la suma de valores (como ventas o precios).</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__cab">Promedios</h4><p>Ayuda a conocer el valor medio de un conjunto de datos.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><h4 class="tarjeta__cab">Análisis rápido</h4><p>Permite encontrar valores extremos (mínimos y máximos) para entender mejor los datos.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Las funciones de agregación resumen la información de una tabla sin mostrar cada registro de forma individual.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 35">35</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 36 (PDF pág. 36) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-36" aria-labelledby="t36">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°11</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t36"><span class="tit__num">36.</span> GROUP BY y HAVING</h2>
+      <p class="tit__sub">Agrupar registros y filtrar grupos</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>La cláusula <strong>GROUP BY</strong> permite agrupar registros que comparten un mismo valor en una columna. La cláusula <strong>HAVING</strong> se usa para filtrar los grupos después de aplicar funciones de agregación.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="q36">
+      <div class="panel__cab"><h3 class="subtitulo" id="q36">¿Qué hace cada uno?</h3></div>
+      <ul class="acciones">
+        <li>
+          <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-personas"/></svg>
+          <div><h4 class="acciones__nom">GROUP BY</h4><p>Agrupa los registros que comparten el mismo valor en una o más columnas. Se usa junto con funciones de agregación.</p></div>
+        </li>
+        <li>
+          <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-embudo"/></svg>
+          <div><h4 class="acciones__nom">HAVING</h4><p>Filtra los grupos resultantes después de aplicar funciones de agregación. Se usa para establecer condiciones sobre los grupos.</p></div>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="s36">
+      <div class="panel__cab"><h3 class="subtitulo" id="s36">Ejemplo en SQL</h3></div>
+      <ul class="ej-sql ej-sql--2 ej-sql--izq ej-sql--largo">
+        <li>
+          <h4 class="ej-sql__tit">Contar productos por categoría</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que cuenta los productos de cada categoría, con el alias cantidad">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">categoria</span>, <span class="t-fun">COUNT</span>(*) <b>AS</b> <span class="t-atr">cantidad</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>GROUP BY</b> <span class="t-atr">categoria</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">Solo categorías con más de un producto</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que cuenta los productos de cada categoría y muestra solo las categorías con más de un producto">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">categoria</span>, <span class="t-fun">COUNT</span>(*) <b>AS</b> <span class="t-atr">cantidad</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>GROUP BY</b> <span class="t-atr">categoria</span></span></li>
+              <li><span class="pseudo__c"><b>HAVING</b> <span class="t-fun">COUNT</span>(*) &gt; <span class="t-num">1</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--flecha">
+      <section class="panel" aria-labelledby="e36">
+        <div class="panel__cab"><h3 class="subtitulo" id="e36">Tabla de ejemplo: PRODUCTOS</h3></div>
+        <table class="tabla-ej">
+          <caption class="sr-only">PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">categoria</th><th scope="col">precio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Teclado</td><td>Informática</td><td>8000</td></tr>
+            <tr><td>2</td><td>Mouse</td><td>Informática</td><td>2500</td></tr>
+            <tr><td>3</td><td>Monitor</td><td>Informática</td><td>12000</td></tr>
+            <tr><td>4</td><td>Cuaderno</td><td>Papelería</td><td>1500</td></tr>
+            <tr><td>5</td><td>Lápiz</td><td>Papelería</td><td>800</td></tr>
+            <tr><td>6</td><td>Silla</td><td>Muebles</td><td>45000</td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <span class="flecha" aria-hidden="true"></span>
+
+      <section class="panel" aria-labelledby="r36">
+        <div class="panel__cab"><h3 class="subtitulo" id="r36">Resultado agrupado</h3></div>
+        <div class="resultado">
+          <table class="tabla-ej">
+            <caption class="sr-only">Resultado agrupado: la cantidad de productos de cada categoría</caption>
+            <thead>
+              <tr><th scope="col">categoria</th><th scope="col">cantidad</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Informática</td><td>3</td></tr>
+              <tr><td>Papelería</td><td>2</td></tr>
+              <tr><td>Muebles</td><td>1</td></tr>
+            </tbody>
+          </table>
+          <div class="intro">
+            <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+            <p>El resultado muestra cuántos productos hay en cada categoría.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="i36">
+      <div class="panel__cab"><h3 class="subtitulo" id="i36">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><h4 class="tarjeta__cab">Agrupa por columna</h4><p>Usa <code class="cod-sql">GROUP BY</code> con una o más columnas para formar grupos.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__cab">Usa funciones agregadas</h4><p>Como COUNT(), SUM(), AVG(), MIN() o MAX().</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-embudo"/></svg><h4 class="tarjeta__cab">HAVING filtra grupos</h4><p>Se usa después de GROUP BY para establecer condiciones sobre los grupos.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lista"/></svg><h4 class="tarjeta__cab">Diferencia entre WHERE y HAVING</h4><p><code class="cod-sql">WHERE</code> filtra registros antes de agrupar. <code class="cod-sql">HAVING</code> filtra grupos después de agrupar.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> <b>GROUP BY</b> organiza los registros en grupos y <b>HAVING</b> decide qué resultados agrupados se mantienen.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 36">36</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 37 (PDF pág. 37) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-37" aria-labelledby="t37">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°11</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t37"><span class="tit__num">37.</span> JOIN: INNER JOIN y LEFT JOIN</h2>
+      <p class="tit__sub">Relacionar tablas para obtener información</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p><strong>JOIN</strong> se usa para combinar datos de dos o más tablas relacionadas. <strong>INNER JOIN</strong> devuelve solo las coincidencias. <strong>LEFT JOIN</strong> devuelve todos los registros de la tabla izquierda y las coincidencias de la derecha.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="q37">
+      <div class="panel__cab"><h3 class="subtitulo" id="q37">¿Qué hace cada uno?</h3></div>
+      <ul class="ambitos logicos joins">
+        <li class="tarjeta">
+          <h4 class="tarjeta__cab">INNER JOIN</h4>
+          <svg class="venn" viewBox="0 0 120 64" role="img" aria-label="Diagrama de INNER JOIN: dos círculos que se cruzan, uno por cada tabla. Solo está pintada la parte común: los registros que tienen coincidencia en las dos tablas.">
+            <defs><clipPath id="venn-inner"><circle cx="46" cy="32" r="24"/></clipPath></defs>
+            <circle class="venn__lleno" cx="74" cy="32" r="24" clip-path="url(#venn-inner)"/>
+            <circle class="venn__borde" cx="46" cy="32" r="24"/>
+            <circle class="venn__borde" cx="74" cy="32" r="24"/>
+          </svg>
+          <p>Devuelve solo los registros con coincidencia en ambas tablas.</p>
+        </li>
+        <li class="tarjeta">
+          <h4 class="tarjeta__cab">LEFT JOIN</h4>
+          <svg class="venn" viewBox="0 0 120 64" role="img" aria-label="Diagrama de LEFT JOIN: dos círculos que se cruzan, uno por cada tabla. Está pintado entero el círculo de la izquierda: todos los registros de la tabla izquierda, tengan o no coincidencia en la derecha.">
+            <circle class="venn__lleno" cx="46" cy="32" r="24"/>
+            <circle class="venn__borde" cx="46" cy="32" r="24"/>
+            <circle class="venn__borde" cx="74" cy="32" r="24"/>
+          </svg>
+          <p>Devuelve todos los registros de la tabla izquierda, aunque no tengan coincidencia en la derecha.</p>
+        </li>
+      </ul>
+    </section>
+
+    <section class="panel" aria-labelledby="s37">
+      <div class="panel__cab"><h3 class="subtitulo" id="s37">Ejemplo en SQL</h3></div>
+      <ul class="ej-sql ej-sql--2 ej-sql--largo">
+        <li>
+          <h4 class="ej-sql__tit">INNER JOIN</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL con INNER JOIN: el nombre del cliente y la fecha de cada venta, uniendo clientes y ventas por id_cliente">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">clientes.nombre</span>, <span class="t-atr">ventas.fecha</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>INNER JOIN</b> <span class="t-atr">ventas</span></span></li>
+              <li><span class="pseudo__c"><b>ON</b> <span class="t-atr">clientes.id_cliente</span> = <span class="t-atr">ventas.id_cliente</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+        <li>
+          <h4 class="ej-sql__tit">LEFT JOIN</h4>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL con LEFT JOIN: todos los clientes, con la fecha de sus ventas si las tienen, uniendo clientes y ventas por id_cliente">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">clientes.nombre</span>, <span class="t-atr">ventas.fecha</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>LEFT JOIN</b> <span class="t-atr">ventas</span></span></li>
+              <li><span class="pseudo__c"><b>ON</b> <span class="t-atr">clientes.id_cliente</span> = <span class="t-atr">ventas.id_cliente</span>;</span></li>
+            </ol>
+          </div>
+        </li>
+      </ul>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--flecha lado-a-lado--joins">
+      <section class="panel" aria-labelledby="e37">
+        <div class="panel__cab"><h3 class="subtitulo" id="e37">Tabla de ejemplo</h3></div>
+        <div class="tablas-fila tablas-par">
+          <table class="tabla-ej">
+            <caption>CLIENTES</caption>
+            <thead>
+              <tr><th scope="col">id_cliente</th><th scope="col">nombre</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>1</td><td>Ana</td></tr>
+              <tr><td>2</td><td>Luis</td></tr>
+              <tr><td>3</td><td>Marta</td></tr>
+              <tr><td>4</td><td>Pedro</td></tr>
+            </tbody>
+          </table>
+          <table class="tabla-ej">
+            <caption>VENTAS</caption>
+            <thead>
+              <tr><th scope="col">id_venta</th><th scope="col">id_cliente</th><th scope="col">fecha</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>101</td><td>1</td><td>2026-03-10</td></tr>
+              <tr><td>102</td><td>2</td><td>2026-03-11</td></tr>
+              <tr><td>103</td><td>2</td><td>2026-03-12</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <span class="flecha" aria-hidden="true"></span>
+
+      <section class="panel" aria-labelledby="r37">
+        <div class="panel__cab"><h3 class="subtitulo" id="r37">Resultado</h3></div>
+        <div class="tablas-fila tablas-par">
+          <table class="tabla-ej">
+            <caption>INNER JOIN</caption>
+            <thead>
+              <tr><th scope="col">nombre</th><th scope="col">fecha</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ana</td><td>2026-03-10</td></tr>
+              <tr><td>Luis</td><td>2026-03-11</td></tr>
+              <tr><td>Luis</td><td>2026-03-12</td></tr>
+            </tbody>
+          </table>
+          <table class="tabla-ej">
+            <caption>LEFT JOIN</caption>
+            <thead>
+              <tr><th scope="col">nombre</th><th scope="col">fecha</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ana</td><td>2026-03-10</td></tr>
+              <tr><td>Luis</td><td>2026-03-11</td></tr>
+              <tr><td>Luis</td><td>2026-03-12</td></tr>
+              <tr><td>Marta</td><td>NULL</td></tr>
+              <tr><td>Pedro</td><td>NULL</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="i37">
+      <div class="panel__cab"><h3 class="subtitulo" id="i37">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-cadena"/></svg><h4 class="tarjeta__cab">Relaciona tablas</h4><p>JOIN se usa para combinar datos de dos o más tablas relacionadas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><h4 class="tarjeta__cab">Usa ON</h4><p>La cláusula <strong>ON</strong> indica la condición que relaciona las tablas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-embudo"/></svg><h4 class="tarjeta__cab">INNER filtra coincidencias</h4><p>Devuelve solo los registros que coinciden en ambas tablas.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-tabla"/></svg><h4 class="tarjeta__cab">LEFT conserva la tabla izquierda</h4><p>Devuelve todos los registros de la tabla izquierda, aunque no tengan coincidencia en la derecha.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea idea--larga" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> <b>INNER JOIN</b> muestra solo coincidencias. <b>LEFT JOIN</b> mantiene todos los registros de la tabla izquierda y agrega las coincidencias cuando existen.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 37">37</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°11</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <div class="pf-grid pf-grid--sql pf-grid--chica">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 35</p>
+      <h3 class="pf__titulo" id="pf1">COUNT, AVG y los vacíos</h3>
+      <div class="pf__cols">
+        <div class="pf__texto pf__al-lado">
+          <p><code class="cod-sql">COUNT(*)</code> cuenta filas. <code class="cod-sql">COUNT(columna)</code> cuenta solo las filas que tienen un valor en esa columna: los vacíos (<strong>NULL</strong>) no se cuentan. <strong>AVG</strong> también ignora los NULL: divide la suma por la cantidad de valores, no de filas.</p>
+          <table class="tabla-ej tabla-notas">
+            <caption>NOTAS</caption>
+            <thead>
+              <tr><th scope="col">alumno</th><th scope="col">nota</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Ana</td><td>8</td></tr>
+              <tr><td>Bruno</td><td>7</td></tr>
+              <tr><td>Carla</td><td>NULL</td></tr>
+              <tr><td>Diego</td><td>10</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="pf__caja">
+          <h4>Con la tabla NOTAS</h4>
+          <ul class="pf__lista">
+            <li>Carla no rindió: <code class="cod-sql">COUNT(*)</code> da 4 y <code class="cod-sql">COUNT(nota)</code>, 3.</li>
+            <li><code class="cod-sql">AVG(nota)</code> da 8.3333: 25 ÷ 3. Si Carla contara como 0, sería 25 ÷ 4.</li>
+            <li><code class="cod-sql">ROUND(AVG(nota), 2)</code> redondea a 2 decimales: 8.33.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 36</p>
+      <h3 class="pf__titulo" id="pf2">El orden completo de una consulta</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Con GROUP BY y HAVING, el orden en que el gestor lee una consulta (TP8, lámina 26) suma dos pasos:</p>
+          <ol class="orden-sql" aria-label="El orden en que el gestor lee la consulta: FROM, WHERE, GROUP BY, HAVING, SELECT y ORDER BY">
+            <li><code class="cod-sql">FROM</code></li>
+            <li><code class="cod-sql">WHERE</code></li>
+            <li><code class="cod-sql">GROUP BY</code></li>
+            <li><code class="cod-sql">HAVING</code></li>
+            <li><code class="cod-sql">SELECT</code></li>
+            <li><code class="cod-sql">ORDER BY</code></li>
+          </ol>
+          <p>WHERE elige filas antes de armar los grupos, y HAVING elige grupos después. Por eso WHERE no acepta <code class="cod-sql">COUNT(*)</code>: cuando filtra, los grupos todavía no existen.</p>
+        </div>
+        <div class="pf__caja">
+          <h4>Las columnas del SELECT</h4>
+          <p>Con GROUP BY, en el SELECT van solo las columnas del GROUP BY o funciones de agregación. Con <code class="cod-sql">GROUP BY categoria</code>, pedir también el nombre no tiene sentido: Informática tiene tres productos y el gestor no sabe cuál mostrar. Algunos gestores dan error; MariaDB, como viene en XAMPP, muestra uno cualquiera.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 37</p>
+      <h3 class="pf__titulo" id="pf3">Alias de tabla y tres tablas</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Un <strong>alias de tabla</strong> es un nombre corto: con <code class="cod-sql cod-larga">FROM clientes c JOIN ventas v</code> se escribe <code class="cod-sql">c.nombre</code> y <code class="cod-sql">v.fecha</code>. <code class="cod-sql">JOIN</code> solo es INNER JOIN.</p>
+          <p>Con dos JOIN se combinan tres tablas: qué productos lleva cada venta (8 filas).</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL que une ventas, detalle_venta y productos: la fecha de cada venta, el nombre de cada producto y la cantidad">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">v.fecha</span>, <span class="t-atr">p.nombre</span>, <span class="t-atr">d.cantidad</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">ventas</span> <span class="t-atr">v</span></span></li>
+              <li><span class="pseudo__c"><b>JOIN</b> <span class="t-atr">detalle_venta</span> <span class="t-atr">d</span></span></li>
+              <li><span class="pseudo__c"><b>ON</b> <span class="t-atr">v.id_venta</span> = <span class="t-atr">d.id_venta</span></span></li>
+              <li><span class="pseudo__c"><b>JOIN</b> <span class="t-atr">productos</span> <span class="t-atr">p</span></span></li>
+              <li><span class="pseudo__c"><b>ON</b> <span class="t-atr">d.id_producto</span> = <span class="t-atr">p.id_producto</span>;</span></li>
+            </ol>
+          </div>
+        </div>
+        <div class="pf__caja">
+          <h4>RIGHT JOIN y la reunión</h4>
+          <p><strong>RIGHT JOIN</strong> es el LEFT JOIN al revés: conserva toda la tabla derecha. INNER JOIN es la <strong>reunión</strong> del TP6 (lámina 19): <span class="alg">CLIENTES <svg class="sim" role="img" aria-label="reunión"><use href="#s-reunion"/></svg> VENTAS</span>.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">Total gastado por cada cliente</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: el nombre de cada cliente y la suma del total de sus ventas, con el alias gastado, ordenado de mayor a menor">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">c.nombre</span>, <span class="t-fun">SUM</span>(<span class="t-atr">v.total</span>) <b>AS</b> <span class="t-atr">gastado</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">clientes</span> <span class="t-atr">c</span></span></li>
+              <li><span class="pseudo__c"><b>JOIN</b> <span class="t-atr">ventas</span> <span class="t-atr">v</span></span></li>
+              <li><span class="pseudo__c"><b>ON</b> <span class="t-atr">c.id_cliente</span> = <span class="t-atr">v.id_cliente</span></span></li>
+              <li><span class="pseudo__c"><b>GROUP BY</b> <span class="t-atr">c.nombre</span></span></li>
+              <li><span class="pseudo__c"><b>ORDER BY</b> <span class="t-atr">gastado</span> <b>DESC</b>;</span></li>
+            </ol>
+          </div>
+          <ol class="instrucciones">
+            <li><span><code class="cod-sql">FROM</code> y <code class="cod-sql">JOIN</code>: cada venta, con su cliente (4 filas: Ana dos veces, Carlos y Sofía).</span></li>
+            <li><span><code class="cod-sql">GROUP BY c.nombre</code>: un grupo por cliente.</span></li>
+            <li><span><code class="cod-sql">SELECT</code>: el nombre y la suma de cada grupo (Ana 89000, Carlos 192000, Sofía 44500).</span></li>
+            <li><span><code class="cod-sql">ORDER BY gastado DESC</code>: Carlos, Ana y Sofía. Puede usar el alias porque se lee después del SELECT.</span></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 11</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°11</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°11 — Resumir y combinar</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°11.</p>
+
+    <!-- Puntos 1 a 3: del PDF. Punto 4, nuevo -->
+    <ol class="acts acts--2col acts--tp9">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> COUNT, SUM, AVG, MIN y MAX</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta SQL para contar el número de productos.</div></li>
+          <li><b class="act__letra">b)</b><div>Escribe una consulta SQL para calcular el total de las ventas.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Qué función usarías para obtener el precio más alto de los productos? Justifica tu respuesta.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> GROUP BY y HAVING</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribe una consulta SQL para contar cuántos alumnos hay en cada curso.</div></li>
+          <li><b class="act__letra">b)</b><div>Usa la tabla de productos para contar la cantidad de productos por categoría.</div></li>
+          <li><b class="act__letra">c)</b><div>Explica con tus palabras la diferencia entre WHERE y HAVING.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> INNER JOIN y LEFT JOIN</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Explica con tus palabras la diferencia entre INNER JOIN y LEFT JOIN.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Qué clientes aparecen solo en LEFT JOIN en la tabla de ejemplo?</div></li>
+          <li><b class="act__letra">c)</b><div>Escribe una consulta para mostrar nombre del cliente y fecha de venta.</div></li>
+        </ol>
+      </li>
+      <li class="act act--ancho">
+        <h3 class="act__titulo"><span class="act__num">4-</span> ¿Qué usarías?</h3>
+        <p class="act__caso">Para cada pedido, anotá qué usarías (una función de agregación, GROUP BY, HAVING o JOIN) y escribí la consulta. Usá las tablas de la tienda: clientes, productos, ventas y detalle_venta.</p>
+        <div class="act-tabla-desliza">
+          <table class="act-tabla act-tabla--filas act-tabla--usarias">
+            <caption class="sr-only">Cuadro para completar: qué usarías y la consulta SQL de cada pedido</caption>
+            <thead><tr><th scope="col">Pedido</th><th scope="col">¿Qué usarías?</th><th scope="col">Consulta SQL</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">Las ciudades donde el promedio de edad de los clientes es mayor a 30.</th><td></td><td></td></tr>
+              <tr><th scope="row">El nombre de cada producto vendido y la cantidad que se vendió.</th><td></td><td></td></tr>
+              <tr><th scope="row">La edad del cliente más joven.</th><td></td><td></td></tr>
+              <tr><th scope="row">El promedio de edad de los clientes de cada ciudad.</th><td></td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 11</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°11</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°11 — Resumir y combinar</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <div class="consigna">
+      <p><strong>Consigna:</strong> Trabajá en phpMyAdmin con la base tienda, en su pestaña <span class="ui">SQL</span>. Anotá en la carpeta cada consulta que escribas y qué devuelve.</p>
+      <div class="descarga">
+        <p>¿No tenés la base tienda o le cambiaste datos? Importá otra vez <code class="cod-archivo">tienda.sql</code> (pestaña <span class="ui">Importar</span>) y vuelve a quedar como al principio. Descargalo desde la página del TP11.</p>
+        <a class="boton no-imprimir" href="../assets/datos/tienda.sql" download="tienda.sql"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar tienda.sql</span></a>
+      </div>
+    </div>
+
+    <ol class="acts acts--2col" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Funciones de agregación</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Contá cuántos clientes hay.</div></li>
+          <li><b class="act__letra">b)</b><div>Compará <code class="cod-sql">COUNT(*)</code> con <code class="cod-sql">COUNT(email)</code> y explicá la diferencia.</div></li>
+          <li><b class="act__letra">c)</b><div>Mostrá el precio promedio, el más caro y el más barato de los productos.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> GROUP BY y HAVING</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá cuántos clientes hay en cada ciudad.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá solo las ciudades con más de un cliente.</div></li>
+          <li><b class="act__letra">c)</b><div>Mostrá cuántas ventas tiene cada cliente (en la tabla ventas).</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> JOIN</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá el nombre del cliente y la fecha de cada venta, con INNER JOIN.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá todos los clientes con sus ventas, también los que no compraron, con LEFT JOIN.</div></li>
+          <li><b class="act__letra">c)</b><div>¿Quiénes aparecen con NULL? ¿Por qué?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">8-</span> Cierre</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá el total gastado por cada cliente, de mayor a menor.</div></li>
+          <li><b class="act__letra">b)</b><div>Sumá esos totales y comparalo con <code class="cod-sql">SUM(total)</code> de la tabla ventas. ¿Coinciden?</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 11</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

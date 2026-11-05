@@ -1271,6 +1271,33 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
 .act__items--cod .ventana-cod { justify-self: start; max-width: 100%; }
 
 /* ==========================================================
+   De 6.º (TP11): resumir y combinar
+   ========================================================== */
+/* Láminas 35 a 37: la tabla de ejemplo → su resultado (uno debajo del otro, con la flecha hacia abajo;
+   en la hoja A4, en una fila) */
+.lado-a-lado--flecha > .flecha { justify-self: center; }
+.lado-a-lado--flecha .tabla-ej { table-layout: auto; font-size: 14px; }
+/* Lámina 35: los cinco ejemplos son de dos renglones; sin número de renglón, entran en una fila de la hoja A4 */
+.ej-sql--5 .pseudo li::before { display: none; }
+.ej-sql--5 .pseudo li { padding-left: 8px; }
+/* Lámina 36: el título de cada ejemplo, a la izquierda, como en el PDF */
+.ej-sql--izq .ej-sql__tit { text-align: left; }
+/* Lámina 37: las dos tablas de ejemplo y los dos resultados, de a dos */
+.tablas-par { gap: 8px; }
+/* "Para profundizar": la tabla NOTAS, del ancho de sus datos; el orden en que se lee una consulta, en una cadena */
+.tabla-notas { width: auto; table-layout: auto; justify-self: start; }
+.orden-sql { display: flex; flex-wrap: wrap; align-items: center; row-gap: 6px; }
+.orden-sql li { display: flex; align-items: center; }
+.orden-sql li:not(:last-child)::after {
+  content: ""; width: 12px; height: 12px; margin: 0 7px; background: var(--acento-texto);
+  clip-path: polygon(0 32%, 52% 32%, 52% 0, 100% 50%, 52% 100%, 52% 68%, 0 68%);
+}
+/* Actividades: el cuadro "¿Qué usarías?" */
+.act-tabla--usarias thead th:first-child { width: 36%; }
+.act-tabla--usarias thead th:nth-child(2) { width: 20%; }
+.act-tabla--usarias tbody th { font-weight: 400; color: var(--texto); }
+
+/* ==========================================================
    Pantallas medianas: secuencias horizontales
    ========================================================== */
 @media (min-width: 600px), print {
@@ -1367,6 +1394,9 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .lado-a-lado--orden { grid-template-columns: 1.3fr 1fr; }
   .acciones, .ej-sql--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .lado-a-lado--qbe { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: stretch; }
+  /* TP11: la tabla de ejemplo y su resultado, uno debajo del otro hasta la hoja A4; INNER JOIN y LEFT JOIN, de a dos */
+  .lado-a-lado--flecha { grid-template-columns: minmax(0, 1fr); }
+  .joins { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
 /* La línea de tiempo de 6 etapas (TP1) y las 5 reglas del DER a las tablas (TP2)
@@ -1388,6 +1418,8 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .lamina--llena .ej-sql { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   /* "Para profundizar" con código: el recuadro, debajo del texto */
   .pf-grid--chica .pf__cols { grid-template-columns: 1fr; }
+  /* TP11: los ejemplos con renglones largos (láminas 36 y 37), uno debajo del otro */
+  .lamina .ej-sql.ej-sql--largo { grid-template-columns: 1fr; }
 }
 
 /* ==========================================================
@@ -2070,6 +2102,33 @@ code.cod-error, code.cod-larga { white-space: normal; -webkit-box-decoration-bre
   .consulta-res--qbe .pseudo__paso { font-size: 11px; padding: 0 7px; }
   /* Actividades: el código de cada instrucción en un renglón */
   .act__items--cod .pseudo--sql { font-size: 12.5px; }
+
+  /* De 6.º (TP11) */
+  /* Láminas 35 a 37: la tabla de ejemplo, la flecha y el resultado en una fila; el resultado, con su nota al costado */
+  .lado-a-lado--flecha { grid-template-columns: auto auto minmax(0, 1fr); align-items: stretch; gap: 8px; }
+  .lado-a-lado--flecha > .flecha { align-self: center; }
+  .lado-a-lado--flecha .resultado { grid-template-columns: auto minmax(0, 1fr); gap: 8px; }
+  .lado-a-lado--flecha .panel .resultado .intro { padding: 6px 8px; gap: 8px; }
+  .lado-a-lado--flecha .resultado .intro .ico--l { width: 30px; height: 30px; }
+  .lado-a-lado--flecha .resultado .intro p { font-size: 13px; line-height: 1.3; padding-left: 8px; }
+  .lamina--apretada .lado-a-lado--flecha .tabla-ej { font-size: 12.5px; }
+  .lamina--llena .lado-a-lado--flecha .tabla-ej th, .lamina--llena .lado-a-lado--flecha .tabla-ej td { padding: 1px 6px; }
+  /* Lámina 35: las cinco funciones en una fila, con el ícono más chico; sus cinco ejemplos, debajo */
+  .agregados { gap: 7px; }
+  .agregados .tarjeta { gap: 3px; padding: 0 0 6px; }
+  .lamina--densa .agregados .tarjeta__cab { font-size: 16px; padding: 2px; }
+  .lamina--densa .agregados .tarjeta .ico--l { width: 32px; height: 32px; }
+  .agregados .tarjeta p { font-size: 13.5px; line-height: 1.25; padding: 0 4px; }
+  .ej-sql--5 { grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 4px; }
+  .ej-sql--5 > li { gap: 3px; padding: 2px 2px 3px; }
+  .lamina--apretada .ej-sql--5 .pseudo--sql { font-size: 10.5px; padding: 3px 0; }
+  .ej-sql--5 .pseudo--sql li { padding-left: 5px; padding-right: 2px; }
+  /* Lámina 37: las cuatro tablas en una fila */
+  .lado-a-lado--joins .tablas-par { flex-wrap: nowrap; gap: 6px; }
+  /* "Para profundizar": la tabla NOTAS al costado del texto */
+  .pf__al-lado { grid-template-columns: minmax(0, 1fr) auto; column-gap: 10px; align-items: start; }
+  /* Actividades: el cuadro, con lugar para escribir */
+  .act-tabla--usarias td { height: 56px; }
 }
 
 /* ==========================================================
