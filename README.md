@@ -40,7 +40,7 @@ Una versión web de la segunda parte del cuadernillo "Bases de Datos y SQL · De
 | 9 | Filtrar | ✅ Disponible |
 | 10 | Ordenar, modificar y QBE | ✅ Disponible |
 | 11 | Resumir y combinar | ✅ Disponible |
-| 12 | Consultas avanzadas y programación | Próximamente |
+| 12 | Consultas avanzadas y programación | ✅ Disponible |
 | **Módulo 4 · Servidores y bases de datos distribuidas** | | |
 | 13 | El servidor y sus usuarios | Próximamente |
 | 14 | Transacciones y distribución | Próximamente |

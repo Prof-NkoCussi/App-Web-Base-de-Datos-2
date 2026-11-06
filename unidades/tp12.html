@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="es-AR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TP N°12 — Consultas avanzadas y programación · Base de Datos II</title>
+  <meta name="description" content="TP N°12 de Base de Datos II: subconsultas y CTE (WITH), scripts .sql, SQL embebido en PHP con mysqli y una introducción a OQL, un lenguaje de consulta de objetos. Prof. Nicolás A. Cussi.">
+  <meta name="theme-color" content="#60A5FA">
+  <!-- Vista previa del enlace (WhatsApp, Classroom, etc.) -->
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="es_AR">
+  <meta property="og:site_name" content="Base de Datos II · Cuadernillo Digital">
+  <meta property="og:title" content="TP N°12 — Consultas avanzadas y programación · Base de Datos II">
+  <meta property="og:description" content="6.º año · Prof. Nicolás A. Cussi">
+  <meta property="og:url" content="https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/unidades/tp12.html">
+  <meta property="og:image" content="https://prof-nkocussi.github.io/App-Web-Base-de-Datos-2/assets/img/miniatura.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Base de Datos II, cuadernillo digital de 6.º año">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preload" href="../assets/fonts/barlow-latin-400-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/barlow-semi-condensed-latin-700-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="../assets/css/estilos.css">
+</head>
+<body data-tp="12" class="modulo-3">
+
+<!-- ====== Íconos (SVG simples, rehechos a partir del PDF) ====== -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <symbol id="i-db-solido" viewBox="0 0 48 48">
+      <g style="fill:currentColor;stroke:none">
+        <ellipse cx="24" cy="9.5" rx="16" ry="5.5"/>
+        <path d="M8 14c2.8 2.9 9.1 4.5 16 4.5S37.2 16.9 40 14v6.5c0 3-7.2 5.5-16 5.5S8 23.5 8 20.5z"/>
+        <path d="M8 25c2.8 2.9 9.1 4.5 16 4.5S37.2 27.9 40 25v6.5c0 3-7.2 5.5-16 5.5S8 34.5 8 31.5z"/>
+        <path d="M8 36c2.8 2.9 9.1 4.5 16 4.5S37.2 38.9 40 36v2.5c0 3-7.2 5.5-16 5.5S8 41.5 8 38.5z"/>
+      </g>
+    </symbol>
+    <symbol id="i-db" viewBox="0 0 48 48">
+      <ellipse cx="24" cy="11" rx="15" ry="5.5" style="fill:var(--ac)"/>
+      <path d="M9 11v26c0 3 6.7 5.5 15 5.5S39 40 39 37V11"/>
+      <path d="M9 19.7c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5M9 28.4c0 3 6.7 5.5 15 5.5s15-2.5 15-5.5"/>
+    </symbol>
+    <!-- Una consulta dentro de otra / un bloque con nombre: documento con un + -->
+    <symbol id="i-doc-mas" viewBox="0 0 48 48">
+      <path d="M38 26V14l-9-9H11v38h15"/>
+      <path d="M29 5v9h9"/>
+      <path d="M16 18h12M16 24h14M16 30h7"/>
+      <circle cx="36" cy="36" r="8.5" style="fill:var(--ac)"/>
+      <path d="M36 31.5v9M31.5 36h9" style="stroke:#fff;stroke-width:3"/>
+    </symbol>
+    <symbol id="i-lupa" viewBox="0 0 48 48">
+      <circle cx="20" cy="20" r="9" style="fill:var(--ac);stroke:none"/>
+      <circle cx="20" cy="20" r="13"/>
+      <path d="M29.5 29.5 41 41" style="stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-barras" viewBox="0 0 48 48">
+      <rect x="8" y="27" width="8" height="15" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="20" y="18" width="8" height="24" rx="1.5" style="fill:var(--ac)"/>
+      <rect x="32" y="8" width="8" height="34" rx="1.5" style="fill:var(--ac)"/>
+    </symbol>
+    <!-- Reutilizar resultados -->
+    <symbol id="i-ciclo" viewBox="0 0 48 48">
+      <path d="M39 22A15 15 0 0 0 13.4 13.4" style="stroke:var(--ac);stroke-width:4.6"/>
+      <path d="M9 26a15 15 0 0 0 25.6 8.6" style="stroke:var(--ac);stroke-width:4.6"/>
+      <path d="M13.4 5.4v8h8M34.6 42.6v-8h-8"/>
+    </symbol>
+    <symbol id="i-libro" viewBox="0 0 48 48">
+      <path d="M24 13c-4.5-3.5-10.5-4.5-18-4v28c7.5-.5 13.5.5 18 4 4.5-3.5 10.5-4.5 18-4V9c-7.5-.5-13.5.5-18 4z" style="fill:var(--ac)"/>
+      <path d="M24 13v28"/>
+    </symbol>
+    <!-- Script: dos archivos -->
+    <symbol id="i-archivos" viewBox="0 0 48 48">
+      <path d="M17 4h14l8 8v23H17z" style="fill:var(--ac)"/>
+      <path d="M9 12h15l8 8v24H9z" style="fill:#fff"/>
+      <path d="M24 12v8h8"/>
+      <path d="M14 27h13M14 33h13M14 39h7"/>
+    </symbol>
+    <!-- phpMyAdmin: una grilla -->
+    <symbol id="i-grilla" viewBox="0 0 48 48">
+      <path d="M6.3 9.3h35.4V16H6.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="5" y="8" width="38" height="32" rx="2"/>
+      <path d="M5 16h38M5 24h38M5 32h38M18 16v24M31 16v24"/>
+    </symbol>
+    <!-- La consola (botón Shell de XAMPP) -->
+    <symbol id="i-terminal" viewBox="0 0 48 48">
+      <path d="M6.3 9.3h35.4V15H6.3z" style="fill:var(--ac);stroke:none"/>
+      <rect x="5" y="8" width="38" height="32" rx="3"/>
+      <path d="M5 15h38"/>
+      <path d="M12 22l6 5-6 5M22 33h12"/>
+    </symbol>
+    <symbol id="i-filas" viewBox="0 0 48 48">
+      <rect x="7" y="7" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+      <rect x="7" y="19.5" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+      <rect x="7" y="32" width="34" height="9" rx="3" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-escudo" viewBox="0 0 48 48">
+      <path d="M24 4 7 10v12c0 11 7 18.5 17 22 10-3.5 17-11 17-22V10z" style="fill:#fff"/>
+      <path d="M16 23l6 6 11-12" style="stroke:var(--ac);stroke-width:4.5"/>
+    </symbol>
+    <symbol id="i-check-aro" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18"/>
+      <path d="M15.5 24.5l6 6 11-12" style="stroke:var(--ac);stroke-width:4.4"/>
+    </symbol>
+    <!-- Lámina 40: los pasos -->
+    <symbol id="i-enchufe" viewBox="0 0 48 48">
+      <path d="M18 5v9M30 5v9"/>
+      <path d="M12 14h24v8a12 12 0 0 1-24 0z" style="fill:var(--ac)"/>
+      <path d="M24 34v9"/>
+    </symbol>
+    <symbol id="i-doc-lapiz" viewBox="0 0 48 48">
+      <path d="M27 43H9V5h18l9 9v6"/>
+      <path d="M27 5v9h9"/>
+      <path d="M14 17h12M14 23h14M14 29h8M14 35h5"/>
+      <path d="M38.5 23.5l5 5L28 44l-6.5 1.5L23 39z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-etiqueta" viewBox="0 0 48 48">
+      <path d="M25 6h17v17L22.5 42.5a2.5 2.5 0 0 1-3.5 0L5.5 29a2.5 2.5 0 0 1 0-3.5z" style="fill:#fff"/>
+      <circle cx="33.5" cy="14.5" r="4" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-engranaje" viewBox="0 0 48 48">
+      <path d="M38.3 19.6 42.6 20.2 42.6 27.8 38.3 28.4 37.3 31 39.8 34.5 34.5 39.8 31 37.3 28.4 38.3 27.8 42.6 20.2 42.6 19.6 38.3 17 37.3 13.5 39.8 8.2 34.5 10.7 31 9.7 28.4 5.4 27.8 5.4 20.2 9.7 19.6 10.7 17 8.2 13.5 13.5 8.2 17 10.7 19.6 9.7 20.2 5.4 27.8 5.4 28.4 9.7 31 10.7 34.5 8.2 39.8 13.5 37.3 17Z"/>
+      <circle cx="24" cy="24" r="6.5" style="fill:var(--ac)"/>
+      <circle cx="24" cy="24" r="2.2" style="fill:#fff;stroke:none"/>
+    </symbol>
+    <symbol id="i-globo" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18" style="fill:#fff"/>
+      <ellipse cx="24" cy="24" rx="7.5" ry="18" style="fill:var(--ac)"/>
+      <path d="M6 24h36M8.5 15h31M8.5 33h31"/>
+    </symbol>
+    <!-- Lámina 41: objetos -->
+    <symbol id="i-objeto" viewBox="0 0 48 48">
+      <path d="M7 13v22l17 8V21z" style="fill:#fff"/>
+      <path d="M41 13v22l-17 8V21z" style="fill:#fff"/>
+      <path d="M24 5 41 13 24 21 7 13z" style="fill:var(--ac)"/>
+    </symbol>
+    <symbol id="i-cadena" viewBox="0 0 48 48">
+      <rect x="4" y="22.5" width="25" height="13" rx="6.5" transform="rotate(-45 16.5 29)" style="fill:var(--ac)"/>
+      <rect x="19" y="12.5" width="25" height="13" rx="6.5" transform="rotate(-45 31.5 19)"/>
+      <path d="M21 27l6-6"/>
+    </symbol>
+    <symbol id="i-alerta" viewBox="0 0 48 48">
+      <path d="M24 6 43.5 40.5h-39z" style="fill:var(--ac)"/>
+      <path d="M24 18v11" style="stroke-width:3.4"/>
+      <circle cx="24" cy="34.6" r="2.3" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 48 48">
+      <circle cx="24" cy="24" r="18" style="fill:var(--ac)"/>
+      <path d="M24 22v13" style="stroke-width:4"/>
+      <circle cx="24" cy="14.5" r="2.6" style="fill:currentColor;stroke:none"/>
+    </symbol>
+    <symbol id="i-lapiz" viewBox="0 0 48 48">
+      <path d="M33 6l9 9-25 25-9-9z" style="fill:var(--ac)"/>
+      <path d="M8 31 5.5 42.5 17 40z" style="fill:#fff"/>
+      <path d="M27 12l9 9"/>
+    </symbol>
+    <symbol id="i-compu" viewBox="0 0 48 48">
+      <rect x="5" y="7" width="38" height="26" rx="2.5" style="fill:var(--ac)"/>
+      <path d="M24 33v7M15 41h18"/>
+    </symbol>
+    <symbol id="i-foco" viewBox="0 0 48 48">
+      <path d="M24 2.5v4M10 8.5l2.8 2.8M38 8.5l-2.8 2.8M4 22h4M40 22h4"/>
+      <path d="M24 12a10 10 0 0 0-6.2 17.8c1.4 1.2 2.2 2.6 2.2 4.2v1h8v-1c0-1.6.8-3 2.2-4.2A10 10 0 0 0 24 12z" style="fill:var(--ac)"/>
+      <path d="M20 39h8M21.5 43h5"/>
+    </symbol>
+    <symbol id="i-descarga" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>
+    </symbol>
+    <symbol id="i-atras" viewBox="0 0 24 24">
+      <path d="M20 12H5M11 6l-6 6 6 6"/>
+    </symbol>
+  </defs>
+</svg>
+
+<a class="saltar" href="#contenido">Saltar al contenido</a>
+
+<header class="barra">
+  <div class="barra__fila">
+    <a class="boton barra__volver" href="../indice.html"><svg aria-hidden="true" focusable="false"><use href="#i-atras"/></svg><span>Índice</span></a>
+    <span class="barra__titulo">TP N°12 — Consultas avanzadas y programación</span>
+    <button class="boton" type="button" data-imprimir aria-label="Guardar en PDF">
+      <svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span><span class="boton__largo">Guardar </span>PDF</span>
+    </button>
+  </div>
+  <nav class="partes" aria-label="Partes del TP N°12">
+    <a href="#pag-38">38 · Subconsultas y CTE</a>
+    <a href="#pag-39">39 · Scripts .sql</a>
+    <a href="#pag-40">40 · SQL en PHP</a>
+    <a href="#pag-41">41 · Consultas de objetos</a>
+    <a href="#profundizar">Para profundizar</a>
+    <a href="#actividades">Actividades</a>
+  </nav>
+</header>
+
+<main id="contenido" class="laminas">
+  <h1 class="sr-only">TP N°12 — Consultas avanzadas y programación</h1>
+
+  <!-- =================== LÁMINA 38 (PDF pág. 38) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada lamina--llena" id="pag-38" aria-labelledby="t38">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t38"><span class="tit__num">38.</span> Subconsultas + introducción a CTE (WITH)</h2>
+      <p class="tit__sub tit__sub--largo">Consultas dentro de consultas y resultados temporales</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+      <p>Una <strong>subconsulta</strong> es una consulta dentro de otra consulta. Una <strong>CTE</strong> (Common Table Expression), escrita con <strong>WITH</strong>, crea un resultado temporal con nombre para usarlo en una consulta principal.</p>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--sub">
+      <section class="panel" aria-labelledby="q38">
+        <div class="panel__cab"><h3 class="subtitulo" id="q38">¿Qué es una subconsulta?</h3></div>
+        <ul class="ambitos sub-tarjetas">
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg><p>Se usa dentro de otra consulta.</p></li>
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-lupa"/></svg><p>Ayuda a filtrar o comparar resultados.</p></li>
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><p>Puede ir en <code class="cod-sql">SELECT</code>, <code class="cod-sql">FROM</code> o <code class="cod-sql">WHERE</code>.</p></li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="s38">
+        <div class="panel__cab"><h3 class="subtitulo" id="s38">Subconsulta: ejemplo</h3></div>
+        <div class="ej-nota">
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL con una subconsulta: el nombre y el precio de los productos cuyo precio es mayor que el promedio de los precios de productos">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>, <span class="t-atr">precio</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &gt; (</span></li>
+              <li class="i2"><span class="pseudo__c"><b>SELECT</b> <span class="t-fun">AVG</span>(<span class="t-atr">precio</span>)</span></li>
+              <li class="i2"><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li><span class="pseudo__c">);</span></li>
+            </ol>
+          </div>
+          <div class="ej-nota__txt">
+            <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+            <p>Este resultado muestra productos con precio mayor al promedio.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--sub">
+      <section class="panel" aria-labelledby="c38">
+        <div class="panel__cab"><h3 class="subtitulo" id="c38">¿Qué es una CTE?</h3></div>
+        <ul class="ambitos sub-tarjetas">
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg><p>Se escribe con <code class="cod-sql">WITH</code>.</p></li>
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><p>Da nombre a un resultado temporal.</p></li>
+          <li class="tarjeta"><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><p>Mejora la legibilidad.</p></li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="e38">
+        <div class="panel__cab"><h3 class="subtitulo" id="e38">CTE: ejemplo</h3></div>
+        <div class="ej-nota">
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL con una CTE: WITH crea el resultado temporal productos_caros, con el nombre y el precio de los productos de más de 10000, y después la consulta principal selecciona todo de productos_caros">
+              <li><span class="pseudo__c"><b>WITH</b> <span class="t-atr">productos_caros</span> <b>AS</b> (</span></li>
+              <li class="i2"><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>, <span class="t-atr">precio</span></span></li>
+              <li class="i2"><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+              <li class="i2"><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">precio</span> &gt; <span class="t-num">10000</span></span></li>
+              <li><span class="pseudo__c">)</span></li>
+              <li><span class="pseudo__c"><b>SELECT</b> *</span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos_caros</span>;</span></li>
+            </ol>
+          </div>
+          <div class="ej-nota__txt">
+            <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg>
+            <p>Primero crea un conjunto temporal y luego lo consulta.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--sub">
+      <section class="panel" aria-labelledby="r38">
+        <div class="panel__cab"><h3 class="subtitulo" id="r38">Comparación rápida</h3></div>
+        <ul class="comparar-rapida">
+          <li>
+            <h4>Subconsulta</h4>
+            <div><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-db"/></svg><p>Va dentro de otra consulta.</p></div>
+          </li>
+          <li>
+            <h4>CTE</h4>
+            <div><svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg><p>Crea un bloque temporal con nombre.</p></div>
+          </li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="t38b">
+        <div class="panel__cab"><h3 class="subtitulo" id="t38b">Ejemplo de tabla</h3></div>
+        <table class="tabla-ej">
+          <caption>PRODUCTOS</caption>
+          <thead>
+            <tr><th scope="col">id_producto</th><th scope="col">nombre</th><th scope="col">precio</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Teclado</td><td>8000</td></tr>
+            <tr><td>2</td><td>Mouse</td><td>2500</td></tr>
+            <tr><td>3</td><td>Monitor</td><td>12000</td></tr>
+            <tr><td>4</td><td>Notebook</td><td>45000</td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <section class="panel" aria-labelledby="i38">
+      <div class="panel__cab"><h3 class="subtitulo" id="i38">Puntos importantes</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-barras"/></svg><h4 class="tarjeta__cab">Filtrar por promedios</h4><p>Permite comparar con valores agregados.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-ciclo"/></svg><h4 class="tarjeta__cab">Reutilizar resultados</h4><p>Las CTE permiten usar el mismo resultado varias veces.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-libro"/></svg><h4 class="tarjeta__cab">Mejorar la claridad</h4><p><code class="cod-sql">WITH</code> hace las consultas más fáciles de leer y mantener.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg><h4 class="tarjeta__cab">Pensar paso a paso</h4><p>Permite dividir problemas complejos en partes más simples.</p></li>
+      </ul>
+    </section>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Las subconsultas y las <b>CTE</b> permiten resolver consultas más complejas. <b>WITH</b> suele hacer el SQL más claro y ordenado.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 38">38</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 39 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-39" aria-labelledby="t39" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t39"><span class="tit__num">39.</span> Scripts .sql</h2>
+      <p class="tit__sub">Un archivo con instrucciones que se ejecutan en orden</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-archivos"/></svg>
+      <p>Un <strong>script</strong> es un archivo de texto con instrucciones SQL, una detrás de otra, que el gestor ejecuta en orden, de la primera a la última. <code class="cod-archivo">escuela.sql</code> y <code class="cod-archivo">tienda.sql</code>, que se importaron en los TPs anteriores, son scripts.</p>
+    </div>
+
+    <div class="lado-a-lado lado-a-lado--script">
+      <figure class="archivo archivo--script">
+        <figcaption class="archivo__nombre">mi_script.sql</figcaption>
+<pre class="archivo__txt"><span class="archivo__com">-- mi_script.sql: crea la base club</span>
+CREATE DATABASE IF NOT EXISTS club;
+USE club;
+<span class="archivo__com">/* Si las tablas ya existen, se borran:
+   así se puede ejecutar otra vez */</span>
+DROP TABLE IF EXISTS socios;
+DROP TABLE IF EXISTS deportes;
+<span class="archivo__com">-- Primero, la tabla referenciada</span>
+CREATE TABLE deportes (
+  id_deporte INT PRIMARY KEY,
+  nombre VARCHAR(40)
+);
+<span class="archivo__com">-- Después, la de la clave foránea</span>
+CREATE TABLE socios (
+  id_socio INT PRIMARY KEY,
+  nombre VARCHAR(60),
+  id_deporte INT,
+  FOREIGN KEY (id_deporte)
+    REFERENCES deportes(id_deporte)
+);
+INSERT INTO deportes VALUES (1, 'Esquí');
+INSERT INTO socios VALUES (1, 'Ana', 1);</pre>
+      </figure>
+
+      <div class="pila">
+        <section class="panel" aria-labelledby="c39">
+          <div class="panel__cab"><h3 class="subtitulo" id="c39">Comentarios</h3></div>
+          <ul class="modos">
+            <li><code class="cod-sql">-- …</code><p><strong>De una línea:</strong> desde <code class="cod-sql">--</code> hasta el final del renglón. Después de los guiones va un espacio.</p></li>
+            <li><code class="cod-sql">/* … */</code><p><strong>De varias líneas:</strong> todo lo que queda entre <code class="cod-sql">/*</code> y <code class="cod-sql">*/</code>.</p></li>
+          </ul>
+          <p class="texto">El gestor no los ejecuta: son notas para quien lee el script.</p>
+        </section>
+
+        <section class="panel" aria-labelledby="x39">
+          <div class="panel__cab"><h3 class="subtitulo" id="x39">Cómo se ejecuta</h3></div>
+          <ul class="modos modos--ico">
+            <li><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-grilla"/></svg><p><strong>En phpMyAdmin:</strong> pestaña <span class="ui">Importar</span>, elegí el archivo y hacé clic en <span class="ui">Importar</span>.</p></li>
+            <li><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-terminal"/></svg><p><strong>Desde la consola</strong> (botón <span class="ui">Shell</span> del panel de XAMPP): <code>mysql -u root &lt; tienda.sql</code>, o entrá con <code>mysql -u root</code> y escribí <code>SOURCE tienda.sql;</code></p></li>
+          </ul>
+          <p class="texto">Si el archivo está en otra carpeta, se escribe su ruta; en SOURCE, con barras <code>/</code>: <code class="cod-ruta">C:/Users/…/tienda.sql</code>.</p>
+        </section>
+      </div>
+    </div>
+
+    <section class="panel" aria-labelledby="u39">
+      <div class="panel__cab"><h3 class="subtitulo" id="u39">¿Para qué sirve?</h3></div>
+      <ul class="ambitos ambitos--4 ambitos--fila puntos-insert puntos--4">
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc-mas"/></svg><h4 class="tarjeta__cab">Crear una base desde cero</h4><p>Con sus tablas y sus claves, en un solo archivo.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-filas"/></svg><h4 class="tarjeta__cab">Cargar datos de prueba</h4><p>Para practicar, como tienda.sql.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg><h4 class="tarjeta__cab">Repetir en otra computadora</h4><p>La misma base, en el laboratorio o en casa.</p></li>
+        <li class="tarjeta"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-escudo"/></svg><h4 class="tarjeta__cab">Hacer respaldos</h4><p>Una copia de la base, para recuperarla (TP13).</p></li>
+      </ul>
+    </section>
+
+    <div class="nota nota--consejo">
+      <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-check-aro"/></svg>Buenas costumbres</h3>
+      <ul class="pf__lista pf__lista--3">
+        <li><strong>Empezar con DROP TABLE IF EXISTS</strong> (las tablas con clave foránea, primero): así se puede ejecutar otra vez.</li>
+        <li><strong>Crear primero las tablas referenciadas:</strong> socios necesita que deportes ya exista.</li>
+        <li><strong>Comentar cada parte:</strong> qué hace y por qué, para quien lo lea después.</li>
+      </ul>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Un script guarda en un archivo las instrucciones SQL, en orden: se ejecutan todas juntas, las veces que haga falta y en cualquier computadora.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 39">39</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 40 (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-40" aria-labelledby="t40" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="t40"><span class="tit__num">40.</span> SQL embebido en PHP</h2>
+      <p class="tit__sub">Usar la base de datos desde un programa</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-globo"/></svg>
+      <p>Un programa escrito en un lenguaje imperativo, como <strong>PHP</strong>, puede tener adentro instrucciones SQL: las manda al gestor, recibe los resultados y los usa, por ejemplo, para armar una página web.</p>
+    </div>
+
+    <ol class="secuencia secuencia--linea pasos-php" aria-label="Los pasos para usar la base desde PHP">
+      <li class="paso"><h3>Conectarse</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-enchufe"/></svg><p><code>new mysqli</code> con el servidor y la base</p></li>
+      <li class="paso"><h3>Preparar la consulta</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-doc-lapiz"/></svg><p><code>prepare</code> con un <code>?</code> por cada dato</p></li>
+      <li class="paso"><h3>Pasarle los datos</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-etiqueta"/></svg><p><code>bind_param</code> le da a cada <code>?</code> su dato</p></li>
+      <li class="paso"><h3>Ejecutarla</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-engranaje"/></svg><p><code>execute</code> el gestor la resuelve</p></li>
+      <li class="paso"><h3>Recorrer los resultados</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-filas"/></svg><p><code>get_result</code> y <code>fetch_assoc</code></p></li>
+      <li class="paso"><h3>Mostrarlos</h3><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg><p><code>echo</code> cada fila, en la página</p></li>
+    </ol>
+
+    <section class="panel" aria-labelledby="e40">
+      <div class="panel__cab panel__cab--texto"><h3 class="subtitulo" id="e40">Ejemplo: clientes.php</h3><p class="texto">Los clientes de una ciudad, en una lista. Usa la base tienda.</p></div>
+      <div class="lado-a-lado lado-a-lado--php">
+        <div class="ventana-cod">
+          <div class="ventana-cod__barra" aria-hidden="true">clientes.php · PHP</div>
+          <ol class="pseudo pseudo--php" aria-label="Código PHP de clientes.php. Se conecta con new mysqli a localhost, con el usuario root sin contraseña, a la base tienda, y elige utf8mb4. Guarda Ushuaia en la variable ciudad. Prepara la consulta SELECT nombre, edad FROM clientes WHERE ciudad = signo de pregunta, le pasa la ciudad con bind_param como texto y la ejecuta. Con get_result toma el resultado y muestra el título Clientes de Ushuaia; con un while y fetch_assoc recorre las filas y muestra cada nombre con su edad en una lista. Al final cierra la conexión.">
+            <li><span class="pseudo__c"><b>&lt;?php</b></span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$conexion</span> = <b>new</b> <span class="t-fun">mysqli</span>(<span class="t-str">"localhost"</span>, <span class="t-str">"root"</span>, <span class="t-str">""</span>, <span class="t-str">"tienda"</span>);</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$conexion</span>-&gt;<span class="t-fun">set_charset</span>(<span class="t-str">"utf8mb4"</span>);</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$ciudad</span> = <span class="t-str">"Ushuaia"</span>;</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$sql</span> = <span class="t-str">"SELECT nombre, edad FROM clientes WHERE ciudad = ?"</span>;</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$consulta</span> = <span class="t-atr">$conexion</span>-&gt;<span class="t-fun">prepare</span>(<span class="t-atr">$sql</span>);</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$consulta</span>-&gt;<span class="t-fun">bind_param</span>(<span class="t-str">"s"</span>, <span class="t-atr">$ciudad</span>);</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$consulta</span>-&gt;<span class="t-fun">execute</span>();</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$resultado</span> = <span class="t-atr">$consulta</span>-&gt;<span class="t-fun">get_result</span>();</span></li>
+            <li><span class="pseudo__c"><b>echo</b> <span class="t-str">"&lt;h1&gt;Clientes de $ciudad&lt;/h1&gt;&lt;ul&gt;"</span>;</span></li>
+            <li><span class="pseudo__c"><b>while</b> (<span class="t-atr">$fila</span> = <span class="t-atr">$resultado</span>-&gt;<span class="t-fun">fetch_assoc</span>()) {</span></li>
+            <li class="i2"><span class="pseudo__c"><b>echo</b> <span class="t-str">"&lt;li&gt;"</span> . <span class="t-atr">$fila</span>[<span class="t-str">"nombre"</span>] . <span class="t-str">", "</span>;</span></li>
+            <li class="i2"><span class="pseudo__c"><b>echo</b> <span class="t-atr">$fila</span>[<span class="t-str">"edad"</span>] . <span class="t-str">" años&lt;/li&gt;"</span>;</span></li>
+            <li><span class="pseudo__c">}</span></li>
+            <li><span class="pseudo__c"><b>echo</b> <span class="t-str">"&lt;/ul&gt;"</span>;</span></li>
+            <li><span class="pseudo__c"><span class="t-atr">$conexion</span>-&gt;<span class="t-fun">close</span>();</span></li>
+          </ol>
+        </div>
+
+        <div class="pila">
+          <figure class="navegador">
+            <figcaption class="navegador__barra"><span class="sr-only">Lo que se ve en el navegador, en la dirección </span><span class="navegador__url">localhost/bd2/clientes.php</span></figcaption>
+            <div class="navegador__pag">
+              <p class="navegador__h1">Clientes de Ushuaia</p>
+              <ul>
+                <li>Ana, 28 años</li>
+                <li>Pedro, 40 años</li>
+                <li>Martín, 19 años</li>
+              </ul>
+            </div>
+          </figure>
+          <div>
+            <h4 class="pila__tit">Cómo se prueba</h4>
+            <ol class="instrucciones">
+              <li><span>Guardá el archivo en <code class="cod-ruta">C:\xampp\htdocs\bd2\</code>.</span></li>
+              <li><span>En el panel de XAMPP, iniciá <span class="ui">Apache</span> y <span class="ui">MySQL</span>.</span></li>
+              <li><span>En el navegador, entrá a <code class="cod-ruta">http://localhost/bd2/<wbr>clientes.php</code>.</span></li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <p class="linea-info"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-info"/></svg><span>Las funciones viejas <code>mysql_connect()</code> y <code>mysql_query()</code> ya no existen desde PHP 7: si aparecen en un apunte o un video, es material viejo.</span></p>
+    </section>
+
+    <div class="lado-a-lado notas-php">
+      <div class="nota nota--importante">
+        <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-alerta"/></svg>Los datos del usuario, siempre con&nbsp;?</h3>
+        <p>Lo que escribe el usuario en un formulario nunca se pega directo en el SQL: va con <code>?</code> y <code>bind_param</code>, en una <strong>consulta preparada</strong>. Así el gestor lo toma como un dato y no como parte de la instrucción. Más sobre esto en el Integrador final.</p>
+      </div>
+      <div class="nota">
+        <h3><svg class="ico tit-ico" aria-hidden="true" focusable="false"><use href="#i-info"/></svg>El usuario root</h3>
+        <p>Sin contraseña, <strong>root</strong> es solo para el laboratorio. En el TP13 se crean usuarios con permisos.</p>
+      </div>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> Con SQL embebido, un programa se conecta a la base, le manda consultas preparadas y usa sus resultados, por ejemplo, para armar una página.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 40">40</span>
+    </footer>
+  </article>
+
+  <!-- =================== LÁMINA 41 (contenido nuevo, no está en el PDF; breve) =================== -->
+  <article class="lamina lamina--densa lamina--compacta lamina--apretada" id="pag-41" aria-labelledby="t41" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h tit__h--largo" id="t41"><span class="tit__num">41.</span> Un lenguaje de consulta de objetos</h2>
+      <p class="tit__sub">Consultas sobre objetos en lugar de tablas</p>
+    </div>
+
+    <div class="intro intro--larga">
+      <svg class="ico ico--xl" aria-hidden="true" focusable="false"><use href="#i-objeto"/></svg>
+      <p>En una base orientada a objetos (TP3, lámina 8), los datos se guardan como <strong>objetos</strong>, con sus atributos y sus vínculos con otros objetos. Por eso se consulta por objetos, atributos y relaciones, no por tablas y columnas.</p>
+    </div>
+
+    <section class="panel" aria-labelledby="o41">
+      <div class="panel__cab"><h3 class="subtitulo" id="o41">OQL, del estándar ODMG</h3></div>
+      <p class="texto"><strong>OQL</strong> (<i lang="en">Object Query Language</i>) es el lenguaje de consulta del estándar <strong>ODMG</strong>, que en los años 90 propuso cómo debían funcionar las bases orientadas a objetos. Se parece a SQL, con <code>select</code>, <code>from</code> y <code>where</code>, pero para ir de un objeto a otro relacionado usa un <strong>punto</strong>.</p>
+      <div class="der-lienzo">
+        <!-- Pantalla ancha y A4 -->
+        <svg class="der der--ancho" viewBox="0 0 640 92" role="img" aria-label="Dos objetos unidos por una flecha. A la izquierda, ana : Alumno, con nombre = “Ana”. La flecha, con la palabra curso, va hasta el objeto sextoA : Curso, con nombre = “6.º A”. Desde ana, a.curso es el objeto sextoA, y a.curso.nombre es “6.º A”.">
+          <rect class="der__caja" x="4" y="14" width="200" height="66" rx="8"/>
+          <path class="der__obj-cab" d="M12 14h184a8 8 0 0 1 8 8v20H4V22a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="104" y="34" text-anchor="middle">ana : Alumno</text>
+          <text x="16" y="64">nombre = "Ana"</text>
+
+          <path class="der__linea" d="M204 47H428"/>
+          <path class="der__linea" d="M420 41l8 6-8 6"/>
+          <text class="der__nom" x="316" y="39" text-anchor="middle">curso</text>
+          <text class="der__nota" x="316" y="66" text-anchor="middle">a.curso</text>
+
+          <rect class="der__caja" x="436" y="14" width="200" height="66" rx="8"/>
+          <path class="der__obj-cab" d="M444 14h184a8 8 0 0 1 8 8v20H436V22a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="536" y="34" text-anchor="middle">sextoA : Curso</text>
+          <text x="448" y="64">nombre = "6.º A"</text>
+        </svg>
+        <!-- Celular: un objeto debajo del otro -->
+        <svg class="der der--angosto" viewBox="0 0 260 214" role="img" aria-label="Dos objetos unidos por una flecha. Arriba, ana : Alumno, con nombre = “Ana”. La flecha, con la palabra curso, baja hasta el objeto sextoA : Curso, con nombre = “6.º A”. Desde ana, a.curso es el objeto sextoA, y a.curso.nombre es “6.º A”.">
+          <rect class="der__caja" x="30" y="4" width="200" height="66" rx="8"/>
+          <path class="der__obj-cab" d="M38 4h184a8 8 0 0 1 8 8v20H30V12a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="130" y="24" text-anchor="middle">ana : Alumno</text>
+          <text x="42" y="54">nombre = "Ana"</text>
+
+          <path class="der__linea" d="M130 70V140"/>
+          <path class="der__linea" d="M124 132l6 8 6-8"/>
+          <text class="der__nom" x="142" y="102">curso</text>
+          <text class="der__nota" x="142" y="120">a.curso</text>
+
+          <rect class="der__caja" x="30" y="144" width="200" height="66" rx="8"/>
+          <path class="der__obj-cab" d="M38 144h184a8 8 0 0 1 8 8v20H30v-20a8 8 0 0 1 8-8z"/>
+          <text class="der__nom der__id" x="130" y="164" text-anchor="middle">sextoA : Curso</text>
+          <text x="42" y="194">nombre = "6.º A"</text>
+        </svg>
+      </div>
+    </section>
+
+    <div class="lado-a-lado lado-a-lado--oql">
+      <section class="panel" aria-labelledby="q41">
+        <div class="panel__cab"><h3 class="subtitulo" id="q41">En OQL</h3></div>
+        <div class="ventana-cod">
+          <div class="ventana-cod__barra" aria-hidden="true">OQL</div>
+          <ol class="pseudo pseudo--php" aria-label="Consulta OQL: select a.nombre, from a in Alumnos, where a.curso.nombre igual a 6.º A">
+            <li><span class="pseudo__c"><b>select</b> <span class="t-atr">a.nombre</span></span></li>
+            <li><span class="pseudo__c"><b>from</b> <span class="t-atr">a</span> <b>in</b> <span class="t-atr">Alumnos</span></span></li>
+            <li><span class="pseudo__c"><b>where</b> <span class="t-atr">a.curso.nombre</span> = <span class="t-str">"6.º A"</span></span></li>
+          </ol>
+        </div>
+        <ul class="pf__lista leer-oql">
+          <li><code>a in Alumnos</code>: <code>a</code> recorre todos los objetos de la clase Alumno.</li>
+          <li><code>a.curso</code>: el curso del alumno (su grupo, como 6.º A), que es otro objeto.</li>
+          <li><code>a.curso.nombre</code>: el nombre de ese curso.</li>
+        </ul>
+      </section>
+
+      <section class="panel" aria-labelledby="s41">
+        <div class="panel__cab"><h3 class="subtitulo" id="s41">Lo mismo en SQL</h3></div>
+        <div class="ventana-cod ventana-cod--sql">
+          <div class="ventana-cod__barra" aria-hidden="true">SQL</div>
+          <ol class="pseudo pseudo--sql" aria-label="La misma consulta en SQL: SELECT a.nombre FROM alumnos a JOIN cursos c ON a.id_curso = c.id_curso WHERE c.nombre = 6.º A">
+            <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">a.nombre</span></span></li>
+            <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">alumnos</span> <span class="t-atr">a</span></span></li>
+            <li><span class="pseudo__c"><b>JOIN</b> <span class="t-atr">cursos</span> <span class="t-atr">c</span> <b>ON</b> <span class="t-atr">a.id_curso</span> = <span class="t-atr">c.id_curso</span></span></li>
+            <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">c.nombre</span> = <span class="t-str">'6.º A'</span>;</span></li>
+          </ol>
+        </div>
+        <p class="texto">Los alumnos y los cursos están en dos tablas: para llegar al curso de cada alumno, hay que unirlas con <strong>JOIN</strong> por la clave foránea <code class="cod-sql">id_curso</code> (TP11).</p>
+      </section>
+    </div>
+
+    <table class="tabla-comp tabla-oql">
+      <caption class="sr-only">SQL y OQL: qué se consulta, cómo se relacionan los datos y qué devuelve cada uno</caption>
+      <thead>
+        <tr><th scope="col"><span class="sr-only">Aspecto</span></th><th scope="col">SQL</th><th scope="col">OQL</th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Consulta</th><td>Tablas y columnas</td><td>Objetos y atributos</td></tr>
+        <tr><th scope="row">Para relacionar</th><td>JOIN, con la clave foránea</td><td>Un punto: <code>a.curso</code></td></tr>
+        <tr><th scope="row">Devuelve</th><td>Filas</td><td>Objetos o valores</td></tr>
+      </tbody>
+    </table>
+
+    <div class="intro">
+      <svg class="ico ico--l" aria-hidden="true" focusable="false"><use href="#i-cadena"/></svg>
+      <p>Hoy la idea sigue en los <strong>ORM</strong> (TP3): en Java, <strong>JPQL</strong>, y en C#, <strong>LINQ</strong>, consultan con objetos, y el ORM lo traduce a SQL.</p>
+    </div>
+
+    <aside class="idea" aria-label="Idea clave">
+      <span class="idea__ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#i-foco"/></svg></span>
+      <p><strong>Idea clave:</strong> OQL consulta objetos: va de un objeto a otro relacionado con un punto, donde SQL necesita un JOIN.</p>
+    </aside>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num" aria-label="Página 41">41</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar" aria-labelledby="tpf" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina</p>
+    </div>
+
+    <!-- Con tanto código, los cuatro bloques no entran en una hoja: van de a dos, a lo ancho, en dos hojas.
+         La lámina 41 es breve: no lleva bloque -->
+    <div class="pf-grid pf-grid--sql pf-grid--apiladas">
+    <section class="pf" aria-labelledby="pf1">
+      <p class="pf__etiqueta">Lámina 38</p>
+      <h3 class="pf__titulo" id="pf1">IN y subconsultas en el SELECT</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Con <strong>IN</strong>, la subconsulta devuelve una lista y la consulta principal se queda con lo que está en ella. Los clientes que compraron alguna vez:</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: el nombre de los clientes cuyo id_cliente está en la lista de id_cliente de la tabla ventas">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span> <b>FROM</b> <span class="t-atr">clientes</span></span></li>
+              <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_cliente</span> <b>IN</b> (</span></li>
+              <li class="i1"><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">id_cliente</span> <b>FROM</b> <span class="t-atr">ventas</span></span></li>
+              <li><span class="pseudo__c">);</span></li>
+            </ol>
+          </div>
+          <p>La subconsulta da 1, 2, 1 y 5: salen Ana, Carlos y Sofía. Con <strong>NOT IN</strong>, los que nunca compraron.</p>
+          <p>En el <strong>SELECT</strong>, una subconsulta que da un solo valor es una columna más: el promedio de los precios, 141063, en cada fila.</p>
+          <div class="ventana-cod ventana-cod--sql">
+            <ol class="pseudo pseudo--sql" aria-label="Código SQL: el nombre y el precio de cada producto y, como tercera columna con el alias promedio, el promedio redondeado de los precios, que calcula una subconsulta">
+              <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span>, <span class="t-atr">precio</span>,</span></li>
+              <li class="i1"><span class="pseudo__c">(<b>SELECT</b> <span class="t-fun">ROUND</span>(<span class="t-fun">AVG</span>(<span class="t-atr">precio</span>))</span></li>
+              <li class="i2"><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>) <b>AS</b> <span class="t-atr">promedio</span></span></li>
+              <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span>;</span></li>
+            </ol>
+          </div>
+        </div>
+        <div class="pila">
+          <div class="pf__caja">
+            <h4>¿Cuándo conviene una CTE?</h4>
+            <ul class="pf__lista">
+              <li>Cuando el mismo resultado se usa más de una vez: se calcula una sola vez, con nombre.</li>
+              <li>Cuando la consulta se vuelve larga: cada CTE es un paso con nombre, y se lee de arriba abajo.</li>
+            </ul>
+          </div>
+          <table class="tabla-ej tabla-promedio">
+            <caption>Resultado (3 de las 8 filas)</caption>
+            <thead>
+              <tr><th scope="col">nombre</th><th scope="col">precio</th><th scope="col">promedio</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>Teclado</td><td>40000.00</td><td>141063</td></tr>
+              <tr><td>Mouse</td><td>25000.00</td><td>141063</td></tr>
+              <tr><td>Monitor</td><td>180000.00</td><td>141063</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section class="pf" aria-labelledby="pf2">
+      <p class="pf__etiqueta">Lámina 39</p>
+      <h3 class="pf__titulo" id="pf2">El script como respaldo</h3>
+      <div class="pf__cols">
+        <div class="pf__texto">
+          <p>Un script también sirve para guardar una copia de una base, y phpMyAdmin lo escribe solo: con <strong>Exportar</strong>, arma un <code class="cod-archivo">.sql</code> con el CREATE TABLE y los INSERT INTO de cada tabla, con todos sus datos.</p>
+          <ol class="instrucciones">
+            <li><span>Elegí la base a la izquierda y entrá a la pestaña <span class="ui">Exportar</span>.</span></li>
+            <li><span>Dejá el método <span class="ui">Rápido</span> y el formato <span class="ui">SQL</span>, y hacé clic en <span class="ui">Exportar</span>.</span></li>
+            <li><span>Se descarga un archivo con el nombre de la base: <code class="cod-archivo">tienda.sql</code>.</span></li>
+          </ol>
+        </div>
+        <div class="pila">
+          <figure class="archivo archivo--dump">
+            <figcaption class="archivo__nombre">tienda.sql (el principio)</figcaption>
+<pre class="archivo__txt"><span class="archivo__com">-- phpMyAdmin SQL Dump</span>
+CREATE TABLE `clientes` (
+  `id_cliente` int(11) NOT NULL,
+<span class="archivo__com">  …</span>
+INSERT INTO `clientes` (…) VALUES
+(1, 'Ana', 'ana@mail.com', …),</pre>
+          </figure>
+          <div class="pf__caja">
+            <h4>Para recuperarla</h4>
+            <p>El archivo no trae CREATE DATABASE: se crea una base vacía, se la elige a la izquierda y se importa el archivo. Queda como estaba cuando se exportó. Cuándo y cómo hacer los respaldos se ve en el TP13.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 12</span>
+    </footer>
+  </article>
+
+  <!-- =================== PARA PROFUNDIZAR, segunda hoja (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--pf" id="profundizar-2" aria-labelledby="tpf2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <div class="tit">
+      <h2 class="tit__h" id="tpf2"><span class="tit__num">+</span> Para profundizar</h2>
+      <p class="tit__sub">Un poco más sobre cada lámina (continuación)</p>
+    </div>
+
+    <div class="pf-grid pf-grid--sql pf-grid--apiladas">
+    <section class="pf pf--ancho" aria-labelledby="pf3">
+      <p class="pf__etiqueta">Lámina 40</p>
+      <h3 class="pf__titulo" id="pf3">Otra forma de conectarse: PDO</h3>
+      <div class="pf__texto">
+        <p><strong>PDO</strong> (<i lang="en">PHP Data Objects</i>) es otra forma de usar la base desde PHP. La consulta preparada es la misma; cambian la conexión, la forma de pasar los datos y la de recorrer el resultado.</p>
+        <div class="lado-a-lado lado-a-lado--pdo">
+          <div class="ventana-cod">
+            <div class="ventana-cod__barra" aria-hidden="true">clientes.php · mysqli</div>
+            <ol class="pseudo pseudo--php" aria-label="Con mysqli: new mysqli con localhost, root, sin contraseña y tienda; set_charset utf8mb4; prepare; bind_param con s y la ciudad; execute; get_result; y un while con fetch_assoc">
+              <li><span class="pseudo__c"><span class="t-atr">$conexion</span> = <b>new</b> <span class="t-fun">mysqli</span>(<span class="t-str">"localhost"</span>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-str">"root"</span>, <span class="t-str">""</span>, <span class="t-str">"tienda"</span>);</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$conexion</span>-&gt;<span class="t-fun">set_charset</span>(<span class="t-str">"utf8mb4"</span>);</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$consulta</span> = <span class="t-atr">$conexion</span>-&gt;<span class="t-fun">prepare</span>(<span class="t-atr">$sql</span>);</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$consulta</span>-&gt;<span class="t-fun">bind_param</span>(<span class="t-str">"s"</span>, <span class="t-atr">$ciudad</span>);</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$consulta</span>-&gt;<span class="t-fun">execute</span>();</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$resultado</span> = <span class="t-atr">$consulta</span>-&gt;<span class="t-fun">get_result</span>();</span></li>
+              <li><span class="pseudo__c"><b>while</b> (<span class="t-atr">$fila</span> = <span class="t-atr">$resultado</span>-&gt;<span class="t-fun">fetch_assoc</span>())</span></li>
+            </ol>
+          </div>
+          <div class="ventana-cod">
+            <div class="ventana-cod__barra" aria-hidden="true">clientes_pdo.php · PDO</div>
+            <ol class="pseudo pseudo--php" aria-label="Con PDO: new PDO con el texto mysql:host=localhost;dbname=tienda;charset=utf8mb4, root y sin contraseña; prepare; execute con la ciudad en una lista; y un while con fetch y PDO::FETCH_ASSOC">
+              <li><span class="pseudo__c"><span class="t-atr">$conexion</span> = <b>new</b> <span class="t-fun">PDO</span>(</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-str">"mysql:host=localhost;dbname=tienda;charset=utf8mb4"</span>,</span></li>
+              <li class="i1"><span class="pseudo__c"><span class="t-str">"root"</span>, <span class="t-str">""</span>);</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$consulta</span> = <span class="t-atr">$conexion</span>-&gt;<span class="t-fun">prepare</span>(<span class="t-atr">$sql</span>);</span></li>
+              <li><span class="pseudo__c"><span class="t-atr">$consulta</span>-&gt;<span class="t-fun">execute</span>([<span class="t-atr">$ciudad</span>]);</span></li>
+              <li><span class="pseudo__c"><b>while</b> (<span class="t-atr">$fila</span> = <span class="t-atr">$consulta</span>-&gt;<span class="t-fun">fetch</span>(<span class="t-fun">PDO::FETCH_ASSOC</span>))</span></li>
+            </ol>
+          </div>
+        </div>
+        <ul class="pf__lista pf__lista--3">
+          <li><strong>mysqli</strong> sirve solo para MySQL y MariaDB. <strong>PDO</strong> sirve para varios gestores (MariaDB, PostgreSQL, SQLite…) con el mismo código: cambia solo el texto de la conexión.</li>
+          <li>Las dos permiten <strong>consultas preparadas</strong> con <code>?</code>. En PDO, <code>execute</code> recibe los datos en una lista, sin <code>bind_param</code> ni <code>get_result</code>.</li>
+          <li>Si la conexión falla, las dos cortan el programa con un error; con <strong>try / catch</strong> se lo atrapa y se muestra un mensaje propio, como en clientes_pdo.php.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="pf pf--ancho" aria-labelledby="pf4">
+      <p class="pf__etiqueta">Todo junto</p>
+      <h3 class="pf__titulo" id="pf4">Un pedido, tres formas: los productos que nunca se vendieron</h3>
+      <div class="pf__texto">
+        <ul class="ej-sql ej-sql--formas">
+          <li>
+            <h4 class="ej-sql__tit">Subconsulta</h4>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL: el nombre de los productos cuyo id_producto no está en la lista de id_producto de detalle_venta">
+                <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span></span></li>
+                <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+                <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_producto</span> <b>NOT IN</b> (</span></li>
+                <li class="i1"><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">id_producto</span></span></li>
+                <li class="i1"><span class="pseudo__c"><b>FROM</b> <span class="t-atr">detalle_venta</span></span></li>
+                <li><span class="pseudo__c">);</span></li>
+              </ol>
+            </div>
+          </li>
+          <li>
+            <h4 class="ej-sql__tit">CTE</h4>
+            <div class="ventana-cod ventana-cod--sql">
+              <ol class="pseudo pseudo--sql" aria-label="Código SQL con una CTE: vendidos tiene los id_producto de detalle_venta; la consulta principal da el nombre de los productos cuyo id_producto no está en vendidos">
+                <li><span class="pseudo__c"><b>WITH</b> <span class="t-atr">vendidos</span> <b>AS</b> (</span></li>
+                <li class="i1"><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">id_producto</span></span></li>
+                <li class="i1"><span class="pseudo__c"><b>FROM</b> <span class="t-atr">detalle_venta</span></span></li>
+                <li><span class="pseudo__c">)</span></li>
+                <li><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">nombre</span></span></li>
+                <li><span class="pseudo__c"><b>FROM</b> <span class="t-atr">productos</span></span></li>
+                <li><span class="pseudo__c"><b>WHERE</b> <span class="t-atr">id_producto</span> <b>NOT IN</b> (</span></li>
+                <li class="i1"><span class="pseudo__c"><b>SELECT</b> <span class="t-atr">id_producto</span></span></li>
+                <li class="i1"><span class="pseudo__c"><b>FROM</b> <span class="t-atr">vendidos</span></span></li>
+                <li><span class="pseudo__c">);</span></li>
+              </ol>
+            </div>
+          </li>
+          <li>
+            <h4 class="ej-sql__tit">Desde PHP</h4>
+            <div class="ventana-cod">
+              <ol class="pseudo pseudo--php" aria-label="Código PHP: la variable sql guarda la misma consulta con la subconsulta; después prepare, execute y get_result, como en clientes.php">
+                <li><span class="pseudo__c"><span class="t-atr">$sql</span> = <span class="t-str">"SELECT nombre FROM productos</span></span></li>
+                <li class="i1"><span class="pseudo__c"><span class="t-str">WHERE id_producto NOT IN (</span></span></li>
+                <li class="i2"><span class="pseudo__c"><span class="t-str">SELECT id_producto</span></span></li>
+                <li class="i2"><span class="pseudo__c"><span class="t-str">FROM detalle_venta)"</span>;</span></li>
+                <li><span class="pseudo__c"><span class="t-atr">$consulta</span> = <span class="t-atr">$conexion</span>-&gt;<span class="t-fun">prepare</span>(<span class="t-atr">$sql</span>);</span></li>
+                <li><span class="pseudo__c"><span class="t-atr">$consulta</span>-&gt;<span class="t-fun">execute</span>();</span></li>
+                <li><span class="pseudo__c"><span class="t-atr">$resultado</span> = <span class="t-atr">$consulta</span>-&gt;<span class="t-fun">get_result</span>();</span></li>
+              </ol>
+            </div>
+          </li>
+        </ul>
+        <p>Las tres dan lo mismo: <strong>Notebook</strong>, el único producto que no aparece en detalle_venta. PHP le manda al gestor el mismo SQL y recorre el resultado con el while de clientes.php; como no lleva datos del usuario, no hace falta <code>?</code> ni <code>bind_param</code>.</p>
+      </div>
+    </section>
+    </div>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 12</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 1 =================== -->
+  <article class="lamina lamina--act" id="actividades" aria-labelledby="act-1">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-lapiz"/></svg>
+      <div>
+        <h2 id="act-1">Actividades para hacer en la carpeta</h2>
+        <p>TP N°12 — Consultas avanzadas y programación</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>1 de 2</span>
+    </header>
+
+    <p class="consigna"><strong>Consigna:</strong> Respondé cada punto de forma completa, usando tus propias palabras. Podés apoyarte en las láminas y en “Para profundizar” del TP N°12.</p>
+
+    <!-- Punto 1: del PDF. Puntos 2 a 4, nuevos -->
+    <ol class="acts acts--2col acts--amplio">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">1-</span> Subconsultas y CTE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué hace la subconsulta del ejemplo?</div></li>
+          <li><b class="act__letra">b)</b><div>Escribe una CTE que seleccione productos con precio mayor a 5000.</div></li>
+          <li><b class="act__letra">c)</b><div>Explica una diferencia entre subconsulta y CTE.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">2-</span> Scripts .sql</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>¿Qué es un script .sql? Nombrá los dos que usaste en los TPs anteriores.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Para qué empieza mi_script.sql con <code class="cod-sql">DROP TABLE IF EXISTS</code>? ¿Qué pasaría si lo ejecutaras dos veces sin esas líneas?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Por qué se crea primero la tabla deportes y después socios? ¿Y por qué se borra primero socios?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">3-</span> SQL embebido en PHP</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Escribí en orden los pasos para usar la base desde PHP, con la función de cada uno.</div></li>
+          <li><b class="act__letra">b)</b><div>En clientes.php, ¿qué marca el <code>?</code> de la consulta? ¿Qué hace <code>bind_param("s", $ciudad)</code>?</div></li>
+          <li><b class="act__letra">c)</b><div>¿Por qué lo que escribe el usuario nunca se pega directo en el SQL?</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">4-</span> Un lenguaje de consulta de objetos</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>En una base orientada a objetos, ¿qué se consulta en lugar de tablas y columnas?</div></li>
+          <li><b class="act__letra">b)</b><div>En la consulta OQL de la lámina, ¿qué significa <code>a.curso.nombre</code>? ¿Qué necesita SQL para lo mismo?</div></li>
+          <li><b class="act__letra">c)</b><div>Escribí en OQL una consulta con los nombres de los alumnos del curso 6.º B, y la misma consulta en SQL.</div></li>
+        </ol>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 12</span>
+    </footer>
+  </article>
+
+  <!-- =================== ACTIVIDADES · Parte 2, en la computadora (contenido nuevo, no está en el PDF) =================== -->
+  <article class="lamina lamina--act lamina--compu" id="actividades-2" aria-labelledby="act-2" data-origen="nuevo">
+    <div class="cab" aria-hidden="true">
+      <svg class="cab__logo"><use href="#i-db-solido"/></svg>
+      <div class="cab__marca"><b>BASES DE DATOS Y SQL</b><span>DESDE CERO</span></div>
+      <div class="cab__lema">TRABAJO PRÁCTICO <span class="cab__lema-n">N°12</span></div>
+      <span class="cab__raya"></span>
+    </div>
+
+    <header class="act-banda">
+      <svg class="ico" aria-hidden="true" focusable="false"><use href="#i-compu"/></svg>
+      <div>
+        <h2 id="act-2">Actividades para hacer en la computadora</h2>
+        <p>TP N°12 — Consultas avanzadas y programación</p>
+      </div>
+      <span class="act-banda__parte">Parte<br>2 de 2</span>
+    </header>
+
+    <div class="consigna">
+      <p><strong>Consigna:</strong> Iniciá Apache y MySQL en el panel de XAMPP. Las consultas van en phpMyAdmin, en la pestaña <span class="ui">SQL</span> de la base tienda, y los archivos .php, en <code class="cod-ruta">C:\xampp\htdocs\bd2\</code> (creá la carpeta bd2). Anotá en la carpeta cada consulta o cambio que hagas y qué resultado da.</p>
+      <div class="descarga">
+        <p>¿No tenés la base tienda o le cambiaste datos? Importá otra vez <code class="cod-archivo">tienda.sql</code> (pestaña <span class="ui">Importar</span>) y vuelve a quedar como al principio. Descargalo desde la página del TP12.</p>
+        <a class="boton no-imprimir" href="../assets/datos/tienda.sql" download="tienda.sql"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar tienda.sql</span></a>
+      </div>
+    </div>
+
+    <ol class="acts acts--2col" start="5">
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">5-</span> Subconsultas y CTE</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Mostrá los productos con precio mayor al promedio, con una subconsulta.</div></li>
+          <li><b class="act__letra">b)</b><div>Mostrá los clientes que compraron alguna vez, con <code class="cod-sql">IN</code> y una subconsulta.</div></li>
+          <li><b class="act__letra">c)</b><div>Con <code class="cod-sql">WITH</code>, calculá el total que gastó cada cliente y después mostrá solo los que superan 50000.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">6-</span> Un script</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>En el Bloc de notas, escribí <code class="cod-archivo">mi_script.sql</code>: que cree la base biblioteca con dos tablas relacionadas, cargue 3 filas en cada una y tenga comentarios. Al guardar, en Tipo elegí “Todos los archivos”.</div></li>
+          <li><b class="act__letra">b)</b><div>Ejecutalo en phpMyAdmin con <span class="ui">Importar</span> y revisá las dos tablas y sus datos.</div></li>
+          <li><b class="act__letra">c)</b><div>Importalo otra vez. ¿Funciona? Si da error, corregilo hasta que funcione dos veces seguidas.</div></li>
+        </ol>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">7-</span> PHP con mysqli</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Descargá clientes.php, guardalo en <code class="cod-ruta">C:\xampp\htdocs\bd2\</code> y abrí <code class="cod-ruta">http://localhost/bd2/<wbr>clientes.php</code>. ¿Qué muestra?</div></li>
+          <li><b class="act__letra">b)</b><div>Cambiá la ciudad, guardá el archivo y recargá la página. ¿Quiénes aparecen?</div></li>
+          <li><b class="act__letra">c)</b><div>Guardá una copia como productos.php y cambiala para que muestre los productos con su precio.</div></li>
+        </ol>
+        <div class="descarga">
+          <a class="boton no-imprimir" href="../assets/datos/clientes.php" download="clientes.php"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar clientes.php</span></a>
+        </div>
+      </li>
+      <li class="act">
+        <h3 class="act__titulo"><span class="act__num">8-</span> PHP con PDO</h3>
+        <ol class="act__items">
+          <li><b class="act__letra">a)</b><div>Descargá clientes_pdo.php, guardalo en la misma carpeta y abrí <code class="cod-ruta">http://localhost/bd2/<wbr>clientes_pdo.php</code>.</div></li>
+          <li><b class="act__letra">b)</b><div>¿Muestra lo mismo que clientes.php?</div></li>
+          <li><b class="act__letra">c)</b><div>Anotá dos diferencias que veas en el código.</div></li>
+        </ol>
+        <div class="descarga">
+          <a class="boton no-imprimir" href="../assets/datos/clientes_pdo.php" download="clientes_pdo.php"><svg aria-hidden="true" focusable="false"><use href="#i-descarga"/></svg><span>Descargar clientes_pdo.php</span></a>
+        </div>
+      </li>
+    </ol>
+
+    <footer class="pie">
+      <span class="pie__linea"></span>
+      <span>Base de Datos II — Prof. Nicolás A. Cussi</span>
+      <span class="pie__linea"></span>
+      <span class="pie__num">TP 12</span>
+    </footer>
+  </article>
+</main>
+
+<script src="../assets/js/actividades.js"></script>
+</body>
+</html>

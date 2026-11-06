@@ -178,4 +178,3 @@ Ritmo para que entre en el año: TP1 en una semana (repaso); TPs 7 y 8 más ráp
 ## Pendientes a consultar con Nicolás
 
 - **Consola SQL en la web (sql.js):** si se suma, desde qué TP y si va local en `assets/` (consultar antes de agregar la dependencia). Hay que tener en cuenta la diferencia de `LIKE` con tildes (ver pág. 32).
-- Confirmar que los alumnos de 6.º tienen XAMPP instalado en el laboratorio (si no, el TP6 lo instala).
